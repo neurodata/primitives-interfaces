@@ -3,9 +3,9 @@
 # ig_wrapper_r.py
 # Created on 2017-09-14.
 
-import rpy2.robjects as robjects
+from rpy2 import robjects
 import numpy as np
-from util import gen_graph_r
+from jhu_primitives.utils.util import gen_graph_r
 
 def ig_get_adjacency_matrix(ig):
     fn = robjects.r("""

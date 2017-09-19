@@ -1,8 +1,5 @@
-import os, sys
-sys.path.append(os.path.abspath(".."))
-
-from JHUGraph import JHUGraph
-from util import gen_graph_r
+from jhu_primitives.core.JHUGraph import JHUGraph
+from jhu_primitives.utils.util import gen_graph_r
 
 gen_graph_r() # path is always /tmp/graph.gml
 g = JHUGraph()

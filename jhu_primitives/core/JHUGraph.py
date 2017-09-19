@@ -3,19 +3,17 @@
 # JHUGraph.py
 # Created on 2017-09-13.
 
-import os, sys
-sys.path.append(os.path.abspath(".."))
 
 from typing import NamedTuple, Sequence, Optional
 from primitive_interfaces.graph import GraphPrimitiveBase
-from read_graph_r import read_graph
-from ig_wrapper_r import ig_get_adjacency_matrix
-from ig_wrapper_r import ig_get_num_vertices
-from ig_wrapper_r import ig_get_num_edges
-from ig_wrapper_r import ig_get_dangling_nodes
-from ig_wrapper_r import ig_is_directed
-from ig_wrapper_r import ig_is_weighted
-from ig_wrapper_r import ig_summary
+from jhu_primitives.wrapper.read_graph_r import read_graph
+from jhu_primitives.wrapper.ig_wrapper_r import ig_get_adjacency_matrix
+from jhu_primitives.wrapper.ig_wrapper_r import ig_get_num_vertices
+from jhu_primitives.wrapper.ig_wrapper_r import ig_get_num_edges
+from jhu_primitives.wrapper.ig_wrapper_r import ig_get_dangling_nodes
+from jhu_primitives.wrapper.ig_wrapper_r import ig_is_directed
+from jhu_primitives.wrapper.ig_wrapper_r import ig_is_weighted
+from jhu_primitives.wrapper.ig_wrapper_r import ig_summary
 
 import numpy as np
 

@@ -5,15 +5,16 @@
 # Email: disa@jhu.edu
 # Copyright (c) 2017. All rights reserved.
 
-import rpy2.robjects as robjects
-from typing import Dict, Sequence, Any
+from rpy2 import robjects
+from typing import Dict, Sequence, Any, TypeVar
+import os
 
-import os, sys
-sys.path.append(os.path.abspath("../../.."))
+from primitive_interfaces.transfomer import TransformerPrimitiveBase
 
-from primitive_interfaces.transformer import TransformerPrimitiveBase
+Input = TypeVar('Input')
+Output = TypeVar('Output')
 
-class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, None]):
+class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output]):
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
 

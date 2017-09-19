@@ -2,9 +2,9 @@
 
 # test_JHUTransform.py
 
-from util import gen_graph_r
-from JHUGraph import JHUGraph
-from JHUTransform import JHUTransform
+from jhu_primitives.utils.util import gen_graph_r
+from jhu_primitives.core.JHUGraph import JHUGraph
+from jhu_primitives.core.JHUTransform import JHUTransform
 
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)
