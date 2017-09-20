@@ -6,7 +6,7 @@
 # Copyright (c) 2017. All rights reserved.
 
 from rpy2 import robjects
-from typing import Dict, Sequence, Any, TypeVar
+from typing import Sequence, Any, TypeVar
 import os
 
 from primitive_interfaces.transfomer import TransformerPrimitiveBase

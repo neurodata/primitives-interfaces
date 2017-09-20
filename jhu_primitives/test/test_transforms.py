@@ -9,6 +9,7 @@ from jhu_primitives.core.JHUGraph import JHUGraph
 from jhu_primitives.ase.SRC.ase import AdjacencySpectralEmbedding
 from jhu_primitives.lse.SRC.lse import LaplacianSpectralEmbedding
 from jhu_primitives.dimselect.SRC.dimselect import DimSelect
+from jhu_primitives.gclust.SRC.gclust import GClust
 
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)
@@ -28,5 +29,9 @@ def test():
     DIMSELECT = DimSelect()
     print("DIMSELECT: ",
             DIMSELECT.produce(inputs=np.random.random((256, 16))), "\n\n")
+
+    GCLUST = GClust()
+    print("GCLUST: ",
+            GCLUST.cluster(inputs=np.random.random((64, 8)), dim=4), "\n\n")
 
 test()

@@ -9,7 +9,7 @@ import numpy as np
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 
-from typing import Dict, Sequence, Any, TypeVar
+from typing import Sequence
 from primitive_interfaces.transfomer import TransformerPrimitiveBase
 
 Input = np.ndarray

@@ -9,27 +9,37 @@ import rpy2.robjects as robjects
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 
-def gclust(X, dim=2):
-    """
-    TODO: YP description
+from typing import Sequence
+from primitive_interfaces.transfomer import TransformerPrimitiveBase
 
-    **Positional Arguments:**
+Input = np.ndarray
+Output = np.ndarray
 
-    X:
-        - A matrix
+class GClust(TransformerPrimitiveBase[Input, Output]):
+    def cluster(self, *, inputs: Input, dim : int =2) -> int:
+        """
+        TODO: YP description
 
-    **Optional Arguments:**
+        **Positional Arguments:**
 
-    dim:
-        - The number of clusters in which to assign the data
-    """
+        inputs:
+            - A matrix
 
-    path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-            "gclust.interface.R")
-    cmd = """
-    source("%s")
-    fn <- function(X, dim) {
-        gclust.interface(X, dim)
-    }
-    """ % path
-    return robjects.r(cmd)(X, dim)
+        **Optional Arguments:**
+
+        dim:
+            - The number of clusters in which to assign the data
+        """
+
+        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                "gclust.interface.R")
+        cmd = """
+        source("%s")
+        fn <- function(X, dim) {
+            gclust.interface(X, dim)
+        }
+        """ % path
+        return int(robjects.r(cmd)(inputs, dim)[0])
+
+    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
+        self.cluster(inputs=inputs)
