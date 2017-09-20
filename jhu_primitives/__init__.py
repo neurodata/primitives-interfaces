@@ -1,10 +1,15 @@
 from __future__ import absolute_import
 from .ase import AdjacencySpectralEmbedding
 from .lse import LaplacianSpectralEmbedding
-from .dimselect import DimSelect
-from .gclust import GClust
+from .dimselect import DimensionSelection
+from .gclust import GaussianClustering
 from .nonpar import NonParametricClustering
-from .numclust import NumClust
+from .numclust import NumberOfClusters
+from .oocase import OutOfCoreAdjacencySpectralEmbedding
+from .ptr import PassToRanks
+from .sgc import SpectralGraphClustering
 
 __all__ = ['AdjacencySpectralEmbedding', 'LaplacianSpectralEmbedding',
-           'DimSelect', 'GClust', 'NonParametricClustering', 'NumClust']
+           'DimensionSelection', 'GaussianClustering', 'NonParametricClustering',
+           'NumberOfClusters', 'OutOfCoreAdjacencySpectralEmbedding', 'PassToRanks', 
+           'SpectralGraphClustering']

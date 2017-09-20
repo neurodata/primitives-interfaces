@@ -15,7 +15,7 @@ from primitive_interfaces.transfomer import TransformerPrimitiveBase
 Input = np.ndarray
 Output = np.ndarray
 
-class DimSelect(TransformerPrimitiveBase[Input, Output]):
+class DimensionSelection(TransformerPrimitiveBase[Input, Output]):
     """
     Select the right number of dimensions within which to embed given
     an adjacency matrix

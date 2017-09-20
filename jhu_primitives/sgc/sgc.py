@@ -1,42 +1,37 @@
 #!/usr/bin/env python
 
-# numclust.py
+# sgc.py
 # Copyright (c) 2017. All rights reserved.
 
 import os
-import rpy2.robjects as robjects
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
+from rpy2 import robjects
+from typing import Sequence
 import numpy as np
 
-from typing import Sequence
 from primitive_interfaces.transfomer import TransformerPrimitiveBase
+from jhu_primitives.core.JHUGraph import JHUGraph
 
-Input = np.ndarray
-Output = int
+Input = JHUGraph
+Output = np.ndarray
 
-class NumberOfClusters(TransformerPrimitiveBase[Input, Output]):
-    """
-    TODO: YP Document
-    """
 
+class SpectralGraphClustering(TransformerPrimitiveBase[Input, Output]):
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         """
         TODO: YP description
 
         **Positional Arguments:**
 
-        X:
-            - TODO: YP description
+        g:
+            - A graph in R 'igraph' format
         """
-
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "numclust.interface.R")
+                "sgc.interface.R")
         cmd = """
         source("%s")
-        fn <- function(X) {
-            numclust.interface(X)
+        fn <- function(g) {
+            sgc.interface(g)
         }
         """ % path
 
-        return robjects.r(cmd)(inputs)[0]
+        return np.array(robjects.r(cmd)(inputs._object))

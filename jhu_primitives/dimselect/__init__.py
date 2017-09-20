@@ -1,1 +1,1 @@
-from .dimselect import DimSelect
+from .dimselect import DimensionSelection
