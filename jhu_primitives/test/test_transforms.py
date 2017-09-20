@@ -16,6 +16,7 @@ from jhu_primitives.oocase.SRC.oocase import OutOfCoreAdjacencySpectralEmbedding
 from jhu_primitives.ptr.SRC.ptr import PassToRanks
 from jhu_primitives.sgc.SRC.sgc import SpectralGraphClustering
 from jhu_primitives.sgm.SRC.sgm import SeededGraphMatching
+from jhu_primitives.vnsgm.SRC.vnsgm import VertexNominationSeededGraphMatching
 
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)
@@ -65,6 +66,11 @@ def test():
     g2.read_graph(fname=gpath)
 
     SGM = SeededGraphMatching()
-    print("SGC: ", SGM.match(g1=g, g2=g2), "\n\n")
+    print("SGM: ", SGM.match(g1=g, g2=g2), "\n\n")
+
+    VNSGM = VertexNominationSeededGraphMatching()
+    print("VNSGM: ", VNSGM.match(g1=g, g2=g2,
+        voi=np.array([1, 2 ,3]), seeds = 2), "\n\n")
+
 
 test()
