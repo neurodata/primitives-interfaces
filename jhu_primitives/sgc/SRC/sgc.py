@@ -4,24 +4,34 @@
 # Copyright (c) 2017. All rights reserved.
 
 import os
-import rpy2.robjects as robjects
+from rpy2 import robjects
+from typing import Sequence
+import numpy as np
 
-def sgc(g):
-    """
-    TODO: YP description
+from primitive_interfaces.transfomer import TransformerPrimitiveBase
+from jhu_primitives.core.JHUGraph import JHUGraph
 
-    **Positional Arguments:**
+Input = JHUGraph
+Output = np.ndarray
 
-    g:
-        - A graph in R 'igraph' format
-    """
-    path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-            "sgc.interface.R")
-    cmd = """
-    source("%s")
-    fn <- function(g) {
-        sgc.interface(g)
-    }
-    """ % path
 
-    return robjects.r(cmd)(g._object)
+class SpectralGraphClustering(TransformerPrimitiveBase[Input, Output]):
+    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
+        """
+        TODO: YP description
+
+        **Positional Arguments:**
+
+        g:
+            - A graph in R 'igraph' format
+        """
+        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                "sgc.interface.R")
+        cmd = """
+        source("%s")
+        fn <- function(g) {
+            sgc.interface(g)
+        }
+        """ % path
+
+        return np.array(robjects.r(cmd)(inputs._object))

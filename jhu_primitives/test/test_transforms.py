@@ -14,6 +14,7 @@ from jhu_primitives.nonpar.SRC.nonpar import NonParametricClustering
 from jhu_primitives.numclust.SRC.numclust import NumberOfClusters
 from jhu_primitives.oocase.SRC.oocase import OutOfCoreAdjacencySpectralEmbedding
 from jhu_primitives.ptr.SRC.ptr import PassToRanks
+from jhu_primitives.sgc.SRC.sgc import SpectralGraphClustering
 
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)
@@ -24,6 +25,7 @@ def test():
     print("Summary: ")
     g.summary()
 
+    """
     ASE = AdjacencySpectralEmbedding()
     print("ASE: ", ASE.embed(g=g, dim=4), "\n\n")
 
@@ -54,5 +56,9 @@ def test():
 
     PTR = PassToRanks()
     print("PTR: ", PTR.produce(inputs=g), "\n\n")
+    """
+
+    SGC = SpectralGraphClustering()
+    print("SGC: ", SGC.produce(inputs=g), "\n\n")
 
 test()
