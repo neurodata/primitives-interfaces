@@ -1,0 +1,6 @@
+numpy
+scipy
+python-igraph
+rpy2
+sklearn
+jinja2

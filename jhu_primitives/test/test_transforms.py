@@ -6,12 +6,8 @@ import numpy as np
 
 from jhu_primitives.utils.util import gen_graph_r
 from jhu_primitives.core.JHUGraph import JHUGraph
-from jhu_primitives.ase.SRC.ase import AdjacencySpectralEmbedding
-from jhu_primitives.lse.SRC.lse import LaplacianSpectralEmbedding
-from jhu_primitives.dimselect.SRC.dimselect import DimSelect
-from jhu_primitives.gclust.SRC.gclust import GClust
-from jhu_primitives.nonpar.SRC.nonpar import NonParametricClustering
-from jhu_primitives.numclust.SRC.numclust import NumClust
+from jhu_primitives import *
+
 
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)

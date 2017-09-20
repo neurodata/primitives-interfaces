@@ -2,9 +2,9 @@ import os
 import sys
 from setuptools import setup
 
-PACKAGE_NAME = 'primitive_interfaces'
+PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
-
+VERSION = '0.0.1'
 
 def check_python_version():
     """Exit when the Python version is too low."""
@@ -26,10 +26,27 @@ check_python_version()
 
 setup(
     name=PACKAGE_NAME,
-    version=read_package_variable('__version__'),
+    version=VERSION,
     description='Python interfaces for TA1 primitives',
     author='D3M authors',
-    packages=[PACKAGE_NAME],
+    packages=[
+              PACKAGE_NAME,
+              'primitive_interfaces',
+              'jhu_primitives.ase',
+              'jhu_primitives.lse',
+              'jhu_primitives.dimselect',
+              'jhu_primitives.gclust',
+              'jhu_primitives.nonpar',
+              'jhu_primitives.numclust',
+              'jhu_primitives.oocase',
+              'jhu_primitives.oocase',
+              'jhu_primitives.ptr',
+              'jhu_primitives.sgc',
+              'jhu_primitives.vnsgm',
+              'jhu_primitives.utils',
+              'jhu_primitives.wrapper',
+              'jhu_primitives.core'
+    ],
     install_requires=['typing'],
     url='https://gitlab.datadrivendiscovery.org/d3m/primitive-interfaces',
 )
