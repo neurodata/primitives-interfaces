@@ -43,6 +43,7 @@ def test():
     # print("OOCASE: ", OOCASE.embed(g=g), "\n\n")
 
     NUMCLUST = NumberOfClusters()
+
     print("NUMCLUST: ",
             NUMCLUST.produce(inputs=np.random.random((128, 16))), "\n\n")
 
