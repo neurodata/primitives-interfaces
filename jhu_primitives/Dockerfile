@@ -35,7 +35,7 @@ RUN set -ex \
 # COPY . $HOME
 
 RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
-RUN pip3 install numpy scipy python-igraph rpy2 sklearn jinja2
+RUN pip3.6 install numpy scipy python-igraph rpy2 sklearn jinja2
 
 RUN chmod -R o+rw /usr/local
 RUN echo "/usr/local/lib/R/lib/" > /etc/ld.so.conf.d/libR.conf \
@@ -43,8 +43,7 @@ RUN echo "/usr/local/lib/R/lib/" > /etc/ld.so.conf.d/libR.conf \
 
 WORKDIR /home/user/primitives-interfaces/
 RUN python3.6 setup.py install
-WORKDIR $HOME
-USER user
+
 
 # to push to D3M gitlab
 # docker login gitlab.datadrivendiscovery.org:5005
