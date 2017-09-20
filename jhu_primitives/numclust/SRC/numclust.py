@@ -7,24 +7,36 @@ import os
 import rpy2.robjects as robjects
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
+import numpy as np
 
-def numclust(X):
+from typing import Sequence
+from primitive_interfaces.transfomer import TransformerPrimitiveBase
+
+Input = np.ndarray
+Output = int
+
+class NumClust(TransformerPrimitiveBase[Input, Output]):
     """
-    TODO: YP description
-
-    **Positional Arguments:**
-
-    X:
-        - TODO: YP description
+    TODO: YP Document
     """
 
-    path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-            "numclust.interface.R")
-    cmd = """
-    source("%s")
-    fn <- function(X) {
-        numclust.interface(X)
-    }
-    """ % path
+    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
+        """
+        TODO: YP description
 
-    return robjects.r(cmd)(X)
+        **Positional Arguments:**
+
+        X:
+            - TODO: YP description
+        """
+
+        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                "numclust.interface.R")
+        cmd = """
+        source("%s")
+        fn <- function(X) {
+            numclust.interface(X)
+        }
+        """ % path
+
+        return robjects.r(cmd)(inputs)[0]

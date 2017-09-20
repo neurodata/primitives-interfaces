@@ -11,6 +11,7 @@ from jhu_primitives.lse.SRC.lse import LaplacianSpectralEmbedding
 from jhu_primitives.dimselect.SRC.dimselect import DimSelect
 from jhu_primitives.gclust.SRC.gclust import GClust
 from jhu_primitives.nonpar.SRC.nonpar import NonParametricClustering
+from jhu_primitives.numclust.SRC.numclust import NumClust
 
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)
@@ -21,6 +22,7 @@ def test():
     print("Summary: ")
     g.summary()
 
+    """
     ASE = AdjacencySpectralEmbedding()
     print("ASE: ", ASE.embed(g=g, dim=4), "\n\n")
 
@@ -29,18 +31,23 @@ def test():
 
     DIMSELECT = DimSelect()
     print("DIMSELECT: ",
-            DIMSELECT.produce(inputs=np.random.random((256, 16))), "\n\n")
+            DIMSELECT.produce(inputs=np.random.random((128, 16))), "\n\n")
 
     GCLUST = GClust()
     print("GCLUST: ",
             GCLUST.cluster(inputs=np.random.random((64, 8)), dim=4), "\n\n")
     print("GCLUST: ",
             GCLUST.produce(inputs=np.random.random((64, 8))), "\n\n")
+    """
 
     # NONPAR
-    NONPAR = NonParametricClustering()
-    xhat1 = np.random.random((16, 4))
-    xhat2 = np.random.random((16, 4))
-    print("NONPAR: ", NONPAR.cluster(xhat1=xhat1, xhat2=xhat2), "\n\n")
+    # NONPAR = NonParametricClustering()
+    # xhat1 = np.random.random((16, 4))
+    # xhat2 = np.random.random((16, 4))
+    # print("NONPAR: ", NONPAR.cluster(xhat1=xhat1, xhat2=xhat2), "\n\n")
+
+    NUMCLUST = NumClust()
+    print("NUMCLUST: ",
+            NUMCLUST.produce(inputs=np.random.random((128, 16))), "\n\n")
 
 test()
