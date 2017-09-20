@@ -15,6 +15,7 @@ from jhu_primitives.numclust.SRC.numclust import NumberOfClusters
 from jhu_primitives.oocase.SRC.oocase import OutOfCoreAdjacencySpectralEmbedding
 from jhu_primitives.ptr.SRC.ptr import PassToRanks
 from jhu_primitives.sgc.SRC.sgc import SpectralGraphClustering
+from jhu_primitives.sgm.SRC.sgm import SeededGraphMatching
 
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)
@@ -25,7 +26,6 @@ def test():
     print("Summary: ")
     g.summary()
 
-    """
     ASE = AdjacencySpectralEmbedding()
     print("ASE: ", ASE.embed(g=g, dim=4), "\n\n")
 
@@ -56,9 +56,15 @@ def test():
 
     PTR = PassToRanks()
     print("PTR: ", PTR.produce(inputs=g), "\n\n")
-    """
 
     SGC = SpectralGraphClustering()
     print("SGC: ", SGC.produce(inputs=g), "\n\n")
+
+    gpath, rig = gen_graph_r(n=50, p=.1)
+    g2 = JHUGraph()
+    g2.read_graph(fname=gpath)
+
+    SGM = SeededGraphMatching()
+    print("SGC: ", SGM.match(g1=g, g2=g2), "\n\n")
 
 test()
