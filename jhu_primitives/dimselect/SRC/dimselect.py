@@ -1,30 +1,46 @@
 #!/usr/bin/env python
 
 # dimselect.py
-# Created by Disa Mhembere on 2017-09-11.
-# Email: disa@jhu.edu
 # Copyright (c) 2017. All rights reserved.
 
 import os
-import rpy2.robjects as robjects
+from rpy2 import robjects
+import numpy as np
+import rpy2.robjects.numpy2ri
+rpy2.robjects.numpy2ri.activate()
 
-def dimselect(X):
+from typing import Dict, Sequence, Any, TypeVar
+from primitive_interfaces.transfomer import TransformerPrimitiveBase
+
+Input = np.ndarray
+Output = np.ndarray
+
+class DimSelect(TransformerPrimitiveBase[Input, Output]):
     """
-    TODO: YP description
-
-    **Positional Arguments:**
-
-    X:
-        - Input data matrix TODO: YP format
+    Select the right number of dimensions within which to embed given
+    an adjacency matrix
     """
 
-    path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-            "dimselect.interface.R")
-    cmd = """
-    source("%s")
-    fn <- function(X) {
-        dimselect.interface(X)
-    }
-    """ % path
+    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
+        """
+        Run the dimension selection algorithm
 
-    return robjects.r(cmd)(X)
+        **Positional Arguments:**
+
+        inputs:
+            - A data matrix
+
+        ** Returns: ***
+        The right number of dimensions within which to embed
+
+        """
+        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                "dimselect.interface.R")
+        cmd = """
+        source("%s")
+        fn <- function(X) {
+            dimselect.interface(X)
+        }
+        """ % path
+
+        return np.array(robjects.r(cmd)(inputs))
