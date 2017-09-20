@@ -7,32 +7,45 @@ import os
 import rpy2.robjects as robjects
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
+import numpy as np
 
-def nonpar(xhat1, xhat2, sigma=0.5):
-    """
-    TODO: YP description
+from typing import Sequence
+from primitive_interfaces.transfomer import TransformerPrimitiveBase
 
-    **Positional Arguments:**
+Input = np.ndarray
+Output = np.ndarray
 
-    xhat1:
-        - A numpy.ndarray type "matrix"
-    xhat2:
-        - A numpy.ndarray type "matrix"
+class NonParametricClustering(TransformerPrimitiveBase[Input, Output]):
 
-    **Optional Arguments:**
+    def cluster(self, *, xhat1 : Input, xhat2 : Input, sigma : float = 0.5):
+        """
+        Non-parametric clustering
 
-    sigma:
-        - a sigma for the Gaussian kernel
-    """
+        **Positional Arguments:**
 
-    path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-            "nonpar.interface.R")
+        xhat1:
+            - A numpy.ndarray type "matrix"
+        xhat2:
+            - A numpy.ndarray type "matrix"
 
-    cmd = """
-    source("%s")
-    fn <- function(xhat1, xhat2, sigma) {
-        nonpar.interface(xhat1, xhat2, sigma)
-    }
-    """ % path
+        **Optional Arguments:**
 
-    return robjects.r(cmd)(xhat1, xhat2, sigma)
+        sigma:
+            - a sigma for the Gaussian kernel
+        """
+
+        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                "nonpar.interface.R")
+
+        cmd = """
+        source("%s")
+        fn <- function(xhat1, xhat2, sigma) {
+            nonpar.interface(xhat1, xhat2, sigma)
+        }
+        """ % path
+
+        return robjects.r(cmd)(xhat1, xhat2, sigma)
+
+    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
+        #self.cluster(inputs[0], inputs[1])
+        pass # TODO

@@ -6,7 +6,6 @@ if(!require(gmmase)){
 
 nonpar.interface <- function(Xhat1, Xhat2, sigma=0.5)
 {
-    browser()
     return(nonpar(Xhat1,Xhat2,sigma))
 
     #cat("The output file is saved in '../DATA/out.txt'.\n")
