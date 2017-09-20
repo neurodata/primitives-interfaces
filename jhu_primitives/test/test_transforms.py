@@ -33,5 +33,7 @@ def test():
     GCLUST = GClust()
     print("GCLUST: ",
             GCLUST.cluster(inputs=np.random.random((64, 8)), dim=4), "\n\n")
+    print("GCLUST: ",
+            GCLUST.produce(inputs=np.random.random((64, 8))), "\n\n")
 
 test()
