@@ -1,37 +1,43 @@
 #!/usr/bin/env python
 
 # lse.py
-# Created by Disa Mhembere on 2017-09-12.
-# Email: disa@jhu.edu
 # Copyright (c) 2017. All rights reserved.
 
-import argparse
-import rpy2.robjects as robjects
+from rpy2 import robjects
+from typing import Dict, Sequence, Any, TypeVar
+import os
 
-def lse(datafn, dim=2):
-    """
-    Perform Laplacian Spectral Embedding on a graph
-    TODO: YP description
+from primitive_interfaces.transfomer import TransformerPrimitiveBase
 
-    **Positional Arguments:**
+Input = TypeVar('Input')
+Output = TypeVar('Output')
 
-    g:
-        - Graph in JHUGraph format
+class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Input, Output]):
+    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
+        pass
 
-    **Optional Arguments:**
+    def embed(self, *, g : Any, dim: int = 2):
+        """
+        Perform Laplacian Spectral Embedding on a graph
+        TODO: YP description
 
-    dim:
-        - The number of dimensions in which to embed the data
-    """
+        **Positional Arguments:**
 
-    path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-            "lse.interface.R")
-    cmd = """
-    source("%s")
-    fn <- function(g, dim) {
-        lse.interface(g, dim)
-    }
-    """ % path
+        g:
+            - Graph in JHUGraph format
 
-    _lse = robjects.r(cmd)
-    return _lse(g._object, dim)
+        **Optional Arguments:**
+
+        dim:
+            - The number of dimensions in which to embed the data
+        """
+        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                "lse.interface.R")
+        cmd = """
+        source("%s")
+        fn <- function(g, dim) {
+            lse.interface(g, dim)
+        }
+        """ % path
+
+        return robjects.r(cmd)(g._object, dim)
