@@ -10,6 +10,11 @@ install:
 dist:
 	$(CC) setup.py sdist
 
+up-test:
+	twine upload dist/* -r testpypi
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	#twine upload --repository testpypi dist/*
+
 up:
 	twine upload dist/*
 

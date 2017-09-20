@@ -10,8 +10,8 @@ RUN useradd --create-home --home-dir $HOME user \
 
 # there are snakes on the plane ...
 RUN apt-get update && apt-get install -y software-properties-common
-RUN add-apt-repository ppa:jonathonf/python-3.6 &&\
-   add-apt-repository ppa:marutter/rrutter
+RUN add-apt-repository ppa:jonathonf/python-3.6 && \
+        add-apt-repository ppa:marutter/rrutter
 
 # install required unix apps
 RUN apt-get update && apt-get install -y openssh-server \
@@ -24,14 +24,14 @@ RUN apt-get update && apt-get install -y openssh-server \
 RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
 RUN set -ex \
     && Rscript -e 'install.packages(c("devtools","mclust","popbio","clue", "igraph"), dependencies = c("Depends", "Imports"))' \
-    && Rscript -e 'devtools::install_github("youngser/gmmase")' \
+    && Rscript -e 'devtools::install_github(c("youngser/gmmase", "youngser/VN"))' \
     && Rscript -e 'install.packages("http://www.cis.jhu.edu/~parky/D3M/VN_0.3.0.tar.gz",type="source", dependencies = c("Depends", "Imports"))'
 
 # copy required files/primitives
 # COPY . $HOME
 
 # Pull project
-RUN a=a git clone https://github.com/neurodata/primitives-interfaces.git \
+RUN git clone https://github.com/neurodata/primitives-interfaces.git \
     /home/user/primitives-interfaces
 
 RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
