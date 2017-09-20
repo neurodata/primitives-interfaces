@@ -72,5 +72,4 @@ def test():
     print("VNSGM: ", VNSGM.match(g1=g, g2=g2,
         voi=np.array([1, 2 ,3]), seeds = 2), "\n\n")
 
-
 test()
