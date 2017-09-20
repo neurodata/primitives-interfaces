@@ -20,10 +20,6 @@ RUN apt-get update && apt-get install -y openssh-server \
     build-essential libreadline-dev python3.6 python3.6-dev \
     liblzma-dev bzip2 libbz2-dev libicu-dev r-base r-base-core
 
-# Pull project
-RUN git clone https://github.com/neurodata/primitives-interfaces.git \
-    /home/user/primitives-interfaces
-
 # install required R packages
 RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
 RUN set -ex \
@@ -34,6 +30,10 @@ RUN set -ex \
 # copy required files/primitives
 # COPY . $HOME
 
+# Pull project
+RUN git clone https://github.com/neurodata/primitives-interfaces.git \
+    /home/user/primitives-interfaces
+
 RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
 RUN pip3.6 install numpy scipy python-igraph rpy2 sklearn jinja2
 
@@ -43,7 +43,7 @@ RUN echo "/usr/local/lib/R/lib/" > /etc/ld.so.conf.d/libR.conf \
 
 WORKDIR /home/user/primitives-interfaces/
 RUN python3.6 setup.py install
-
+RUN pip3.6 install jupyter
 
 # to push to D3M gitlab
 # docker login gitlab.datadrivendiscovery.org:5005
