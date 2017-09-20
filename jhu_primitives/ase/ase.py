@@ -11,6 +11,7 @@ import os
 
 from primitive_interfaces.transfomer import TransformerPrimitiveBase
 from jhu_primitives.core.JHUGraph import JHUGraph
+import numpy as np
 
 Input = TypeVar('Input')
 Output = TypeVar('Output')
@@ -43,4 +44,4 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output]):
         }
         """ % path
 
-        return robjects.r(cmd)(g._object, dim)
+        return np.array(robjects.r(cmd)(g._object, dim))

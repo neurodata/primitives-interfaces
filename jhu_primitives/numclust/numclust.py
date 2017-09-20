@@ -39,4 +39,4 @@ class NumberOfClusters(TransformerPrimitiveBase[Input, Output]):
         }
         """ % path
 
-        return robjects.r(cmd)(inputs)[0]
+        return int(robjects.r(cmd)(inputs)[0])

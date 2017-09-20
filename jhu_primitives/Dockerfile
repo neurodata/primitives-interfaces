@@ -1,24 +1,24 @@
 # our R base image
-FROM rocker/tidyverse
+FROM ubuntu:16.04
 
-MAINTAINER Youngser Park <youngser@jhu.edu>
+MAINTAINER Youngser Park <youngser@jhu.edu>, Disa Mhembere
 
 # create an R user
 ENV HOME /home/user
 RUN useradd --create-home --home-dir $HOME user \
     && chown -R user:user $HOME
 
+# there are snakes on the plane ...
+RUN apt-get update && apt-get install -y software-properties-common
+RUN add-apt-repository ppa:jonathonf/python-3.6 &&\
+   add-apt-repository ppa:marutter/rrutter
+
 # install required unix apps
 RUN apt-get update && apt-get install -y openssh-server \
     git libcurl4-openssl-dev libxml2-dev \
     libssl-dev libssh2-1-dev vim wget tmux \
-    build-essential libreadline-dev python3 python3-dev \
-    liblzma-dev bzip2 libbz2-dev libicu-dev
-
-# Pull project
-# tocken: gUNY-zMxguoAMW7Qn41t
-#RUN git clone https://oauth2:gUNY-zMxguoAMW7Qn41t@gitlab.datadrivendiscovery.org/ypark/D3M.git /home/user/D3M
-RUN git clone https://github.com/youngser/D3M.git /home/user/D3M
+    build-essential libreadline-dev python3.6 python3.6-dev \
+    liblzma-dev bzip2 libbz2-dev libicu-dev r-base r-base-core
 
 # install required R packages
 RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
@@ -30,18 +30,20 @@ RUN set -ex \
 # copy required files/primitives
 # COPY . $HOME
 
-RUN wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py
-RUN pip3 install numpy scipy python-igraph rpy2 sklearn jinja2
+# Pull project
+RUN git clone https://github.com/neurodata/primitives-interfaces.git \
+    /home/user/primitives-interfaces
 
-#RUN mkdir /home/user/D3M/DATA
-RUN chown -R user:user /home/user/D3M
+RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
+RUN pip3.6 install numpy scipy python-igraph rpy2 sklearn jinja2
+
 RUN chmod -R o+rw /usr/local
 RUN echo "/usr/local/lib/R/lib/" > /etc/ld.so.conf.d/libR.conf \
     && cd /etc/ld.so.conf.d/ && ldconfig
 
-
-WORKDIR $HOME
-USER user
+WORKDIR /home/user/primitives-interfaces/
+RUN python3.6 setup.py install
+RUN pip3.6 install jupyter
 
 # to push to D3M gitlab
 # docker login gitlab.datadrivendiscovery.org:5005

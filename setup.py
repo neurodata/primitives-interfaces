@@ -4,7 +4,7 @@ from setuptools import setup
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
-VERSION = '0.0.1'
+VERSION = '0.0.1b'
 
 def check_python_version():
     """Exit when the Python version is too low."""
@@ -28,7 +28,7 @@ setup(
     name=PACKAGE_NAME,
     version=VERSION,
     description='Python interfaces for TA1 primitives',
-    author='D3M authors',
+    author='Disa Mhembere, Eric Bridgeford',
     packages=[
               PACKAGE_NAME,
               'primitive_interfaces',
@@ -39,14 +39,15 @@ setup(
               'jhu_primitives.nonpar',
               'jhu_primitives.numclust',
               'jhu_primitives.oocase',
-              'jhu_primitives.oocase',
               'jhu_primitives.ptr',
               'jhu_primitives.sgc',
+              'jhu_primitives.sgm',
               'jhu_primitives.vnsgm',
               'jhu_primitives.utils',
               'jhu_primitives.wrapper',
               'jhu_primitives.core'
     ],
-    install_requires=['typing'],
-    url='https://gitlab.datadrivendiscovery.org/d3m/primitive-interfaces',
+    install_requires=['typing', 'numpy', 'scipy',
+        'python-igraph', 'rpy2', 'sklearn', 'jinja2'],
+    url='https://github.com/neurodata/primitives-interfaces',
 )

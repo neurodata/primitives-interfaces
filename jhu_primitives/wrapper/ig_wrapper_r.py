@@ -14,7 +14,6 @@ def ig_get_adjacency_matrix(ig):
         get.adjacency(ig)
     }
     """)
-    adj = fn(ig)
     return fn(ig)
 
 def ig_get_dense_matrix(ig):
