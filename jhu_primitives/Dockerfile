@@ -31,7 +31,7 @@ RUN set -ex \
 # COPY . $HOME
 
 # Pull project
-RUN git clone https://github.com/neurodata/primitives-interfaces.git \
+RUN a=a git clone https://github.com/neurodata/primitives-interfaces.git \
     /home/user/primitives-interfaces
 
 RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
@@ -44,10 +44,14 @@ RUN echo "/usr/local/lib/R/lib/" > /etc/ld.so.conf.d/libR.conf \
 WORKDIR /home/user/primitives-interfaces/
 RUN python3.6 setup.py install
 RUN pip3.6 install jupyter
+RUN mkdir -p /home/user/.jupyter
+COPY jupyter_notebook_config.py /home/user/.jupyter/jupyter_notebook_config.py
+WORKDIR /home/user
 
 # to push to D3M gitlab
 # docker login gitlab.datadrivendiscovery.org:5005
 # Error response from daemon: Get https://gitlab.datadrivendiscovery.org:5005/v1/users/: dial tcp 192.31.133.81:5005: i/o timeout
 # docker build -t gitlab.datadrivendiscovery.org:5005/ypark/d3m/image .
 # docker push gitlab.datadrivendiscovery.org:5005/ypark/d3m/image
-ENTRYPOINT ["bash"]
+EXPOSE 8888
+ENTRYPOINT ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
