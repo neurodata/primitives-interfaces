@@ -16,6 +16,16 @@ def ig_get_adjacency_matrix(ig):
     """)
     return fn(ig)
 
+def ig_get_dense_matrix(ig):
+    fn = robjects.r("""
+    fn <- function(ig) {
+        suppressMessages(require(igraph))
+        as.matrix(get.adjacency(ig))
+    }
+    """)
+    adj = fn(ig)
+    return fn(ig)
+
 def ig_get_num_vertices(ig):
     fn = robjects.r("""
     fn <- function(ig) {
