@@ -8,6 +8,7 @@ from jhu_primitives.utils.util import gen_graph_r
 from jhu_primitives.core.JHUGraph import JHUGraph
 from jhu_primitives import *
 
+
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)
 
@@ -17,7 +18,6 @@ def test():
     print("Summary: ")
     g.summary()
 
-    """
     ASE = AdjacencySpectralEmbedding()
     print("ASE: ", ASE.embed(g=g, dim=4), "\n\n")
 
@@ -48,9 +48,20 @@ def test():
 
     PTR = PassToRanks()
     print("PTR: ", PTR.produce(inputs=g), "\n\n")
-    """
 
     SGC = SpectralGraphClustering()
     print("SGC: ", SGC.produce(inputs=g), "\n\n")
+
+    gpath, rig = gen_graph_r(n=50, p=.1)
+    g2 = JHUGraph()
+    g2.read_graph(fname=gpath)
+
+    SGM = SeededGraphMatching()
+    print("SGM: ", SGM.match(g1=g, g2=g2), "\n\n")
+
+    VNSGM = VertexNominationSeededGraphMatching()
+    print("VNSGM: ", VNSGM.match(g1=g, g2=g2,
+        voi=np.array([1, 2 ,3]), seeds = 2), "\n\n")
+
 
 test()

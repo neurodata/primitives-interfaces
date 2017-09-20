@@ -6,14 +6,14 @@ if (length(args)<2) {
 } else if (length(args)==2) {
     input1 <- args[1]
     input2 <- args[2]
-    s <- 0
+    S <- NULL
 } else {
     input1 <- args[1]
     input2 <- args[2]
-    s <- args[3]
+    S <- args[3]
 }
 
 
 cat("working with ", input1, ",", input2, "\n")
 
-sgm.interface(input1, input2, s)
+sgm.interface(input1, input2, S)
