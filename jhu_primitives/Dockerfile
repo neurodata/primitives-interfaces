@@ -37,13 +37,12 @@ RUN set -ex \
 RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
 RUN pip3 install numpy scipy python-igraph rpy2 sklearn jinja2
 
-#RUN mkdir /home/user/D3M/DATA
-RUN chown -R user:user /home/user/D3M
 RUN chmod -R o+rw /usr/local
 RUN echo "/usr/local/lib/R/lib/" > /etc/ld.so.conf.d/libR.conf \
     && cd /etc/ld.so.conf.d/ && ldconfig
 
-
+WORKDIR /home/user/primitives-interfaces/
+RUN python3.6 setup.py install
 WORKDIR $HOME
 USER user
 
