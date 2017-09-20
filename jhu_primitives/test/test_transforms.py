@@ -43,10 +43,10 @@ def test():
     print("GCLUST: ",
             GCLUST.produce(inputs=np.random.random((64, 8))), "\n\n")
 
-    # NONPAR = NonParametricClustering()
-    # xhat1 = np.random.random((16, 4))
-    # xhat2 = np.random.random((16, 4))
-    # print("NONPAR: ", NONPAR.cluster(xhat1=xhat1, xhat2=xhat2), "\n\n")
+    NONPAR = NonParametricClustering()
+    xhat1 = np.random.random((16, 2))
+    xhat2 = np.random.random((16, 2))
+    print("NONPAR: ", NONPAR.cluster(xhat1=xhat1, xhat2=xhat2), "\n\n")
 
     # OOCASE = OutOfCoreAdjacencySpectralEmbedding()
     # print("OOCASE: ", OOCASE.embed(g=g), "\n\n")
