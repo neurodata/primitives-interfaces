@@ -1,13 +1,14 @@
+CC=python3
 all: py3
 
 py3:
-	python3 setup.py build
+	$(CC) setup.py build
 
 install:
-	python setup.py install
+	$(CC) setup.py install
 
 dist:
-	python setup.py sdist
+	$(CC) setup.py sdist
 
 up:
 	twine upload dist/*
