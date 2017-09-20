@@ -1,7 +1,7 @@
 # our R base image
 FROM ubuntu:16.04
 
-MAINTAINER Youngser Park <youngser@jhu.edu>, Disa Mhembere
+MAINTAINER Youngser Park <youngser@jhu.edu>, Disa Mhembere, Eric Bridgeford
 
 # create an R user
 ENV HOME /home/user
