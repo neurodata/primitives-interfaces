@@ -4,7 +4,7 @@ from setuptools import setup
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
-VERSION = '0.0.1a'
+VERSION = '0.0.1b'
 
 def check_python_version():
     """Exit when the Python version is too low."""
