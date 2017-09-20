@@ -8,8 +8,11 @@ from .numclust import NumberOfClusters
 from .oocase import OutOfCoreAdjacencySpectralEmbedding
 from .ptr import PassToRanks
 from .sgc import SpectralGraphClustering
+from .sgm import SeededGraphMatching
+from .vnsgm import VertexNominationSeededGraphMatching
 
 __all__ = ['AdjacencySpectralEmbedding', 'LaplacianSpectralEmbedding',
            'DimensionSelection', 'GaussianClustering', 'NonParametricClustering',
            'NumberOfClusters', 'OutOfCoreAdjacencySpectralEmbedding', 'PassToRanks', 
-           'SpectralGraphClustering']
+           'SpectralGraphClustering', 'SeededGraphMatching',
+           'VertexNominationSeededGraphMatching']
