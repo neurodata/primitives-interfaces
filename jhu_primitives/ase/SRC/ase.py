@@ -6,10 +6,11 @@
 # Copyright (c) 2017. All rights reserved.
 
 from rpy2 import robjects
-from typing import Sequence, Any, TypeVar
+from typing import Sequence, TypeVar
 import os
 
 from primitive_interfaces.transfomer import TransformerPrimitiveBase
+from jhu_primitives.core.JHUGraph import JHUGraph
 
 Input = TypeVar('Input')
 Output = TypeVar('Output')
@@ -18,7 +19,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output]):
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
 
-    def embed(self, *, g : Any, dim: int = 2):
+    def embed(self, *, g : JHUGraph, dim: int = 2):
         """
         Perform Adjacency Spectral Embedding on a graph
         TODO: YP description

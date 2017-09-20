@@ -5,25 +5,34 @@
 # Copyright (c) 2017. All rights reserved.
 
 import os
-import rpy2.robjects as robjects
+from rpy2 import robjects
+from typing import Sequence, Any, TypeVar
+import numpy as np
 
-def ptr(g):
-    """
-    TODO: YP description
+from primitive_interfaces.transfomer import TransformerPrimitiveBase
+from jhu_primitives.core.JHUGraph import JHUGraph
 
-    **Positional Arguments:**
+Input = JHUGraph
+Output = np.ndarray
 
-    g:
-        - An r igraph object repr in python
-    """
+class PassToRanks(TransformerPrimitiveBase[Input, Output]):
+    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
+        """
+        TODO: YP description
 
-    path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-            "ptr.interface.R")
-    cmd = """
-    source("%s")
-    fn <- function(g) {
-        ptr.interface(g)
-    }
-    """ % path
+        **Positional Arguments:**
 
-    return robjects.r(cmd)(g._object)
+        g:
+            - An r igraph object repr in python
+        """
+
+        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                "ptr.interface.R")
+        cmd = """
+        source("%s")
+        fn <- function(inputs) {
+            ptr.interface(inputs)
+        }
+        """ % path
+
+        return np.array(robjects.r(cmd)(inputs._object))

@@ -13,6 +13,7 @@ from jhu_primitives.gclust.SRC.gclust import GaussianClustering
 from jhu_primitives.nonpar.SRC.nonpar import NonParametricClustering
 from jhu_primitives.numclust.SRC.numclust import NumberOfClusters
 from jhu_primitives.oocase.SRC.oocase import OutOfCoreAdjacencySpectralEmbedding
+from jhu_primitives.ptr.SRC.ptr import PassToRanks
 
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)
@@ -51,5 +52,7 @@ def test():
     print("NUMCLUST: ",
             NUMCLUST.produce(inputs=np.random.random((128, 16))), "\n\n")
 
+    PTR = PassToRanks()
+    print("PTR: ", PTR.produce(inputs=g), "\n\n")
 
 test()

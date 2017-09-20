@@ -8,6 +8,7 @@ from typing import Sequence, Any, TypeVar
 import os
 
 from primitive_interfaces.transfomer import TransformerPrimitiveBase
+from jhu_primitives.core.JHUGraph import JHUGraph
 
 Input = TypeVar('Input')
 Output = TypeVar('Output')
@@ -17,7 +18,7 @@ class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
 
-    def embed(self, *, g : Any, dim: int = 2):
+    def embed(self, *, g : JHUGraph, dim: int = 2):
         """
         TODO: YP description
 
