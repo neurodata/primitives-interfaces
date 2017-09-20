@@ -5,6 +5,7 @@
 from rpy2 import robjects
 from typing import Sequence, TypeVar, Any
 import os
+import numpy as np
 
 from primitive_interfaces.transfomer import TransformerPrimitiveBase
 from jhu_primitives.core.JHUGraph import JHUGraph
@@ -44,4 +45,4 @@ class SeededGraphMatching(TransformerPrimitiveBase[Input, Output]):
         }
         """ % path
 
-        return robjects.r(cmd)(g1._object, g2._object, seeds)
+        return np.array(robjects.r(cmd)(g1._object, g2._object, seeds))
