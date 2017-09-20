@@ -44,7 +44,7 @@ class NonParametricClustering(TransformerPrimitiveBase[Input, Output]):
         }
         """ % path
 
-        return robjects.r(cmd)(xhat1, xhat2, sigma)
+        return float(robjects.r(cmd)(xhat1, xhat2, sigma)[0])
 
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         #self.cluster(inputs[0], inputs[1])

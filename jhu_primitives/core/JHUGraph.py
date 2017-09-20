@@ -52,9 +52,6 @@ class JHUGraph(GraphPrimitiveBase[Input, Output, Params]):
     def get_adjacency_matrix(self):
         return ig_get_adjacency_matrix(self._object)
 
-    def get_adjacency_matrix(self):
-        return self.adjacency_matrix
-
     def get_num_vertices(self):
         return self._num_vertices
 
