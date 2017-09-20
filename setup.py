@@ -32,6 +32,17 @@ setup(
     packages=[
               PACKAGE_NAME,
               'primitive_interfaces',
+              'jhu_primitives.ase',
+              'jhu_primitives.lse',
+              'jhu_primitives.dimselect',
+              'jhu_primitives.gclust',
+              'jhu_primitives.nonpar',
+              'jhu_primitives.numclust',
+              'jhu_primitives.oocase',
+              'jhu_primitives.ptr',
+              'jhu_primitives.sgc',
+              'jhu_primitives.sgm',
+              'jhu_primitives.vnsgm',
               'jhu_primitives.utils',
               'jhu_primitives.wrapper',
               'jhu_primitives.core'
