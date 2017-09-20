@@ -15,7 +15,7 @@ from primitive_interfaces.transfomer import TransformerPrimitiveBase
 Input = np.ndarray
 Output = np.ndarray
 
-class GClust(TransformerPrimitiveBase[Input, Output]):
+class GaussianClustering(TransformerPrimitiveBase[Input, Output]):
     def cluster(self, *, inputs: Input, dim : int =2) -> int:
         """
         TODO: YP description

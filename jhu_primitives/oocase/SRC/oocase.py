@@ -3,32 +3,43 @@
 # oocase.py
 # Copyright (c) 2017. All rights reserved.
 
+from rpy2 import robjects
+from typing import Sequence, Any, TypeVar
 import os
-import rpy2.robjects as robjects
 
-def oocase(g, dim=2):
-    """
-    TODO: YP description
+from primitive_interfaces.transfomer import TransformerPrimitiveBase
 
-    **Positional Arguments:**
+Input = TypeVar('Input')
+Output = TypeVar('Output')
 
-    g:
-        - A graph
+class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output]):
 
-    **Optional Arguments:**
+    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
+        pass
 
-    dim:
-        - The number of dimensions in which to embed the data
-    """
+    def embed(self, *, g : Any, dim: int = 2):
+        """
+        TODO: YP description
 
-    path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-            "oocase.interface.R")
+        **Positional Arguments:**
 
-    cmd = """
-    source("%s")
-    fn <- function(g, dim) {
-        oocase.interface(g, dmax)
-    }
-    """ % path
+        g:
+            - A graph
 
-    return robjects.r(cmd)(g._object, dim)
+        **Optional Arguments:**
+
+        dim:
+            - The number of dimensions in which to embed the data
+        """
+
+        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                "oocase.interface.R")
+
+        cmd = """
+        source("%s")
+        fn <- function(g, dim) {
+            oocase.interface(g, dim)
+        }
+        """ % path
+
+        return robjects.r(cmd)(g._object, dim)

@@ -15,7 +15,7 @@ from primitive_interfaces.transfomer import TransformerPrimitiveBase
 Input = np.ndarray
 Output = int
 
-class NumClust(TransformerPrimitiveBase[Input, Output]):
+class NumberOfClusters(TransformerPrimitiveBase[Input, Output]):
     """
     TODO: YP Document
     """
