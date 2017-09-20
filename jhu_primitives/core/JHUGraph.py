@@ -14,6 +14,7 @@ from jhu_primitives.wrapper.ig_wrapper_r import ig_get_dangling_nodes
 from jhu_primitives.wrapper.ig_wrapper_r import ig_is_directed
 from jhu_primitives.wrapper.ig_wrapper_r import ig_is_weighted
 from jhu_primitives.wrapper.ig_wrapper_r import ig_summary
+from jhu_primitives.wrapper.ig_wrapper_r import ig_get_dense_matrix
 
 import numpy as np
 
@@ -52,8 +53,8 @@ class JHUGraph(GraphPrimitiveBase[Input, Output, Params]):
     def get_adjacency_matrix(self):
         return ig_get_adjacency_matrix(self._object)
 
-    def get_adjacency_matrix(self):
-        return self.adjacency_matrix
+    def get_dense_matrix(self):
+        return ig_get_dense_matrix(self._object)
 
     def get_num_vertices(self):
         return self._num_vertices
