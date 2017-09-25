@@ -20,7 +20,7 @@ class VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Input, Output
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
 
-    def match(self, *, g1 : JHUGraph, g2 : JHUGraph, voi : np.array, seeds: int):
+    def match(self, *, g1 : JHUGraph, g2 : JHUGraph, voi : np.array, seeds: Input):
         """
         TODO: YP description
 
@@ -33,16 +33,16 @@ class VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Input, Output
         voi:
             - vector of indices for vertices of interest
         seeds:
-            - the number of seeds, assumed to be the first "seeds" vertices
-                      in both graphs with identity correspondence
+            - the matrix of seeds, s x 2 where s is number of seeds and
+              column i seeds are for graph i
         """
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "vnsgm.interface.R")
         cmd = """
         source("%s")
-        fn <- function(g1, g2, voi, s) {
-            vnsgm.interface(g1, g2, voi, s)
+        fn <- function(g1, g2, voi, seeds) {
+            vnsgm.interface(g1, g2, voi, seeds)
         }
         """ % path
 
