@@ -35,7 +35,7 @@ RUN git clone https://github.com/neurodata/primitives-interfaces.git \
     /home/user/primitives-interfaces
 
 RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
-RUN pip3.6 install numpy scipy python-igraph rpy2 sklearn jinja2
+RUN pip3.6 install numpy scipy python-igraph rpy2 sklearn jinja2 matplotlib
 
 RUN chmod -R o+rw /usr/local
 RUN echo "/usr/local/lib/R/lib/" > /etc/ld.so.conf.d/libR.conf \
