@@ -4,7 +4,7 @@ from setuptools import setup
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
-VERSION = '0.0.1a5'
+VERSION = '0.0.2a1'
 
 def check_python_version():
     """Exit when the Python version is too low."""
@@ -28,7 +28,9 @@ setup(
     name=PACKAGE_NAME,
     version=VERSION,
     description='Python interfaces for TA1 primitives',
-    author='Disa Mhembere, Eric Bridgeford',
+    long_description='A library wrapping JHU\'s Python interfaces for the D3M"+\
+        " program\'s TA1 primitives.',
+    author='Disa Mhembere, Eric Bridgeford, Youngser Park, Heather G. Patsolic',
     author_email="disa@jhu.edu",
     packages=[
               PACKAGE_NAME,
