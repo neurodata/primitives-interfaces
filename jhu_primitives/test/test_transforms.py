@@ -15,6 +15,7 @@ def test():
     g = JHUGraph()
     g.read_graph(fname=gpath)
 
+    """
     print("Summary: ")
     g.summary()
 
@@ -53,6 +54,7 @@ def test():
     SGC = SpectralGraphClustering()
     print("SGC: ", SGC.produce(inputs=g), "\n\n")
 
+    """
     gpath, rig = gen_graph_r(n=50, p=.1)
     g2 = JHUGraph()
     g2.read_graph(fname=gpath)
@@ -62,6 +64,6 @@ def test():
 
     VNSGM = VertexNominationSeededGraphMatching()
     print("VNSGM: ", VNSGM.match(g1=g, g2=g2,
-        voi=np.array([1, 2 ,3]), seeds = 2), "\n\n")
+        voi=np.array([1,2,3]), seeds=np.array([[8,4,3],[1,2,3]])), "\n\n")
 
 test()
