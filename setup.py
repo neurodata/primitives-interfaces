@@ -33,7 +33,6 @@ setup(
     author_email="disa@jhu.edu",
     packages=[
               PACKAGE_NAME,
-              'primitive_interfaces',
               'jhu_primitives.ase',
               'jhu_primitives.lse',
               'jhu_primitives.dimselect',
