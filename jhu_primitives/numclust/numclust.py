@@ -10,7 +10,7 @@ rpy2.robjects.numpy2ri.activate()
 import numpy as np
 
 from typing import Sequence
-from primitive_interfaces.transfomer import TransformerPrimitiveBase
+from primitive_interfaces.transformer import TransformerPrimitiveBase
 
 Input = np.ndarray
 Output = int

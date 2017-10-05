@@ -7,7 +7,7 @@ from typing import Sequence, TypeVar, Any
 import os
 import numpy as np
 
-from primitive_interfaces.transfomer import TransformerPrimitiveBase
+from primitive_interfaces.transformer import TransformerPrimitiveBase
 from jhu_primitives.core.JHUGraph import JHUGraph
 
 Input = TypeVar('Input')

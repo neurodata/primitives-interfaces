@@ -7,7 +7,7 @@ from rpy2 import robjects
 from typing import Sequence, Any, TypeVar
 import os
 
-from primitive_interfaces.transfomer import TransformerPrimitiveBase
+from primitive_interfaces.transformer import TransformerPrimitiveBase
 from jhu_primitives.core.JHUGraph import JHUGraph
 
 Input = TypeVar('Input')
