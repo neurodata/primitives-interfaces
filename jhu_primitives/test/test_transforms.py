@@ -15,7 +15,7 @@ def test():
     g = JHUGraph()
     g.read_graph(fname=gpath)
 
-    """
+    
     print("Summary: ")
     g.summary()
 
@@ -53,8 +53,7 @@ def test():
 
     SGC = SpectralGraphClustering()
     print("SGC: ", SGC.produce(inputs=g), "\n\n")
-
-    """
+    
     gpath, rig = gen_graph_r(n=50, p=.1)
     g2 = JHUGraph()
     g2.read_graph(fname=gpath)

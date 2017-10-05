@@ -4,7 +4,7 @@ from setuptools import setup
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
-VERSION = '0.0.3'
+VERSION = '0.0.4'
 
 def check_python_version():
     """Exit when the Python version is too low."""
@@ -48,7 +48,22 @@ setup(
               'jhu_primitives.wrapper',
               'jhu_primitives.core'
     ],
+    entry_points = {
+        'd3m.primtiives': [
+            'jhu_primitives.AdjacencySpectralEmbedding=jhu_primitives.ase:AdjacencySpectralEmbedding',
+            'jhu_primitives.LaplacianSpectralEmbedding=jhu_primitives.lse:LaplacianSpectralEmbedding',
+            'jhu_primitives.DimensionSelection=jhu_primitives.dimselect:DimensionSelection',
+            'jhu_primitives.GaussianClustering=jhu_primitives.gclust:GaussianClustering',
+            'jhu_primitives.NonParametricClusteirng=jhu_primitives.nonpar:NonParametricClustering',
+            'jhu_primitives.NumberOfClusters=jhu_primitives.numclust:NumberOfClusters',
+            'jhu_primitives.OutOfCoreAdjacencySpectralEmbedding=jhu_primitives.oocase:OutOfCoreAdjacencySpectralEmbedding',
+            'jhu_primitives.PassToRanks=jhu_primitives.ptr:PassToRanks',
+            'jhu_primitives.SpectralGraphClustering=jhu_primitives.sgc:SpectralGraphClustering',
+            'jhu_primitives.SeededGraphMatching=jhu_primitives.sgm:SeededGraphMatching',
+            'jhu_primitives.VertexNominationSeededGraphMatching=jhu_primitives.vnsgm:VertexNominationSeededGraphMatching'
+            ]
+    },
     install_requires=['typing', 'numpy', 'scipy',
-        'python-igraph', 'rpy2', 'sklearn', 'jinja2'],
+        'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
     url='https://github.com/neurodata/primitives-interfaces',
 )
