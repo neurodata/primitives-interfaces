@@ -43,5 +43,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output]):
             ase.interface(g, dim)
         }
         """ % path
+        print(cmd)
 
         return np.array(robjects.r(cmd)(g._object, dim))

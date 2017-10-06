@@ -24,7 +24,7 @@ Output = None
 class Params(NamedTuple):
     adjacency_matrix: str # TODO: scipy.sparse.csc_matrix
 
-class JHUGraph(GraphTransformerPrimitiveBase[Input, Output, Params]):
+class JHUGraph(GraphTransformerPrimitiveBase[Input, Output]):
 
     adjacency_matrix = None
     _num_vertices = None
@@ -82,12 +82,6 @@ class JHUGraph(GraphTransformerPrimitiveBase[Input, Output, Params]):
         pass
 
     def fit(self, *, timeout: float = None, iterations: Optional[int] = 1) -> bool:
-        pass
-
-    def get_params(self) -> Params:
-        pass
-
-    def set_params(self, *, params: Params) -> None:
         pass
 
     def set_random_seed(self, *, seed: int) -> None:

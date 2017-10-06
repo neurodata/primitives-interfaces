@@ -22,6 +22,6 @@ sgm.interface <- function(g1, g2, S)
         S <- S[,c(2,1)]
     }
 
-    out <- sgm(A2, A1, hard=FALSE, S, iteration=niter)$P
+    out <- sgm(A2, A1, S, iteration=niter)$P
     return(out)
 }
