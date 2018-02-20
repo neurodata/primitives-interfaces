@@ -31,7 +31,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, None]):
     "languages": ["R", "python3.6"],
     "library": "gmmase",
     "version": "0.3.0",
-    "is_class": true,
+    "is_class": True,
     "team": "JHU",
     "schema_version": 1.0,
     "tags": [
@@ -53,16 +53,16 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, None]):
                 {
                     "shape": "n_samples, n_samples",
                     "type": "array-like",
-                    "is_hyperparameter": false,
+                    "is_hyperparameter": False,
                     "name": "graph",
                     "description": "an input graph, it must be JHUGraph format"
                 },
                 {
                     "type": "float",
                     "name": "dim",
-                    "is_hyperparameter": false,
+                    "is_hyperparameter": False,
                     "default": "2",
-                    "optional": true,
+                    "optional": True,
                     "description": "embedding dimension of the spectral embedding"
                 }
             ],
