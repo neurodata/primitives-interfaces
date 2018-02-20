@@ -5,7 +5,6 @@
 # Email: disa@jhu.edu
 # Copyright (c) 2017. All rights reserved.
 
-from . import __author__, __version__
 from rpy2 import robjects
 from typing import Sequence, TypeVar
 import os
@@ -27,12 +26,12 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, None]):
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
         'id': 'b940ccbd-9e9b-3166-af50-210bfd79251b',
-        'version': __version__,
+        'version': '0.3.0',
         'name': "Monomial Regressor",
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['test primitive'],
         'source': {
-            'name': __author__,
+            'name': "JHU Team",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
                 'https://gitlab.com/datadrivendiscovery/tests-data/blob/master/primitives/test_primitives/monomial.py',
