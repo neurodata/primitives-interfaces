@@ -1,5 +1,6 @@
 if(!suppressMessages(require(VN))) {
-    install.packages("http://www.cis.jhu.edu/~parky/D3M/VN_0.3.0.tar.gz",type="source")
+    suppressMessages(require(devtools))
+    devtools::install_github("youngser/VN")
     suppressMessages(library(VN))
 }
 if(!require(igraph)) {
