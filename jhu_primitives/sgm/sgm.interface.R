@@ -14,7 +14,7 @@ sgm.interface <- function(g1, g2, S)
     A2 <- as.matrix(g2[]); m <- nrow(A2)
 
     gamma <- 1
-    niter <- 30
+#    niter <- 30
     s <- nrow(S)
     if(is.null(s)){
         s <- 0
@@ -23,6 +23,6 @@ sgm.interface <- function(g1, g2, S)
         S <- S[,c(2,1)]
     }
 
-    out <- sgm(A2, A1, S, iteration=niter)$P
+    out <- sgm(A2, A1, S)$P
     return(out)
 }
