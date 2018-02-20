@@ -5,7 +5,7 @@
 
 import os
 from rpy2 import robjects
-from typing import Sequence
+from typing import Sequence, TypeVar
 import numpy as np
 
 from primitive_interfaces.transformer import TransformerPrimitiveBase
@@ -13,9 +13,9 @@ from jhu_primitives.core.JHUGraph import JHUGraph
 
 Input = JHUGraph
 Output = np.ndarray
+Params = TypeVar('Params')
 
-
-class SpectralGraphClustering(TransformerPrimitiveBase[Input, Output]):
+class SpectralGraphClustering(TransformerPrimitiveBase[Input, Output, Params]):
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         """
         TODO: YP description

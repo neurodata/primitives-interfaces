@@ -15,8 +15,10 @@ import numpy as np
 
 Input = TypeVar('Input')
 Output = TypeVar('Output')
+Params = TypeVar('Params')
 
-class VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Input, Output]):
+class
+VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Input, Output, Params]):
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
 

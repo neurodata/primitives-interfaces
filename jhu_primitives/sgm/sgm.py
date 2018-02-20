@@ -12,8 +12,9 @@ from jhu_primitives.core.JHUGraph import JHUGraph
 
 Input = TypeVar('Input')
 Output = TypeVar('Output')
+Params = TypeVar('Params')
 
-class SeededGraphMatching(TransformerPrimitiveBase[Input, Output]):
+class SeededGraphMatching(TransformerPrimitiveBase[Input, Output, Params]):
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
 

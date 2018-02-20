@@ -9,13 +9,14 @@ import rpy2.robjects as robjects
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 
-from typing import Sequence
+from typing import Sequence, TypeVar
 from primitive_interfaces.transformer import TransformerPrimitiveBase
 
 Input = np.ndarray
 Output = np.ndarray
+Params = TypeVar('Params')
 
-class GaussianClustering(TransformerPrimitiveBase[Input, Output]):
+class GaussianClustering(TransformerPrimitiveBase[Input, Output, Params]):
     def cluster(self, *, inputs: Input, dim : int =2) -> int:
         """
         TODO: YP description

@@ -9,13 +9,14 @@ import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 import numpy as np
 
-from typing import Sequence
+from typing import Sequence, TypeVar
 from primitive_interfaces.transformer import TransformerPrimitiveBase
 
 Input = np.ndarray
 Output = int
+Params = TypeVar('Params')
 
-class NumberOfClusters(TransformerPrimitiveBase[Input, Output]):
+class NumberOfClusters(TransformerPrimitiveBase[Input, Output, Params]):
     """
     TODO: YP Document
     """

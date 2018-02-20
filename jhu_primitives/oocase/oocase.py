@@ -12,8 +12,10 @@ from jhu_primitives.core.JHUGraph import JHUGraph
 
 Input = TypeVar('Input')
 Output = TypeVar('Output')
+Params = TypeVar('Params')
 
-class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output]):
+class
+OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, Params]):
 
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass

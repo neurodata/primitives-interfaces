@@ -13,8 +13,9 @@ import numpy as np
 
 Input = TypeVar('Input')
 Output = TypeVar('Output')
+Params = TypeVar('Params')
 
-class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Input, Output]):
+class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Input, Output, Params]):
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
 

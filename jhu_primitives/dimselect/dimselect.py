@@ -9,13 +9,14 @@ import numpy as np
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 
-from typing import Sequence
+from typing import Sequence, TypeVar
 from primitive_interfaces.transformer import TransformerPrimitiveBase
 
 Input = np.ndarray
 Output = np.ndarray
+Params = TypeVar('Params')
 
-class DimensionSelection(TransformerPrimitiveBase[Input, Output]):
+class DimensionSelection(TransformerPrimitiveBase[Input, Output, Params]):
     """
     Select the right number of dimensions within which to embed given
     an adjacency matrix

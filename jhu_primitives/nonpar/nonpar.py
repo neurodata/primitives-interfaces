@@ -9,13 +9,15 @@ import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 import numpy as np
 
-from typing import Sequence
+from typing import Sequence, TypeVar
 from primitive_interfaces.transformer import TransformerPrimitiveBase
 
 Input = np.ndarray
 Output = np.ndarray
+Params = TypeVar('Params')
 
-class NonParametricClustering(TransformerPrimitiveBase[Input, Output]):
+
+class NonParametricClustering(TransformerPrimitiveBase[Input, Output, Params]):
 
     def cluster(self, *, xhat1 : Input, xhat2 : Input, sigma : float = 0.5):
         """
