@@ -16,9 +16,10 @@ from d3m_metadata import container, hyperparams, metadata as metadata_module, pa
 from primitive_interfaces import base
 
 
-Input = TypeVar('Input')
-Output = TypeVar('Output')
+Input = TypeVar('Inputs')
+Output = TypeVar('Outputs')
 Params = TypeVar('Params')
+
 
 class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, Params]):
     # This should contain only metadata which cannot be automatically determined from the code.
