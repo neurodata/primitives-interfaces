@@ -25,7 +25,7 @@ Output = None
 class Params(NamedTuple):
     adjacency_matrix: str # TODO: scipy.sparse.csc_matrix
 
-class JHUGraph(ClusteringPrimitiveBase[Input, Output, Params]):
+class JHUGraph(ClusteringPrimitiveBase[Input, Output, Params, None]):
 
     adjacency_matrix = None
     _num_vertices = None
