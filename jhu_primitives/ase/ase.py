@@ -5,6 +5,7 @@
 # Email: disa@jhu.edu
 # Copyright (c) 2017. All rights reserved.
 
+from . import __author__, __version__
 from rpy2 import robjects
 from typing import Sequence, TypeVar
 import os
