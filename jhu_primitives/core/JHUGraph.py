@@ -6,7 +6,7 @@
 
 from typing import NamedTuple, Sequence, Optional
 #from primitive_interfaces.graph import GraphTransformerPrimitiveBase
-from primitive_interfaces.graph import ClusteringPrimitiveBase 
+from primitive_interfaces.clustering import ClusteringPrimitiveBase 
 from jhu_primitives.wrapper.read_graph_r import read_graph
 from jhu_primitives.wrapper.ig_wrapper_r import ig_get_adjacency_matrix
 from jhu_primitives.wrapper.ig_wrapper_r import ig_get_num_vertices
