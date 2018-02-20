@@ -12,12 +12,18 @@ import os
 from primitive_interfaces.transformer import TransformerPrimitiveBase
 from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
+from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
+from primitive_interfaces import base
+
 
 Input = TypeVar('Input')
 Output = TypeVar('Output')
 Params = TypeVar('Params')
 
 class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, Params]):
+    # This should contain only metadata which cannot be automatically determined from the code.
+    metadata = metadata_module.PrimitiveMetadata({})
+
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
 
