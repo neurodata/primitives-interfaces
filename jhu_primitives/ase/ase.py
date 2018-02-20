@@ -18,10 +18,10 @@ from primitive_interfaces import base
 
 Input = TypeVar('Inputs')
 Output = TypeVar('Outputs')
-Params = TypeVar('Params')
+#Params = TypeVar('Params')
 
 
-class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, Params]):
+class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, None]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({})
 
