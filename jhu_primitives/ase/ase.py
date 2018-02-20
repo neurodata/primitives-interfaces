@@ -15,8 +15,9 @@ import numpy as np
 
 Input = TypeVar('Input')
 Output = TypeVar('Output')
+Params = TypeVar('Params')
 
-class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output]):
+class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, Params]):
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
 
