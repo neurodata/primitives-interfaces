@@ -25,7 +25,7 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     pass
 
-class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, None, Hyperparams]):
+class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
