@@ -18,10 +18,14 @@ from primitive_interfaces import base
 
 Input = TypeVar('Inputs')
 Output = TypeVar('Outputs')
-#Params = TypeVar('Params')
 
+class Params(params.Params):
+    pass
 
-class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, None]):
+class Hyperparams(hyperparams.Hyperparams):
+    pass
+
+class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, Params, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -31,7 +35,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, None]):
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['test primitive'],
         'source': {
-            'name': "JHU Team",
+            'name': 'JHU Team',
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
                 'https://gitlab.com/datadrivendiscovery/tests-data/blob/master/primitives/test_primitives/monomial.py',
