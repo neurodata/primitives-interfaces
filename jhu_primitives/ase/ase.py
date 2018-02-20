@@ -23,7 +23,7 @@ Output = TypeVar('Outputs')
 
 class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Input, Output, None]):
     # This should contain only metadata which cannot be automatically determined from the code.
-    # metadata = metadata_module.PrimitiveMetadata({})
+    metadata = metadata_module.PrimitiveMetadata({})
 
     def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
         pass
