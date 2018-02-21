@@ -29,27 +29,14 @@ setup(
     version=VERSION,
     description='Python interfaces for TA1 primitives',
     long_description='A library wrapping JHU\'s Python interfaces for the D3M program\'s TA1 primitives.',
-    author='Disa Mhembere, Eric Bridgeford, Youngser Park, Heather G. Patsolic',
+    author='Disa Mhembere, Eric Bridgeford, Youngser Park, Heather G. Patsolic, Tyler M. Tomita, Jesse L. Patsolic',
     author_email="disa@jhu.edu",
     packages=[
               PACKAGE_NAME,
-              'jhu_primitives.ase',
-              'jhu_primitives.lse',
-              'jhu_primitives.dimselect',
-              'jhu_primitives.gclust',
-              'jhu_primitives.nonpar',
-              'jhu_primitives.numclust',
-              'jhu_primitives.oocase',
-              'jhu_primitives.ptr',
-              'jhu_primitives.sgc',
-              'jhu_primitives.sgm',
-              'jhu_primitives.vnsgm',
-              'jhu_primitives.utils',
-              'jhu_primitives.wrapper',
-              'jhu_primitives.core'
+              'jhu_primitives.monomial'
     ],
     entry_points = {
-        'd3m.primtiives': [
+        'd3m.primitives': [
             'jhu_primitives.AdjacencySpectralEmbedding=jhu_primitives.ase:AdjacencySpectralEmbedding',
             'jhu_primitives.LaplacianSpectralEmbedding=jhu_primitives.lse:LaplacianSpectralEmbedding',
             'jhu_primitives.DimensionSelection=jhu_primitives.dimselect:DimensionSelection',
@@ -69,3 +56,23 @@ setup(
         'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
     url='https://github.com/neurodata/primitives-interfaces',
 )
+
+"""
+    packages=[
+              PACKAGE_NAME,
+              'jhu_primitives.ase',
+              'jhu_primitives.lse',
+              'jhu_primitives.dimselect',
+              'jhu_primitives.gclust',
+              'jhu_primitives.nonpar',
+              'jhu_primitives.numclust',
+              'jhu_primitives.oocase',
+              'jhu_primitives.ptr',
+              'jhu_primitives.sgc',
+              'jhu_primitives.sgm',
+              'jhu_primitives.vnsgm',
+              'jhu_primitives.utils',
+              'jhu_primitives.wrapper',
+              'jhu_primitives.core',
+              'jhu_primitives.monomial'
+    ]"""

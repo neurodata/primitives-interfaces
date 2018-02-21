@@ -16,6 +16,7 @@ from jhu_primitives.wrapper.ig_wrapper_r import ig_is_directed
 from jhu_primitives.wrapper.ig_wrapper_r import ig_is_weighted
 from jhu_primitives.wrapper.ig_wrapper_r import ig_summary
 from jhu_primitives.wrapper.ig_wrapper_r import ig_get_dense_matrix
+from primitive_interfaces.base import Hyperparams
 
 import numpy as np
 
@@ -25,7 +26,7 @@ Output = None
 class Params(NamedTuple):
     adjacency_matrix: str # TODO: scipy.sparse.csc_matrix
 
-class JHUGraph(ClusteringPrimitiveBase[Input, Output, Params, None]):
+class JHUGraph(ClusteringPrimitiveBase[Input, Output, Params, Hyperparams]):
 
     adjacency_matrix = None
     _num_vertices = None
