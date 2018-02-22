@@ -7,21 +7,26 @@ import numpy as np
 from jhu_primitives.utils.util import gen_graph_r
 from jhu_primitives.core.JHUGraph import JHUGraph
 from jhu_primitives import *
+from jhu_primitives.wrapper.read_graph_r import read_graph
+from jhu_primitives.wrapper.ig_wrapper_r import ig_get_adjacency_matrix
 
 
 def test():
     gpath, rig = gen_graph_r(n=50, p=.1)
 
-    g = JHUGraph()
+
+    hyperparams_class = JHUGraph.metadata.query()['primitive_code']['class_type_arguments']['Hyperparams']
+    g = JHUGraph(hyperparams=hyperparams_class.defaults())
     g.read_graph(fname=gpath)
 
-    
     print("Summary: ")
     g.summary()
 
-    ASE = AdjacencySpectralEmbedding()
-    print("ASE: ", ASE.embed(g=g, dim=4), "\n\n")
+    hyperparams_class = AdjacencySpectralEmbedding.metadata.query()['primitive_code']['class_type_arguments']['Hyperparams']
+    ASE = AdjacencySpectralEmbedding(hyperparams={"dim": 4})
+    print("ASE: ", ASE.produce(inputs=g.get_adjacency_matrix()).value, "\n\n")
 
+    '''
     LSE = LaplacianSpectralEmbedding()
     print("LSE: ", LSE.embed(g=g, dim=4), "\n\n")
 
@@ -53,7 +58,7 @@ def test():
 
     SGC = SpectralGraphClustering()
     print("SGC: ", SGC.produce(inputs=g), "\n\n")
-    
+
     gpath, rig = gen_graph_r(n=50, p=.1)
     g2 = JHUGraph()
     g2.read_graph(fname=gpath)
@@ -64,5 +69,5 @@ def test():
     VNSGM = VertexNominationSeededGraphMatching()
     print("VNSGM: ", VNSGM.match(g1=g, g2=g2,
         voi=np.array([1,2,3]), seeds=np.array([[8,4,3],[1,2,3]])), "\n\n")
-
+    '''
 test()

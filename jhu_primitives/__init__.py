@@ -2,10 +2,10 @@ from __future__ import absolute_import
 
 from jhu_primitives.monomial.monomial import MonomialPrimitive
 
-__all__ = ['MonomialPrimitive',]
+__all__ = ['MonomialPrimitive', "AdjacencySpectralEmbedding"]
 
-"""
 from .ase import AdjacencySpectralEmbedding
+"""
 from .lse import LaplacianSpectralEmbedding
 from .dimselect import DimensionSelection
 from .gclust import GaussianClustering
