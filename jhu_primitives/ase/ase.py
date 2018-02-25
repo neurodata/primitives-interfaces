@@ -11,7 +11,7 @@ import os
 
 
 from primitive_interfaces.transformer import TransformerPrimitiveBase
-from jhu_primitives.core.JHUGraph import JHUGraph
+#from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
 from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
 from primitive_interfaces import base

@@ -21,6 +21,10 @@ lse.interface <- function(g, dim)
     ## }
 
     ## embedding into "dim"
+    if (class(g) == "dgCMatrix") {
+        g = igraph::graph_from_adjacency_matrix(g)
+    }
+
     X <- embed_laplacian_matrix(g, dim)$X
 
     return(X)

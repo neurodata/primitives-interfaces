@@ -11,6 +11,13 @@ if(!require(igraph)) {
 vnsgm.interface <- function(g1, g2, voi, S)
 {
 
+    if (class(g1) == "dgCMatrix") {
+        g1 = igraph::graph_from_adjacency_matrix(g1)
+    }
+    if (class(g2) == "dgCMatrix") {
+        g2 = igraph::graph_from_adjacency_matrix(g2)
+    }
+
     R <- 100
     gamma <- 1
     h <- ell <- 1

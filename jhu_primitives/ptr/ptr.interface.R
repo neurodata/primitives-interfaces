@@ -11,6 +11,9 @@ if(!require(igraph)){
 ptr.interface <- function(g)
 {
 #    X <- as.matrix(read.table(input))
+    if (class(g) == "dgCMatrix") {
+        g = igraph::graph_from_adjacency_matrix(g)
+    }
     g <- ptr(g)
     out <- as.matrix(g[])
 

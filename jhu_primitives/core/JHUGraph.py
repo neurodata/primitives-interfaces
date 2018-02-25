@@ -4,8 +4,8 @@
 # Created on 2017-09-13.
 
 
-from typing import NamedTuple, Sequence, Optional
-from primitive_interfaces.clustering import ClusteringPrimitiveBase
+from typing import NamedTuple, Sequence, Optional, Dict
+from primitive_interfaces.transformer import TransformerPrimitiveBase
 from jhu_primitives.wrapper.read_graph_r import read_graph
 from jhu_primitives.wrapper.ig_wrapper_r import ig_get_adjacency_matrix
 from jhu_primitives.wrapper.ig_wrapper_r import ig_get_num_vertices
@@ -15,17 +15,18 @@ from jhu_primitives.wrapper.ig_wrapper_r import ig_is_directed
 from jhu_primitives.wrapper.ig_wrapper_r import ig_is_weighted
 from jhu_primitives.wrapper.ig_wrapper_r import ig_summary
 from jhu_primitives.wrapper.ig_wrapper_r import ig_get_dense_matrix
-from primitive_interfaces.base import Hyperparams
+# from primitive_interfaces.base import Hyperparams
 from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
-from d3m_metadata.params import Params
 import os
-
 from primitive_interfaces.base import CallResult
 
 import numpy as np
 
-Inputs = container.matrix
+Inputs = container.List[str]
 Outputs = container.ndarray
+
+class Params(params.Params):
+    pass
 
 class Hyperparams(hyperparams.Hyperparams):
     # TODO: Fix medatadata parameter
@@ -34,7 +35,7 @@ class Hyperparams(hyperparams.Hyperparams):
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
-class JHUGraph(ClusteringPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
+class JHUGraph(TransformerPrimitiveBase[Inputs, Outputs,  Hyperparams]):
 
     # TODO: Create metadata for this
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -87,14 +88,17 @@ ry=primitives'.format(
     _weighted = None
     _dangling_nodes = None
 
-    def read_graph(self, *, fname: str) -> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:
+        super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
+
+    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> None:
 
         dtype = self.hyperparams['dtype']
 
         if dtype == "gml":
-            self._object = read_graph(fname, "gml")
+            self._object = read_graph(inputs, "gml")
         elif dtype.startswith("edge"):
-            self._object = read_graph(fname, "edge")
+            self._object = read_graph(inputs, "edge")
         else:
             raise NotImplementedError("Reading graphs of type '{}'".\
                     format(dtype))
@@ -132,18 +136,3 @@ ry=primitives'.format(
 
     def summary(self) -> None:
         ig_summary(self._object)
-
-    def set_training_data(self, *, inputs: Inputs) -> None:  # type: ignore
-        pass
-
-    def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
-        return base.CallResult(self.get_adjacency_matrix())
-
-    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        return base.CallResult(None)
-
-    def get_params(self) -> Params:
-        return Params(other={})
-
-    def set_params(self, *, params: Params) -> None:
-        return None

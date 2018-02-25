@@ -33,7 +33,18 @@ setup(
     author_email="disa@jhu.edu",
     packages=[
               PACKAGE_NAME,
-              'jhu_primitives.monomial'
+              'jhu_primitives.monomial',
+              'jhu_primitives.ase',
+              'jhu_primitives.lse',
+              'jhu_primitives.dimselect',
+              'jhu_primitives.gclust',
+              'jhu_primitives.nonpar',
+              'jhu_primitives.numclust',
+              'jhu_primitives.ptr',
+              'jhu_primitives.oocase',
+              'jhu_primitives.sgc',
+              'jhu_primitives.sgm',
+              'jhu_primitives.vnsgm'
     ],
     entry_points = {
         'd3m.primitives': [
