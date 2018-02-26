@@ -1,7 +1,7 @@
 import os
 import sys
 from setuptools import setup
-from subprocess import call
+from subprocess import check_output, call
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
@@ -11,6 +11,11 @@ def check_python_version():
     """Exit when the Python version is too low."""
     if sys.version_info < MINIMUM_PYTHON_VERSION:
         sys.exit("Python {}.{}+ is required.".format(*MINIMUM_PYTHON_VERSION))
+
+def install_r():
+    """ Install r-base using apt-get."""
+    print(check_output(['apt-get', 'update'], shell=True))
+    print(check_output(['apt-get', 'install', '-y', 'r-base'], shell=True))
 
 
 def read_package_variable(key):
@@ -24,6 +29,8 @@ def read_package_variable(key):
     assert False, "'{0}' not found in '{1}'".format(key, module_path)
 
 check_python_version()
+
+install_r()
 
 setup(
     name=PACKAGE_NAME,
@@ -67,9 +74,6 @@ setup(
         'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
     url='https://github.com/neurodata/primitives-interfaces',
 )
-
-call(['apt-get', 'update'])
-call(['apt-get', 'install', '-y', 'r-base'])
 
 """
     packages=[
