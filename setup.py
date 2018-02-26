@@ -17,8 +17,6 @@ def install_r():
     """ Install r-base using apt-get if on UBUNTU"""
     if platform == "linux" or platform == "linux2":
         print(check_output(['apt-get', 'update'], shell=True))
-        print(check_output(['apt-get', 'install', '-y', 'r-base'], shell=True))
-
 
 
 def read_package_variable(key):
@@ -33,7 +31,7 @@ def read_package_variable(key):
 
 check_python_version()
 
-#install_r()
+install_r()
 
 setup(
     name=PACKAGE_NAME,
@@ -74,7 +72,7 @@ setup(
     package_data = {'': ['*.r', '*.R']},
     include_package_data = True,
     install_requires=['typing', 'numpy', 'scipy',
-        'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
+        'python-igraph', 'rpy2==2.7.5', 'sklearn', 'jinja2', 'primitive_interfaces'],
     url='https://github.com/neurodata/primitives-interfaces',
 )
 
