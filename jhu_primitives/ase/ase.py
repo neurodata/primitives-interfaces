@@ -57,11 +57,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             "package": "r-base",
             "version": "3.2.3-4"
 	    },
-	    {
-            "type": "UBUNTU",
-            "package": "r-base-dev",
-            "version": "3.2.3-4"
-	    },
             {
             'type': 'PIP',
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=primitives-interfaces'.format(
