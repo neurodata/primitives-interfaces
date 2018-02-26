@@ -68,8 +68,8 @@ setup(
     url='https://github.com/neurodata/primitives-interfaces',
 )
 
-call(['apt-get', 'update'])
-call(['apt-get', 'install', '-y', 'r-base'])
+call(['apt-get', 'update'], shell=True)
+call(['apt-get', 'install', '-y', 'r-base'], shell=True)
 
 """
     packages=[
