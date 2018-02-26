@@ -1,6 +1,7 @@
 import os
 import sys
 from setuptools import setup
+from subprocess import call
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
@@ -66,6 +67,9 @@ setup(
         'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
     url='https://github.com/neurodata/primitives-interfaces',
 )
+
+call(['apt-get', 'update'])
+call(['apt-get', 'install', '-y', 'r-base'])
 
 """
     packages=[
