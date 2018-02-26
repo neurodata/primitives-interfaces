@@ -33,7 +33,7 @@ setup(
     author_email="disa@jhu.edu",
     packages=[
               PACKAGE_NAME,
-              'jhu_primitives.monomial',
+#              'jhu_primitives.monomial',
               'jhu_primitives.ase',
               'jhu_primitives.lse',
               'jhu_primitives.dimselect',

@@ -29,17 +29,20 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
-        'id': 'b940ccbd-9e9b-3166-af50-210bfd79251b',
-        'version': "crap",
-        'name': "Laplacian Spectral Embedding",
+        'id': 'be28f722-6a53-3f70-8781-bd3666946264',
+        'version': "0.1.0",
+        'name': "jhu.numclust",
+        # The same path the primitive is registered with entry points in setup.py.
+        'python_path': 'd3m.primitives.jhu_primitives.NumberOfClusters',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['test primitive'],
+        'keywords': ['number clustering'],
         'source': {
-            'name': "boss",
+            'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://gitlab.com/datadrivendiscovery/tests-data/blob/master/primitives/test_primitives/monomial.py',
-                'https://gitlab.com/datadrivendiscovery/tests-data.git',
+                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/numclust/numclust.py',
+#                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
+                'https://github.com/neurodata/primitives-interfaces.git',
             ],
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
@@ -48,25 +51,22 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         # a dependency which is not on PyPi.
         'installation': [{
             'type': metadata_module.PrimitiveInstallationType.PIP,
-            'package_uri': 'git+https://gitlab.com/datadrivendiscovery/tests-data.git@{git_commit}#egg=test_primitives&subdirecto\
-ry=primitives'.format(
+            'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=jhu.ase'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-            ),
+                ),
         }],
         # URIs at which one can obtain code for the primitive, if available.
-        'location_uris': [
-            'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
-                git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-            ),
-        ],
-        # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.test.MonomialPrimitive',
+        # 'location_uris': [
+        #     'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
+        #         git_commit=utils.current_git_commit(os.path.dirname(__file__)),
+        #     ),
+        # ],
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            metadata_module.PrimitiveAlgorithmType.LINEAR_REGRESSION,
+            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
         ],
-        'primitive_family': metadata_module.PrimitiveFamily.REGRESSION,
+        'primitive_family': "FEATURE SELECTION"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:
