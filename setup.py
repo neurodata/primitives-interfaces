@@ -2,6 +2,7 @@ import os
 import sys
 from setuptools import setup
 from subprocess import check_output, call
+from sys import platform
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
@@ -13,9 +14,11 @@ def check_python_version():
         sys.exit("Python {}.{}+ is required.".format(*MINIMUM_PYTHON_VERSION))
 
 def install_r():
-    """ Install r-base using apt-get."""
-    print(check_output(['apt-get', 'update'], shell=True))
-    print(check_output(['apt-get', 'install', '-y', 'r-base'], shell=True))
+    """ Install r-base using apt-get if on UBUNTU"""
+    if platform == "linux" or platform == "linux2":
+        print(check_output(['apt-get', 'update'], shell=True))
+        print(check_output(['apt-get', 'install', '-y', 'r-base'], shell=True))
+
 
 
 def read_package_variable(key):
