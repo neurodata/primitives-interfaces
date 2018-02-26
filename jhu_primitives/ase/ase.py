@@ -54,11 +54,13 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         'installation': [
 	    {
             "type": "UBUNTU",
-            "package": "r-base"
+            "package": "r-base",
+            "version": "3.2.3-4"
 	    },
 	    {
             "type": "UBUNTU",
-            "package": "r-base-dev"
+            "package": "r-base-dev",
+            "version": "3.2.3-4"
 	    },
             {
             'type': 'PIP',
