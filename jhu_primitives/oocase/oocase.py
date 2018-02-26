@@ -69,7 +69,7 @@ class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outpu
         'algorithm_types': [
             "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
         ],
-        'primitive_family': "FEATURE SELECTION"
+        'primitive_family': "DATA_TRANSFORMATION"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:
