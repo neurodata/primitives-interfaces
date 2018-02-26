@@ -1,8 +1,7 @@
 from __future__ import absolute_import
 
-from jhu_primitives.monomial.monomial import MonomialPrimitive
 
-__all__ = ['MonomialPrimitive', "AdjacencySpectralEmbedding",
+__all__ = ["AdjacencySpectralEmbedding",
            "LaplacianSpectralEmbedding", "DimensionSelection",
            "GaussianClustering", "NonParametricClustering",
            "NumberOfClusters", "OutOfCoreAdjacencySpectralEmbedding", "PassToRanks",
