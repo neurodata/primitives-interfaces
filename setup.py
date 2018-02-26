@@ -33,7 +33,7 @@ def read_package_variable(key):
 
 check_python_version()
 
-install_r()
+#install_r()
 
 setup(
     name=PACKAGE_NAME,

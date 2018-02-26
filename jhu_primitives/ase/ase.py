@@ -51,8 +51,13 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [{
-            'type': metadata_module.PrimitiveInstallationType.PIP,
+        'installation': [
+	    {
+            "type": "UBUNTU",
+            "package": "r-base"
+	    },
+            {
+            'type': 'PIP',
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=primitives-interfaces'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
             ),
