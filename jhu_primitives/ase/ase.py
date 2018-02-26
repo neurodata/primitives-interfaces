@@ -53,7 +53,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # a dependency which is not on PyPi.
         'installation': [{
             'type': metadata_module.PrimitiveInstallationType.PIP,
-            'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=test_primitives&subdirecto\
+            'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=primitives-interfaces&subdirecto\
 ry=primitives'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
             ),
