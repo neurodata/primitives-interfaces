@@ -52,7 +52,7 @@ setup(
             'jhu_primitives.LaplacianSpectralEmbedding=jhu_primitives.lse:LaplacianSpectralEmbedding',
             'jhu_primitives.DimensionSelection=jhu_primitives.dimselect:DimensionSelection',
             'jhu_primitives.GaussianClustering=jhu_primitives.gclust:GaussianClustering',
-            'jhu_primitives.NonParametricClusteirng=jhu_primitives.nonpar:NonParametricClustering',
+            'jhu_primitives.NonParametricClustering=jhu_primitives.nonpar:NonParametricClustering',
             'jhu_primitives.NumberOfClusters=jhu_primitives.numclust:NumberOfClusters',
             'jhu_primitives.OutOfCoreAdjacencySpectralEmbedding=jhu_primitives.oocase:OutOfCoreAdjacencySpectralEmbedding',
             'jhu_primitives.PassToRanks=jhu_primitives.ptr:PassToRanks',
