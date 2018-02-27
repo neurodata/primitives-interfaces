@@ -14,10 +14,13 @@ def check_python_version():
         sys.exit("Python {}.{}+ is required.".format(*MINIMUM_PYTHON_VERSION))
 
 def install_r():
+    print("Trying to install R")
+    sys.stdout.flush()
     """ Install r-base using apt-get if on UBUNTU"""
     if platform == "linux" or platform == "linux2":
         ## https://cran.rstudio.com/bin/linux/ubuntu/
         print("Adding rstudio repo for Artful")
+        sys.stdout.flush()
         os.system("sh -c '''echo 'deb https://cran.rstudio.com/bin/linux/ubuntu artful/ >> /etc/apt/sources.list'''")
         os.system("gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9")
         os.system("gpg -a --export E084DAB9 | apt-key add -")
