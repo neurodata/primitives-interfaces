@@ -52,11 +52,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
         'installation': [
-	    {
-            "type": "UBUNTU",
-            "package": "r-base",
-            "version": "3.3.3"
-	    },
             {
             'type': 'PIP',
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=primitives-interfaces'.format(
