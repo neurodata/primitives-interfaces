@@ -54,6 +54,8 @@ check_python_version()
 #install_r()
 
 setup(
+    include_package_data = True,
+    scripts=['install_r.sh'],
     name=PACKAGE_NAME,
     version=VERSION,
     description='Python interfaces for TA1 primitives',
@@ -90,8 +92,6 @@ setup(
             ]
     },
     package_data = {'': ['*.r', '*.R']},
-    include_package_data = True,
-    scripts=['install_r.sh'],
     cmdclass={'install': InstallR},
     install_requires=['typing', 'numpy', 'scipy',
         'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
