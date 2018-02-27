@@ -16,7 +16,14 @@ def check_python_version():
 def install_r():
     """ Install r-base using apt-get if on UBUNTU"""
     if platform == "linux" or platform == "linux2":
-        print(check_output(['apt-get', 'update'], shell=True))
+        print("Adding rstudio repo for xenial")
+        os.system("sh -c '''echo 'deb https://cran.rstudio.com/bin/linux/ubuntu xenial/ >> /etc/apt/sources.list'''")
+        os.system("gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9")
+        os.system("gpg -a --export E084DAB9 | sudo apt-key add -")
+        os.system("apt-get update")
+        os.system("apt-get -y install r-base")
+        #os.system("apt-get -y install r-base-dev")
+        #os.system("apt-get -y install r-recommended")
 
 
 def read_package_variable(key):
@@ -72,7 +79,7 @@ setup(
     package_data = {'': ['*.r', '*.R']},
     include_package_data = True,
     install_requires=['typing', 'numpy', 'scipy',
-        'python-igraph', 'rpy2==2.7.5', 'sklearn', 'jinja2', 'primitive_interfaces'],
+        'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
     url='https://github.com/neurodata/primitives-interfaces',
 )
 
