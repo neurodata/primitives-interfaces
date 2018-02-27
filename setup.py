@@ -20,7 +20,7 @@ def install_r():
         print("Adding rstudio repo for Artful")
         os.system("sh -c '''echo 'deb https://cran.rstudio.com/bin/linux/ubuntu artful/ >> /etc/apt/sources.list'''")
         os.system("gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9")
-        os.system("gpg -a --export E084DAB9 | sudo apt-key add -")
+        os.system("gpg -a --export E084DAB9 | apt-key add -")
         os.system("apt-get update")
         os.system("apt-get -y install r-base")
         #os.system("apt-get -y install r-base-dev")
