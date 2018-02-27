@@ -11,7 +11,7 @@ VERSION = '0.0.4'
 
 class InstallR(install):
     #https://stackoverflow.com/questions/15440115/how-would-i-run-a-script-file-as-part-of-the-python-setup-py-install#16609054
-    def inr(self):
+    def run(self):
         install.run(self)
         print("\n\n\nInstalling R:\n\n\n")
         subprocess.call("install_r.sh", shell=True)
