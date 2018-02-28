@@ -9,34 +9,11 @@ PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
 VERSION = '0.0.4'
 
-class InstallR(install):
-    #https://stackoverflow.com/questions/15440115/how-would-i-run-a-script-file-as-part-of-the-python-setup-py-install#16609054
-    def run(self):
-        install.run(self)
-        print("\n\n\nInstalling R:\n\n\n")
-        subprocess.call("install_r.sh", shell=True)
-
 
 def check_python_version():
     """Exit when the Python version is too low."""
     if sys.version_info < MINIMUM_PYTHON_VERSION:
         sys.exit("Python {}.{}+ is required.".format(*MINIMUM_PYTHON_VERSION))
-
-#def install_r():
-#    print("Trying to install R")
-#    sys.stdout.flush()
-#    """ Install r-base using apt-get if on UBUNTU"""
-#    if platform == "linux" or platform == "linux2":
-#        ## https://cran.rstudio.com/bin/linux/ubuntu/
-#        print("Adding rstudio repo for Artful")
-#        sys.stdout.flush()
-#        os.system("sh -c '''echo 'deb https://cran.rstudio.com/bin/linux/ubuntu artful/ >> /etc/apt/sources.list'''")
-#        os.system("gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9")
-#        os.system("gpg -a --export E084DAB9 | apt-key add -")
-#        os.system("apt-get update")
-#        os.system("apt-get -y install r-base")
-#        #os.system("apt-get -y install r-base-dev")
-#        #os.system("apt-get -y install r-recommended")
 
 
 def read_package_variable(key):
@@ -51,11 +28,8 @@ def read_package_variable(key):
 
 check_python_version()
 
-#install_r()
 
 setup(
-    include_package_data = True,
-    scripts=['install_r.sh'],
     name=PACKAGE_NAME,
     version=VERSION,
     description='Python interfaces for TA1 primitives',
@@ -92,7 +66,7 @@ setup(
             ]
     },
     package_data = {'': ['*.r', '*.R']},
-    cmdclass={'install': InstallR},
+    include_package_data = True,
     install_requires=['typing', 'numpy', 'scipy',
         'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
     url='https://github.com/neurodata/primitives-interfaces',
