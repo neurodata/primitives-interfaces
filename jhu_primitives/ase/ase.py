@@ -62,6 +62,11 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             'package': 'libxml2-dev',
             'version': '2.9.4'
             },
+            {
+            'type': 'UBUNTU',
+            'package': 'libpcre3-dev',
+            'version': '2.9.4'
+            },
 #            {
 #            'type': 'UBUNTU',
 #            'package': 'r-base-dev',
