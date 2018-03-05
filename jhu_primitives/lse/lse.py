@@ -93,9 +93,9 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "SINGULAR_VALUE_DECOMPOSITION"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "FEATURE_EXTRACTION"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:

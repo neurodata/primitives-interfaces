@@ -90,9 +90,9 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "GAUSSIAN_PROCESS"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "CLUSTERING"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:

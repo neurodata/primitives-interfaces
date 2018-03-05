@@ -35,7 +35,7 @@ class VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Inputs, Outpu
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.VertexNominationSeededGraphMatching',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graph matching'],
+        'keywords': ['vertex nomination'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -90,9 +90,9 @@ class VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Inputs, Outpu
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "LOW_RANK_MATRIX_APPROXIMATIONS"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "VERTEX_NOMINATION"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:
