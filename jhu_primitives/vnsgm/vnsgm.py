@@ -50,10 +50,36 @@ class VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Inputs, Outpu
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
         'installation': [{
-            'type': metadata_module.PrimitiveInstallationType.PIP,
+            {
+            'type': 'UBUNTU',
+            'package': 'r-base',
+            'version': '3.4.2'
+            },
+            {
+            'type': 'UBUNTU',
+            'package': 'libxml2-dev',
+            'version': '2.9.4'
+            },
+            {
+            'type': 'UBUNTU',
+            'package': 'libpcre3-dev',
+            'version': '2.9.4'
+            },
+#            {
+#            'type': 'UBUNTU',
+#            'package': 'r-base-dev',
+#            'version': '3.4.2'
+#            },
+#            {
+#            'type': 'UBUNTU',
+#            'package': 'r-recommended',
+#            'version': '3.4.2'
+#            },
+            {
+            'type': 'PIP',
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=jhu_primitives'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-                ),
+            ),
         }],
         # URIs at which one can obtain code for the primitive, if available.
         # 'location_uris': [
