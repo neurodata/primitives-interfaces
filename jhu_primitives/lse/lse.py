@@ -11,9 +11,9 @@ import os
 from primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
-from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
-from primitive_interfaces import base
-from primitive_interfaces.base import CallResult
+from d3m.metadata import container, hyperparams, metadata as metadata_module, params, utils
+from d3m.primitive_interfaces import base
+from d3m.primitive_interfaces.base import CallResult
 
 
 Inputs = container.matrix

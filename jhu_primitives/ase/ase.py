@@ -10,12 +10,13 @@ from typing import Sequence, TypeVar, Union, Dict
 import os
 
 
-from primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
-from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
-from primitive_interfaces import base
-from primitive_interfaces.base import CallResult
+from d3m import container, utils
+from d3m.metadata import hyperparams, base as metadata_module, params
+from d3m.primitive_interfaces import base
+from d3m.primitive_interfaces.base import CallResult
 
 
 Inputs = container.matrix
