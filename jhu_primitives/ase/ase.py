@@ -9,13 +9,14 @@ from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
 
-
-from primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
-from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
-from primitive_interfaces import base
-from primitive_interfaces.base import CallResult
+from d3m import container
+from d3m import utils
+from d3m.metadata import hyperparams, base as metadata_module, params
+from d3m.primitive_interfaces import base
+from d3m.primitive_interfaces.base import CallResult
 
 
 Inputs = container.matrix
@@ -94,15 +95,15 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "SINGULAR_VALUE_DECOMPOSITION"
         ],
         'primitive_family': "DATA_TRANSFORMATION"
     })
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str,base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
-    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
+    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
 #    def embed(self, *, g : JHUGraph, dim: int):
         """
         Perform Adjacency Spectral Embedding on a graph
@@ -195,7 +196,7 @@ metadata = metadata_module.PrimitiveMetadata({
             ),
         }],
         # URIs at which one can obtain code for the primitive, if available.
-        'location_uris': [
+        'location_uris': [ 
             'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
             ),
