@@ -6,15 +6,16 @@
 from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
-from primitive_interfaces.transformer import TransformerPrimitiveBase
+
+from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
-from d3m.metadata import container, hyperparams, metadata as metadata_module, params, utils
+
+from d3m import container
+from d3m import utils
+from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
-
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -23,7 +24,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    dim = hyperparams.Hyperparameter[int](default = 2)
+    dim = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'])
 
 class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -95,7 +96,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         'primitive_family': "CLUSTERING"
     })
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
@@ -116,7 +117,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "gclust.interface.R")
 
-        dim = self.hyperparams['dim']
+        dim = self.hyperparams['dim'] #change this to differentiate
         cmd = """
         source("%s")
         fn <- function(X, dim) {
