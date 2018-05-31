@@ -7,15 +7,14 @@ from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
 
-#from jhu_primitives.core.JHUGraph import JHUGraph
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
+
+from primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
-from d3m import container
-from d3m import utils
-from d3m.metadata import hyperparams, base as metadata_module, params
-from d3m.primitive_interfaces import base
-from d3m.primitive_interfaces.base import CallResult
+from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
+from primitive_interfaces import base
+from primitive_interfaces.base import CallResult
+
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -28,32 +27,6 @@ class Hyperparams(hyperparams.Hyperparams):
         'https://metadata.datadrivendiscovery.org/types/ControlParameter',
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
-
-def file_path_conversion(abs_file_path, uri="file"):
-    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
-    path_sep = file_path[0]
-    file_path = file_path[1:]  # Remove initial separator
-    if len(file_path) == 0:
-        print("Invalid file path: len(file_path) == 0")
-        return
-
-    s = ""
-    if path_sep == "/":
-        s = file_path
-    elif path_sep == "\\":
-        splits = file_path.split("\\")
-        data_folder = splits[-1]
-        for i in splits:
-            if i != "":
-                s += "/" + i
-    else:
-        print("Unsupported path separator!")
-        return
-
-    if uri == "file":
-        return "file://localhost" + s
-    else:
-        return local_drive + ":" + s
 
 class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -79,37 +52,11 @@ class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outpu
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [
-            {
-            'type': 'UBUNTU',
-            'package': 'r-base',
-            'version': '3.4.2'
-            },
-            {
-            'type': 'UBUNTU',
-            'package': 'libxml2-dev',
-            'version': '2.9.4'
-            },
-            {
-            'type': 'UBUNTU',
-            'package': 'libpcre3-dev',
-            'version': '2.9.4'
-            },
-#            {
-#            'type': 'UBUNTU',
-#            'package': 'r-base-dev',
-#            'version': '3.4.2'
-#            },
-#            {
-#            'type': 'UBUNTU',
-#            'package': 'r-recommended',
-#            'version': '3.4.2'
-#            },
-            {
-            'type': 'PIP',
+        'installation': [{
+            'type': metadata_module.PrimitiveInstallationType.PIP,
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=jhu_primitives'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-            ),
+                ),
         }],
         # URIs at which one can obtain code for the primitive, if available.
         # 'location_uris': [
@@ -120,12 +67,12 @@ class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outpu
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "SINGULAR_VALUE_DECOMPOSITION"
+            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
         ],
-        'primitive_family': "FEATURE_EXTRACTION"
+        'primitive_family': "DATA_TRANSFORMATION"
     })
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
@@ -149,7 +96,6 @@ class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outpu
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "oocase.interface.R")
-        path = file_path_conversion(path, uri = "")
         cmd = """
         source("%s")
         fn <- function(inputs, dim) {

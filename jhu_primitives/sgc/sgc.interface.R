@@ -17,7 +17,7 @@ sgc.interface <- function(g)
     ##     g <- graph.adjacency(X)
     ## }
 
-    if (class(g) == "dgCMatrix" || class(g) == 'matrix') {
+    if (class(g) == "dgCMatrix") {
         g = igraph::graph_from_adjacency_matrix(g)
     }
 
