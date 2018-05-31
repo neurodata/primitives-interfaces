@@ -11,10 +11,10 @@ if(!require(igraph)) {
 vnsgm.interface <- function(g1, g2, voi, S)
 {
 
-    if (class(g1) == "dgCMatrix" || class(g1) == 'matrix') {
+    if (class(g1) == "dgCMatrix") {
         g1 = igraph::graph_from_adjacency_matrix(g1)
     }
-    if (class(g2) == "dgCMatrix" || class(g2) == 'matrix') {
+    if (class(g2) == "dgCMatrix") {
         g2 = igraph::graph_from_adjacency_matrix(g2)
     }
 
