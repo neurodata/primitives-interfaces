@@ -4,4 +4,4 @@ python-igraph
 rpy2
 sklearn
 jinja2
-primitive_interfaces
+d3m

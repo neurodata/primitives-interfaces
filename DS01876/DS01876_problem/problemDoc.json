@@ -1,0 +1,38 @@
+{
+  "about": {
+    "problemID": "DS01876_problem",
+    "problemName": "DS01875 vertex nomination problem",
+    "problemDescription": "Data for DS01876 consists of one graph, G1. Associated with each node is a classLabel that has to be learned and predicted.",
+    "taskType": "vertexNomination",
+    "problemSchemaVersion": "3.1.1"
+  },
+  "inputs": {
+    "data": [
+      {
+        "datasetID": "DS01876_dataset",
+        "targets": [
+          {
+            "targetIndex": 0,
+            "resID": "1",
+            "colIndex": 2,
+            "colName": "classLabel"
+          }
+        ]
+      }
+    ],
+    "dataSplits": {
+      "method": "holdOut",
+      "testSize": 1,
+      "numRepeats": 0,
+      "splitsFile": "dataSplits.csv"
+    },
+    "performanceMetrics": [
+      {
+        "metric": "accuracy"
+      }
+    ]
+  },
+  "expectedOutputs": {
+    "predictionsFile": "predictions.csv"
+  }
+}
