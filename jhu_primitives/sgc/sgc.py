@@ -145,7 +145,7 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
             sgc.interface(inputs)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
         result = np.array(robjects.r(cmd)(inputs))
 

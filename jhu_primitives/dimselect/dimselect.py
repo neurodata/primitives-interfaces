@@ -148,7 +148,7 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         }
         """ % path
 
-        print(cmd)
+        #print(cmd)
 
         result = np.array(robjects.r(cmd)(inputs))
 

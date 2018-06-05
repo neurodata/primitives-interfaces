@@ -145,8 +145,11 @@ class NonParametricClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
             - a sigma for the Gaussian kernel
         """
 
-        xhat1 = inputs[0,:,:]
-        xhat2 = inputs[1,:,:]
+        #xhat1 = inputs[0,:,:]
+        #xhat2 = inputs[1,:,:]
+
+        xhat1 = inputs[0]
+        xhat2 = inputs[1]
 
         sigma = self.hyperparams['sigma']
 
@@ -160,7 +163,7 @@ class NonParametricClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
         }
         """ % path
 
-        result =  np.array(robjects.r(cmd)(xhat1, xhat2, sigma)[0])
+        result =  np.array(robjects.r(cmd)(xhat1, xhat2, sigma))
 
         outputs = container.ndarray(result)
 

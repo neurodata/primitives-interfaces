@@ -10,7 +10,9 @@ ase.interface <- function(g, dim)
     if (class(g) == "dgCMatrix" || class(g) == "matrix") {
         g = igraph::graph_from_adjacency_matrix(g)
     }
-    X <- embed_adjacency_matrix(g, dim)$X
+    SVD <- embed_adjacency_matrix(g, dim)
+    X <-SVD$X
+    D <- SVD$D
 
-    return(X)
+    return(list(X,D))
 }

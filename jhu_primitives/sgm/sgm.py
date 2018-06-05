@@ -160,7 +160,7 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
             sgm.interface(g1, g2, seed)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
         result = np.array(robjects.r(cmd)(inputs[0], inputs[1], seed))
 
