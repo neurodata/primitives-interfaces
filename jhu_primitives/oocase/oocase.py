@@ -158,7 +158,7 @@ class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outpu
             oocase.interface(inputs, dim)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
         result = np.array(robjects.r(cmd)(inputs, dim))
 

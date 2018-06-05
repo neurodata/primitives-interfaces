@@ -149,7 +149,7 @@ class PassToRanks(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
             ptr.interface(inputs)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
         result = np.array(robjects.r(cmd)(inputs))
 

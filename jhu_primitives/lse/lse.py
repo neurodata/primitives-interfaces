@@ -160,10 +160,16 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             lse.interface(inputs, dim)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs, dim))
+        result = robjects.r(cmd)(inputs, dim)
+        print('result[0]:')
+        print(result[0])
 
-        outputs = container.ndarray(result)
+        print('result[1]:')
+        print(result[1])
 
-        return base.CallResult(outputs)
+        vectors = container.ndarray(result[0])
+        eig_values = container.ndarray(result[1])
+
+        return base.CallResult(vectors), base.CallResult(eig_values)
