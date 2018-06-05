@@ -11,14 +11,12 @@ rpy2.robjects.numpy2ri.activate()
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
+
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
-
-
-
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -29,6 +27,7 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     #hp = hyperparams.Hyperparameter[None](default = None)
     hp = None
+
 
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
@@ -149,7 +148,8 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         }
         """ % path
 
-        result = np.array(robjects.r(cmd)(inputs)[0])
+        #result = np.array(robjects.r(cmd)(inputs)[0])
+        result = np.array(robjects.r(cmd)(inputs))
 
         outputs = container.ndarray(result)
 

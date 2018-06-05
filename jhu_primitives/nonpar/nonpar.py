@@ -10,11 +10,13 @@ import os
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
+
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -143,8 +145,11 @@ class NonParametricClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
             - a sigma for the Gaussian kernel
         """
 
-        xhat1 = inputs[0,:,:]
-        xhat2 = inputs[1,:,:]
+        #xhat1 = inputs[0,:,:]
+        #xhat2 = inputs[1,:,:]
+
+        xhat1 = inputs[0]
+        xhat2 = inputs[1]
 
         sigma = self.hyperparams['sigma']
 
@@ -158,7 +163,7 @@ class NonParametricClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
         }
         """ % path
 
-        result =  np.array(robjects.r(cmd)(xhat1, xhat2, sigma)[0])
+        result =  np.array(robjects.r(cmd)(xhat1, xhat2, sigma))
 
         outputs = container.ndarray(result)
 

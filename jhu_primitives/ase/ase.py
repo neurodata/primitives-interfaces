@@ -157,17 +157,19 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             ase.interface(inputs, dim)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
 
         #result = np.array(robjects.r(cmd)(inputs, dim))
-        sol = robjects.r(cmd)(inputs, dim)
-        #result = np.array(sol)
-        result = sol
-        outputs = container.ndarray(result)
+        result = robjects.r(cmd)(inputs, dim)
+        vectors = container.ndarray(result[0])
+        eig_values = container.ndarray(result[1])
+        #result = container.ndarray(vectors, eig_values)
+        #outputs = container.ndarray(result)
+        #print(outputs)
 
-        return base.CallResult(outputs)
-
+        return base.CallResult(vectors), base.CallResult(eig_values)
+        
         #return np.array(robjects.r(cmd)(g._object, dim))
 
     def set_training_data(self) -> None:  # type: ignore

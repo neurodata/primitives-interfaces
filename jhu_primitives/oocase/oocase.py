@@ -11,11 +11,13 @@ import os
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
+
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -156,7 +158,7 @@ class OutOfCoreAdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outpu
             oocase.interface(inputs, dim)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
         result = np.array(robjects.r(cmd)(inputs, dim))
 
