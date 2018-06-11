@@ -9,9 +9,10 @@ from typing import Sequence, TypeVar, Union, Dict
 import os
 
 
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
+from primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
+
 
 from d3m import container
 from d3m import utils
@@ -21,6 +22,7 @@ from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 
 
+
 Inputs = container.ndarray
 Outputs = container.ndarray
 
@@ -28,6 +30,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
+
     #dim = hyperparams.Hyperparameter[None](default=None)
     hp = None
 
@@ -57,6 +60,7 @@ def file_path_conversion(abs_file_path, uri="file"):
     else:
         return local_drive + ":" + s
 
+
 class PassToRanks(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
@@ -81,37 +85,11 @@ class PassToRanks(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [
-            {
-            'type': 'UBUNTU',
-            'package': 'r-base',
-            'version': '3.4.2'
-            },
-            {
-            'type': 'UBUNTU',
-            'package': 'libxml2-dev',
-            'version': '2.9.4'
-            },
-            {
-            'type': 'UBUNTU',
-            'package': 'libpcre3-dev',
-            'version': '2.9.4'
-            },
-#            {
-#            'type': 'UBUNTU',
-#            'package': 'r-base-dev',
-#            'version': '3.4.2'
-#            },
-#            {
-#            'type': 'UBUNTU',
-#            'package': 'r-recommended',
-#            'version': '3.4.2'
-#            },
-            {
-            'type': 'PIP',
+        'installation': [{
+            'type': metadata_module.PrimitiveInstallationType.PIP,
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=jhu_primitives'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-            ),
+                ),
         }],
         # URIs at which one can obtain code for the primitive, if available.
         # 'location_uris': [
@@ -122,12 +100,12 @@ class PassToRanks(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "DATA_NORMALIZATION"
+            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
         ],
-        'primitive_family': "NORMALIZATION"
+        'primitive_family': "DATA_TRANSFORMATION"
     })
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
@@ -142,7 +120,6 @@ class PassToRanks(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "ptr.interface.R")
-        path = file_path_conversion(path, uri="")
         cmd = """
         source("%s")
         fn <- function(inputs) {

@@ -21,8 +21,10 @@ lse.interface <- function(g, dim)
     ## }
 
     ## embedding into "dim"
+
     if (class(g) == "dgCMatrix" || class(g) == 'matrix') {
         g = igraph::graph_from_adjacency_matrix(g, weighted = TRUE, mode = 'undirected')
+
     }
 
     SVD <- igraph::embed_laplacian_matrix(g, dim, type = 'DAD')
