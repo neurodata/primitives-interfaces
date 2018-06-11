@@ -12,9 +12,11 @@ import os
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
+
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
+
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 
@@ -27,7 +29,7 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     #dim = hyperparams.Hyperparameter[None](default=None)
-    dim = None
+    hp = None
 
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
@@ -147,9 +149,10 @@ class PassToRanks(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
             ptr.interface(inputs)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs))
+        result = robjects.r(cmd)(inputs)
+        #print(result)
 
         outputs = container.ndarray(result)
 

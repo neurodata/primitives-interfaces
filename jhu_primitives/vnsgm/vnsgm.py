@@ -11,6 +11,7 @@ import os
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
+
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
@@ -149,13 +150,17 @@ class VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Inputs, Outpu
         path = file_path_conversion(path, uri = "")
         cmd = """
         source("%s")
-        fn <- function(g1, g2, voi, seed) {
+        fn <- function(g1, g2, voi, seed = matrix(nrow = 0,ncol = 2)) {
             vnsgm.interface(g1, g2, voi, seed)
         }
         """ % path
         print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs[0], inputs[1], inputs[2], inputs[3]))
+        if len(inputs) == 3:
+            result = np.array(robjects.r(cmd)(inputs[0], inputs[1], inputs[2] ))
+        else:
+            result = np.array(robjects.r(cmd)(inputs[0], inputs[1], inputs[2], inputs[3]))
+
 
         outputs = container.ndarray(result)
 

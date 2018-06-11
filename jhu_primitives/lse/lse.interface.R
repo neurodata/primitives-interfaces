@@ -22,12 +22,14 @@ lse.interface <- function(g, dim)
 
     ## embedding into "dim"
     if (class(g) == "dgCMatrix" || class(g) == 'matrix') {
-        g = igraph::graph_from_adjacency_matrix(g)
+        g = igraph::graph_from_adjacency_matrix(g, weighted = TRUE, mode = 'undirected')
     }
 
-    X <- embed_laplacian_matrix(g, dim)$X
+    SVD <- igraph::embed_laplacian_matrix(g, dim, type = 'DAD')
+    X <- SVD$X
+    D <- SVD$D
 
-    return(X)
+    return(list(X, D))
 
     ## cat("The output files are saved in '../DATA/out_vectors.txt', '../DATA/in_vectors.txt', and '../DATA/eigenvalues'.\n")
     ## write.table(embed$X,"../DATA/out_vectors.txt", col.names=F, row.names=F)
