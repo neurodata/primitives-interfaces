@@ -26,7 +26,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    dim = hyperparams.Hyperparameter[int](default=2, semantic_types=[
+    max_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/ControlParameter',
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
@@ -146,31 +146,24 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             - The number of dimensions in which to embed the data
         """
 
-        dim = self.hyperparams['dim']
+        max_dimension = self.hyperparams['max_dimension']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "ase.interface.R")
         path = file_path_conversion(path, uri = "")
         cmd = """
         source("%s")
-        fn <- function(inputs, dim) {
-            ase.interface(inputs, dim)
+        fn <- function(inputs, max_dimension) {
+            ase.interface(inputs, max_dimension)
         }
         """ % path
-        #print(cmd)
 
-
-        #result = np.array(robjects.r(cmd)(inputs, dim))
-        result = robjects.r(cmd)(inputs, dim)
+        result = robjects.r(cmd)(inputs, max_dimension)
         vectors = container.ndarray(result[0])
         eig_values = container.ndarray(result[1])
-        #result = container.ndarray(vectors, eig_values)
-        #outputs = container.ndarray(result)
-        #print(outputs)
 
-        return base.CallResult(vectors), base.CallResult(eig_values)
+        return base.CallResult([vectors, eig_values])
         
-        #return np.array(robjects.r(cmd)(g._object, dim))
 
     def set_training_data(self) -> None:  # type: ignore
         """

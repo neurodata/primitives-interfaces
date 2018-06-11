@@ -26,7 +26,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    seed = hyperparams.Hyperparameter[np.ndarray](default=np.array([0]), semantic_types=[
+    seeds = hyperparams.Hyperparameter[np.ndarray](default=np.array([0]), semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/ControlParameter',
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
@@ -149,20 +149,20 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
               If empty, assumes no seeds are used.
         """
 
-        seed = self.hyperparams['seed']
+        seeds = self.hyperparams['seeds']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "sgm.interface.R")
         path = file_path_conversion(path, uri = "")
         cmd = """
         source("%s")
-        fn <- function(g1, g2, seed) {
-            sgm.interface(g1, g2, seed)
+        fn <- function(g1, g2, seeds) {
+            sgm.interface(g1, g2, seeds)
         }
         """ % path
         #print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs[0], inputs[1], seed))
+        result = np.array(robjects.r(cmd)(inputs[0], inputs[1], seeds))
 
         outputs = container.ndarray(result)
 

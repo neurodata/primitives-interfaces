@@ -24,7 +24,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    dim = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'])
+    max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'])
 
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
@@ -144,18 +144,18 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
                 "gclust.interface.R")
         path = file_path_conversion(path, uri = "")
 
-        dim = self.hyperparams['dim'] #change this to differentiate
+        max_clusters = self.hyperparams['max_clusters'] #change this to differentiate
         cmd = """
         source("%s")
-        fn <- function(X, dim) {
-            gclust.interface(X, dim)
+        fn <- function(X, max_clusters) {
+            gclust.interface(X, max_clusters)
         }
         """ % path
 
         #print(cmd)
 
         #result = int(robjects.r(cmd)(inputs, dim)[0])
-        result = robjects.r(cmd)(inputs, dim)
+        result = robjects.r(cmd)(inputs, max_clusters)
 
         outputs = container.ndarray(result)
 

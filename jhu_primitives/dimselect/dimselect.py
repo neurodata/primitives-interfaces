@@ -26,7 +26,8 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    hp = hyperparams.Hyperparameter[None](default = None,semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'])
+    #hp = hyperparams.Hyperparameter[None](default = None,semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'])
+    n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'])
 
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
@@ -141,16 +142,17 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "dimselect.interface.R")
         path = file_path_conversion(path, uri="")
+        n_elbows = self.hyperparams['n_elbows']
         cmd = """
         source("%s")
-        fn <- function(X) {
-            dimselect.interface(X)
+        fn <- function(X, n_elbows) {
+            dimselect.interface(X, n_elbows)
         }
         """ % path
 
         #print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs))
+        result = np.array(robjects.r(cmd)(inputs, n_elbows))
 
         outputs = container.ndarray(result)
 
