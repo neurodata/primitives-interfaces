@@ -29,7 +29,7 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     #dim = hyperparams.Hyperparameter[None](default=None)
-    dim = None
+    hp = None
 
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
@@ -151,7 +151,8 @@ class PassToRanks(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         """ % path
         #print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs))
+        result = robjects.r(cmd)(inputs)
+        #print(result)
 
         outputs = container.ndarray(result)
 

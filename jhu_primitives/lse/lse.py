@@ -28,7 +28,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    dim = hyperparams.Hyperparameter[int](default=2, semantic_types=[
+    max_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/ControlParameter',
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
@@ -149,27 +149,22 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             - The number of dimensions in which to embed the data
         """
 
-        dim = self.hyperparams['dim']
+        max_dimension = self.hyperparams['max_dimension']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "lse.interface.R")
         path = file_path_conversion(path, uri = "")
         cmd = """
         source("%s")
-        fn <- function(inputs, dim) {
-            lse.interface(inputs, dim)
+        fn <- function(inputs, max_dimension) {
+            lse.interface(inputs, max_dimension)
         }
         """ % path
         #print(cmd)
 
-        result = robjects.r(cmd)(inputs, dim)
-        print('result[0]:')
-        print(result[0])
-
-        print('result[1]:')
-        print(result[1])
-
+        result = robjects.r(cmd)(inputs, max_dimension)
+        
         vectors = container.ndarray(result[0])
         eig_values = container.ndarray(result[1])
 
-        return base.CallResult(vectors), base.CallResult(eig_values)
+        return base.CallResult([vectors, eig_values])

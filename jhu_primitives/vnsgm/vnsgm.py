@@ -150,13 +150,17 @@ class VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Inputs, Outpu
         path = file_path_conversion(path, uri = "")
         cmd = """
         source("%s")
-        fn <- function(g1, g2, voi, seed) {
+        fn <- function(g1, g2, voi, seed = matrix(nrow = 0,ncol = 2)) {
             vnsgm.interface(g1, g2, voi, seed)
         }
         """ % path
         print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs[0], inputs[1], inputs[2], inputs[3]))
+        if len(inputs) == 3:
+            result = np.array(robjects.r(cmd)(inputs[0], inputs[1], inputs[2] ))
+        else:
+            result = np.array(robjects.r(cmd)(inputs[0], inputs[1], inputs[2], inputs[3]))
+
 
         outputs = container.ndarray(result)
 
