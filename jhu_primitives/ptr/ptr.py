@@ -12,9 +12,15 @@ import os
 from primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
-from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
-from primitive_interfaces import base
-from primitive_interfaces.base import CallResult
+
+
+from d3m import container
+from d3m import utils
+from d3m.metadata import hyperparams, base as metadata_module, params
+
+from d3m.primitive_interfaces import base
+from d3m.primitive_interfaces.base import CallResult
+
 
 
 Inputs = container.ndarray
@@ -24,7 +30,36 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    dim = hyperparams.Hyperparameter[None](default=None)
+
+    #dim = hyperparams.Hyperparameter[None](default=None)
+    hp = None
+
+def file_path_conversion(abs_file_path, uri="file"):
+    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
+    path_sep = file_path[0]
+    file_path = file_path[1:]  # Remove initial separator
+    if len(file_path) == 0:
+        print("Invalid file path: len(file_path) == 0")
+        return
+
+    s = ""
+    if path_sep == "/":
+        s = file_path
+    elif path_sep == "\\":
+        splits = file_path.split("\\")
+        data_folder = splits[-1]
+        for i in splits:
+            if i != "":
+                s += "/" + i
+    else:
+        print("Unsupported path separator!")
+        return
+
+    if uri == "file":
+        return "file://localhost" + s
+    else:
+        return local_drive + ":" + s
+
 
 class PassToRanks(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -91,9 +126,10 @@ class PassToRanks(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
             ptr.interface(inputs)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs))
+        result = robjects.r(cmd)(inputs)
+        #print(result)
 
         outputs = container.ndarray(result)
 

@@ -5,7 +5,7 @@
 
 
 from typing import NamedTuple, Sequence, Optional, Dict
-from primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from jhu_primitives.wrapper.read_graph_r import read_graph
 from jhu_primitives.wrapper.ig_wrapper_r import ig_get_adjacency_matrix
 from jhu_primitives.wrapper.ig_wrapper_r import ig_get_num_vertices
@@ -16,9 +16,16 @@ from jhu_primitives.wrapper.ig_wrapper_r import ig_is_weighted
 from jhu_primitives.wrapper.ig_wrapper_r import ig_summary
 from jhu_primitives.wrapper.ig_wrapper_r import ig_get_dense_matrix
 # from primitive_interfaces.base import Hyperparams
-from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
+
+from d3m import container, utils
+#from d3m.metadata import hyperparams as metadata_module, params
+from d3m.metadata import hyperparams, base as metadata_module, params
 import os
-from primitive_interfaces.base import CallResult
+
+from d3m.primitive_interfaces import base
+from d3m.primitive_interfaces.base import CallResult
+
+
 
 import numpy as np
 
@@ -88,7 +95,7 @@ ry=primitives'.format(
     _weighted = None
     _dangling_nodes = None
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, str] = None) -> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> None:

@@ -4,5 +4,5 @@ if(!require(mclust)){
 }
 
 gclust.interface <- function(X, K=2) {
-    return(Mclust(X, 1:K)$G)
+    return(Mclust(X, 1:K)$classification)
 }

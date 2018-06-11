@@ -11,10 +11,13 @@ rpy2.robjects.numpy2ri.activate()
 from primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
-from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
-from primitive_interfaces import base
-from primitive_interfaces.base import CallResult
 
+
+from d3m import container
+from d3m import utils
+from d3m.metadata import hyperparams, base as metadata_module, params
+from d3m.primitive_interfaces import base
+from d3m.primitive_interfaces.base import CallResult
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -23,7 +26,35 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    dim = hyperparams.Hyperparameter[int](default = 2)
+
+    max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'])
+
+def file_path_conversion(abs_file_path, uri="file"):
+    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
+    path_sep = file_path[0]
+    file_path = file_path[1:]  # Remove initial separator
+    if len(file_path) == 0:
+        print("Invalid file path: len(file_path) == 0")
+        return
+
+    s = ""
+    if path_sep == "/":
+        s = file_path
+    elif path_sep == "\\":
+        splits = file_path.split("\\")
+        data_folder = splits[-1]
+        for i in splits:
+            if i != "":
+                s += "/" + i
+    else:
+        print("Unsupported path separator!")
+        return
+
+    if uri == "file":
+        return "file://localhost" + s
+    else:
+        return local_drive + ":" + s   
+
 
 class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -89,18 +120,21 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "gclust.interface.R")
+        path = file_path_conversion(path, uri = "")
 
-        dim = self.hyperparams['dim']
+        max_clusters = self.hyperparams['max_clusters'] #change this to differentiate
+
         cmd = """
         source("%s")
-        fn <- function(X, dim) {
-            gclust.interface(X, dim)
+        fn <- function(X, max_clusters) {
+            gclust.interface(X, max_clusters)
         }
         """ % path
 
-        print(cmd)
+        #print(cmd)
 
-        result = int(robjects.r(cmd)(inputs, dim)[0])
+        #result = int(robjects.r(cmd)(inputs, dim)[0])
+        result = robjects.r(cmd)(inputs, max_clusters)
 
         outputs = container.ndarray(result)
 
