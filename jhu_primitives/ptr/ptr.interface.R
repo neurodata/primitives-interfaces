@@ -33,9 +33,11 @@ passtoranks <- function(g)
 ptr.interface <- function(g)
 {
 #    X <- as.matrix(read.table(input))
+
     if (class(g) == "dgCMatrix" || class(g) == 'matrix') {
         g = igraph::graph_from_adjacency_matrix(g, weighted = TRUE)
         # if we always assume weighted, are there any issues if it is unweighted?
+
     }
     new_g <- passtoranks(g)
     out <- as.matrix(new_g[])

@@ -39,7 +39,6 @@ setup(
     packages=[
               PACKAGE_NAME,
               'jhu_primitives.ase',
-              'jhu_primitives.lcc',
               'jhu_primitives.lse',
               'jhu_primitives.dimselect',
               'jhu_primitives.gclust',
@@ -69,8 +68,8 @@ setup(
     },
     package_data = {'': ['*.r', '*.R']},
     include_package_data = True,
-    install_requires=['typing', 'numpy', 'scipy', 'networkx',
-        'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'd3m'],
+    install_requires=['typing', 'numpy', 'scipy',
+        'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
     url='https://github.com/neurodata/primitives-interfaces',
 )
 
@@ -79,7 +78,6 @@ setup(
               PACKAGE_NAME,
               'jhu_primitives.ase',
               'jhu_primitives.lse',
-              'jhu_primitives.lcc',
               'jhu_primitives.dimselect',
               'jhu_primitives.gclust',
               'jhu_primitives.nonpar',
