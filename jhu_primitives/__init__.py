@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 __all__ = ["AdjacencySpectralEmbedding",
            "LaplacianSpectralEmbedding", "DimensionSelection",
-           "GaussianClustering", "NonParametricClustering",
+           "GaussianClustering", "LargestConnectedComponent","NonParametricClustering",
            "NumberOfClusters", "OutOfCoreAdjacencySpectralEmbedding", "PassToRanks",
            "SpectralGraphClustering", "SeededGraphMatching",
            "VertexNominationSeededGraphMatching"]
@@ -24,6 +24,7 @@ from .vnsgm import VertexNominationSeededGraphMatching
 """
 __all__ = ['AdjacencySpectralEmbedding', 'LaplacianSpectralEmbedding',
            'DimensionSelection', 'GaussianClustering', 'NonParametricClustering',
+           ,'LargestConnectedComponent',
            'NumberOfClusters', 'OutOfCoreAdjacencySpectralEmbedding', 'PassToRanks', 
            'SpectralGraphClustering', 'SeededGraphMatching',
            'VertexNominationSeededGraphMatching']
