@@ -8,10 +8,8 @@ from typing import Sequence, TypeVar, Union, Dict
 import os
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
-from primitive_interfaces.transformer import TransformerPrimitiveBase
-#from jhu_primitives.core.JHUGraph import JHUGraph
+from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 import numpy as np
-
 
 from d3m import container
 from d3m import utils
