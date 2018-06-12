@@ -12,6 +12,7 @@ from .ase import AdjacencySpectralEmbedding
 from .lse import LaplacianSpectralEmbedding
 from .dimselect import DimensionSelection
 from .gclust import GaussianClustering
+from .lcc import LargestConnectedComponent
 from .nonpar import NonParametricClustering
 from .numclust import NumberOfClusters
 from .oocase import OutOfCoreAdjacencySpectralEmbedding
