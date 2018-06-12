@@ -69,8 +69,10 @@ setup(
     },
     package_data = {'': ['*.r', '*.R']},
     include_package_data = True,
+
     install_requires=['typing', 'numpy', 'scipy', 'networkx',
         'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'd3m'],
+
     url='https://github.com/neurodata/primitives-interfaces',
 )
 
