@@ -39,7 +39,6 @@ setup(
     packages=[
               PACKAGE_NAME,
               'jhu_primitives.ase',
-              'jhu_primitives.lcc',
               'jhu_primitives.lse',
               'jhu_primitives.dimselect',
               'jhu_primitives.gclust',
@@ -55,7 +54,6 @@ setup(
         'd3m.primitives': [
             'jhu_primitives.AdjacencySpectralEmbedding=jhu_primitives.ase:AdjacencySpectralEmbedding',
             'jhu_primitives.LaplacianSpectralEmbedding=jhu_primitives.lse:LaplacianSpectralEmbedding',
-            'jhu_primitives.LargestConnectedComponent'
             'jhu_primitives.DimensionSelection=jhu_primitives.dimselect:DimensionSelection',
             'jhu_primitives.GaussianClustering=jhu_primitives.gclust:GaussianClustering',
             'jhu_primitives.NonParametricClustering=jhu_primitives.nonpar:NonParametricClustering',
@@ -69,10 +67,8 @@ setup(
     },
     package_data = {'': ['*.r', '*.R']},
     include_package_data = True,
-
-    install_requires=['typing', 'numpy', 'scipy', 'networkx',
-        'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'd3m'],
-
+    install_requires=['typing', 'numpy', 'scipy',
+        'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
     url='https://github.com/neurodata/primitives-interfaces',
 )
 
@@ -81,7 +77,6 @@ setup(
               PACKAGE_NAME,
               'jhu_primitives.ase',
               'jhu_primitives.lse',
-              'jhu_primitives.lcc',
               'jhu_primitives.dimselect',
               'jhu_primitives.gclust',
               'jhu_primitives.nonpar',
