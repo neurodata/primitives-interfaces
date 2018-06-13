@@ -7,7 +7,7 @@ from sys import platform
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
-VERSION = '0.0.4'
+VERSION = '2018.6.5'
 
 
 def check_python_version():
@@ -39,6 +39,7 @@ setup(
     packages=[
               PACKAGE_NAME,
               'jhu_primitives.ase',
+              'jhu_primitives.lcc',
               'jhu_primitives.lse',
               'jhu_primitives.dimselect',
               'jhu_primitives.gclust',
@@ -53,6 +54,7 @@ setup(
     entry_points = {
         'd3m.primitives': [
             'jhu_primitives.AdjacencySpectralEmbedding=jhu_primitives.ase:AdjacencySpectralEmbedding',
+            'jhu_primitives.LargestConnectedComponent=jhu_primitives.lcc:LargestConnectedComponent',
             'jhu_primitives.LaplacianSpectralEmbedding=jhu_primitives.lse:LaplacianSpectralEmbedding',
             'jhu_primitives.DimensionSelection=jhu_primitives.dimselect:DimensionSelection',
             'jhu_primitives.GaussianClustering=jhu_primitives.gclust:GaussianClustering',
@@ -68,7 +70,7 @@ setup(
     package_data = {'': ['*.r', '*.R']},
     include_package_data = True,
     install_requires=['typing', 'numpy', 'scipy',
-        'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'primitive_interfaces'],
+        'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'd3m'],
     url='https://github.com/neurodata/primitives-interfaces',
 )
 
