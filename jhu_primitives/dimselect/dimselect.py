@@ -7,8 +7,11 @@
 from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
+<<<<<<< HEAD
+=======
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
+>>>>>>> a8743767cceafd5ac6a68f0330100efb5d443e8c
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 import numpy as np
 from d3m import utils
@@ -23,8 +26,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    #hp = hyperparams.Hyperparameter[None](default = None,semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'])
-    n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'])
+    n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
