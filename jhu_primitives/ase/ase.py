@@ -10,13 +10,12 @@ from typing import Sequence, TypeVar, Union, Dict
 import os
 
 
-from primitive_interfaces.transformer import TransformerPrimitiveBase
-#from jhu_primitives.core.JHUGraph import JHUGraph
+from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 import numpy as np
-from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
-from primitive_interfaces import base
-from primitive_interfaces.base import CallResult
-
+from d3m import utils
+from d3m_metadata import hyperparams, base as metadata_module, params
+from d3m.primitive_interfaces import base
+from d3m.primitive_interfaces.base import CallResult
 
 Inputs = container.matrix
 Outputs = container.ndarray
@@ -25,8 +24,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    dim = hyperparams.Hyperparameter[int](default=2, semantic_types=[
-        'https://metadata.datadrivendiscovery.org/types/ControlParameter',
+    max_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
@@ -119,25 +117,25 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             - The number of dimensions in which to embed the data
         """
 
-        dim = self.hyperparams['dim']
+        max_dimension = self.hyperparams['max_dimension']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "ase.interface.R")
         cmd = """
         source("%s")
-        fn <- function(inputs, dim) {
-            ase.interface(inputs, dim)
+        fn <- function(inputs, max_dimension) {
+            ase.interface(inputs, max_dimension)
         }
         """ % path
-        print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs, dim))
 
-        outputs = container.ndarray(result)
+        result = robjects.r(cmd)(inputs, max_dimension)
+        vectors = container.ndarray(result[0])
+        eig_values = container.ndarray(result[1])
 
-        return base.CallResult(outputs)
+        return base.CallResult([vectors, eig_values])
+        
 
-        #return np.array(robjects.r(cmd)(g._object, dim))
 
     def set_training_data(self) -> None:  # type: ignore
         """

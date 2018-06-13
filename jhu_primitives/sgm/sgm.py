@@ -6,13 +6,15 @@ from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
 
-
-from primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 #from jhu_primitives.core.JHUGraph import JHUGraph
 import numpy as np
-from d3m_metadata import container, hyperparams, metadata as metadata_module, params, utils
-from primitive_interfaces import base
-from primitive_interfaces.base import CallResult
+from d3m import container
+from d3m import utils
+from d3m.metadata import hyperparams, base as metadata_module, params
+from d3m.primitive_interfaces import base
+from d3m.primitive_interfaces.base import CallResult
+
 
 
 Inputs = container.ndarray
@@ -22,8 +24,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    seed = hyperparams.Hyperparameter[np.ndarray](default=np.array([0]), semantic_types=[
-        'https://metadata.datadrivendiscovery.org/types/ControlParameter',
+    seeds = hyperparams.Hyperparameter[np.ndarray](default=np.array([0]), semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
@@ -93,19 +94,19 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
               If empty, assumes no seeds are used.
         """
 
-        seed = self.hyperparams['seed']
+        seeds = self.hyperparams['seeds']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "sgm.interface.R")
         cmd = """
         source("%s")
-        fn <- function(g1, g2, seed) {
-            sgm.interface(g1, g2, seed)
+        fn <- function(g1, g2, seeds) {
+            sgm.interface(g1, g2, seeds)
         }
         """ % path
-        print(cmd)
+        #print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs[0], inputs[1], seed))
+        result = np.array(robjects.r(cmd)(inputs[0], inputs[1], seeds))
 
         outputs = container.ndarray(result)
 
