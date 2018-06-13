@@ -25,7 +25,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    hp = hyperparams.Hyperparameter[None](default=None)
+    hp = None
 
 class VertexNominationSeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.

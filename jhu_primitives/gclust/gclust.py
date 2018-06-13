@@ -24,12 +24,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-<<<<<<< HEAD
     max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-=======
-
-    max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/MetafeatureParameter'])
->>>>>>> a8743767cceafd5ac6a68f0330100efb5d443e8c
 
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]

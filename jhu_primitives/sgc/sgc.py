@@ -25,7 +25,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    dim = hyperparams.Hyperparameter[None](default=None)
+    dim = None
 
 class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
