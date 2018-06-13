@@ -25,7 +25,6 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     seeds = hyperparams.Hyperparameter[np.ndarray](default=np.array([0]), semantic_types=[
-        'https://metadata.datadrivendiscovery.org/types/ControlParameter',
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
