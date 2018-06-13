@@ -77,7 +77,23 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [{
+        'installation': [
+            {
+                'type': 'UBUNTU',
+                'package': 'r-base',
+                'version': '3.4.2'
+            },
+            {
+                'type': 'UBUNTU',
+                'package': 'libxml2-dev',
+                'version': '2.9.4'
+            },
+            {
+                'type': 'UBUNTU',
+                'package': 'libpcre3-dev',
+                'version': '2.9.4'
+            },
+            {
             'type': metadata_module.PrimitiveInstallationType.PIP,
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=jhu_primitives'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
