@@ -7,15 +7,12 @@
 from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
-<<<<<<< HEAD
-=======
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
->>>>>>> a8743767cceafd5ac6a68f0330100efb5d443e8c
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 import numpy as np
 from d3m import utils
-from d3m_metadata import hyperparams, base as metadata_module, params
+from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 

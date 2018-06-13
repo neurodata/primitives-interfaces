@@ -56,7 +56,6 @@ setup(
             'jhu_primitives.AdjacencySpectralEmbedding=jhu_primitives.ase:AdjacencySpectralEmbedding',
             'jhu_primitives.LargestConnectedComponent=jhu_primitives.lcc:LargestConnectedComponent',
             'jhu_primitives.LaplacianSpectralEmbedding=jhu_primitives.lse:LaplacianSpectralEmbedding',
-            'jhu_primitives.LargestConnectedComponent=jhu_primitives.lcc:LargestConnectedComponent',
             'jhu_primitives.DimensionSelection=jhu_primitives.dimselect:DimensionSelection',
             'jhu_primitives.GaussianClustering=jhu_primitives.gclust:GaussianClustering',
             'jhu_primitives.NonParametricClustering=jhu_primitives.nonpar:NonParametricClustering',
