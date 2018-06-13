@@ -28,8 +28,26 @@ def read_package_variable(key):
 
 check_python_version()
 
+#from setuptools import setup
+#from setuptools.command.install import install
+#import subprocess
+#import os
+
+#class CustomInstallCommand(install):
+#    """Custom install setup to help run shell commands (outside shell) before installation"""
+#    def run(self):
+#        dir_path = os.path.dirname(os.path.realpath(__file__))
+#        #template_path = os.path.join(dir_path, 'install_r.sh')
+#        #templatejs_path = os.path.join(dir_path, 'install_r.sh')
+#        templatejs = subprocess.check_output([
+#            './install_r.sh'
+ #       ])
+ #       install.run(self)
+
+
 
 setup(
+ #   cmdclass={'install': CustomInstallCommand},
     name=PACKAGE_NAME,
     version=VERSION,
     description='Python interfaces for TA1 primitives',
@@ -69,7 +87,7 @@ setup(
     },
     package_data = {'': ['*.r', '*.R']},
     include_package_data = True,
-    install_requires=['typing', 'numpy', 'scipy',
+    install_requires=['typing', 'numpy', 'scipy','networkx',
         'python-igraph', 'rpy2', 'sklearn', 'jinja2', 'd3m'],
     url='https://github.com/neurodata/primitives-interfaces',
 )

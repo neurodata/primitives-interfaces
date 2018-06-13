@@ -103,16 +103,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=jhu_primitives'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),),
             },
-            {
-            'type': 'PIP',
-            'package': 'python_igraph',
-            'version': '0.7.1'
-            },
-            {
-            'type': 'PIP',
-            'package': 'networkx',
-            'version': '2.1'
-            }
             ],
         # URIs at which one can obtain code for the primitive, if available.
         # 'location_uris': [
