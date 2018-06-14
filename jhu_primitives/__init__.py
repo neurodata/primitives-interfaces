@@ -20,6 +20,7 @@ from .ptr import PassToRanks
 from .sgc import SpectralGraphClustering
 from .sgm import SeededGraphMatching
 from .vnsgm import VertexNominationSeededGraphMatching
+from .utils import file_path_conversion
 
 """
 __all__ = ['AdjacencySpectralEmbedding', 'LaplacianSpectralEmbedding',
