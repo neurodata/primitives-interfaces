@@ -153,7 +153,19 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             print("Unsupported graph type")
             return
 
-        result = numpy.array(largest_component)
+        print(type(largest_component))
+
+        g_subgraph = g.subgraph(largest_component)
+
+        g_subgraph_edges = g_subgraph.get_edgelist()
+
+        g_subgraph_nx = networkx.DiGraph(g_subgraph_edges)
+
+        g_subgraph_nx = networkx.Graph(g_subgraph_nx)
+
+        print(type(g_subgraph_nx))
+
+        result = numpy.array(g_subgraph_nx)
 
         outputs = container.ndarray(result)
 
