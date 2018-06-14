@@ -15,6 +15,7 @@ from d3m import utils, container
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+from jhu_primitives.utils.util import file_path_conversion
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -50,8 +51,6 @@ def file_path_conversion(abs_file_path, uri="file"):
         return "file://localhost" + s
     else:
         return local_drive + ":" + s
-
-
 
 class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -145,5 +144,7 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         result = np.array(robjects.r(cmd)(inputs, n_elbows))
 
         outputs = container.ndarray(result)
+
+        if inputs is 
 
         return base.CallResult(outputs)

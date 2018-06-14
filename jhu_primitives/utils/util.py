@@ -3,15 +3,28 @@
 # util.py
 # Created on 2017-09-14.
 
-import igraph
-from jhu_primitives.wrapper.read_graph_r import read_graph
+def file_path_conversion(abs_file_path, uri="file"):
+    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
+    path_sep = file_path[0]
+    file_path = file_path[1:]  # Remove initial separator
+    if len(file_path) == 0:
+        print("Invalid file path: len(file_path) == 0")
+        return
 
-def gen_graph_r(n=10, p=.2):
-    g = igraph.Graph.Erdos_Renyi(n, p)
-    #gpath = "/tmp/graph"
-    #g.write_gml(g, gpath, format = 'gml')
-    gpath = 'tmp/graph.gml'
-    g.write_gml(open(gpath, 'w'))
-    ig = read_graph(gpath, 'gml')
+    s = ""
+    if path_sep == "/":
+        s = file_path
+    elif path_sep == "\\":
+        splits = file_path.split("\\")
+        data_folder = splits[-1]
+        for i in splits:
+            if i != "":
+                s += "/" + i
+    else:
+        print("Unsupported path separator!")
+        return
 
-    return (gpath, ig)
+    if uri == "file":
+        return "file://localhost" + s
+    else:
+        return local_drive + ":" + s
