@@ -14,6 +14,8 @@ from d3m import utils, container
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+import networkx
+import igraph
 
 Inputs = container.matrix
 Outputs = container.ndarray
@@ -22,7 +24,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    max_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types=[
+    embedding_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
@@ -115,17 +117,28 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             - The number of dimensions in which to embed the data
         """
 
-        print("test")
-        max_dimension = self.hyperparams['max_dimension']
+        embedding_dimension = self.hyperparams['embedding_dimension']
 
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "ase.interface.R")
-        cmd = """
-        source("%s")
-        fn <- function(inputs, max_dimension) {
-            ase.interface(inputs, max_dimension)
-        }
-        """ % path
+        g = inputs
+
+        if type(g) == networkx.graph.Graph:
+            return
+
+
+        if type(g) == np.ndarray:
+            if g.ndim == 2:
+                if g.shape[0] == g.shape[1]: # n x n 
+                    g = igraph.Graph.Adjacency((A > 0).tolist())
+                elif g.shape[1] == 2: # (unweighted) edge list
+                    g = igraph.Graph(list(g))
+                elif g.shape[1] == 3: # (weighted) edge list
+                    edges = g[:, :2]
+                    weights = g[:,2]
+                    g = igraph.Graph(edges = edges, weight = weights)
+
+
+
+
 
 
         result = robjects.r(cmd)(inputs, max_dimension)
