@@ -200,13 +200,12 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
                 G = networkx.Graph(X)
                 hp_ase = AdjacencySpectralEmbedding.Hyperparams({'max_dimension': min(100, len(G))})
                 U = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G).value[1]
-
             else:
-                print("Unsupported input type")
+                print("Unsupported input type; only n x n and m x 2 numpy arrays supported")
                 return
 
         if type(X) == igraph.Graph:
-            print("igraph.Graph currently unsupported")
+            print("igraph.Graph unsupported")
 
         print("finding elbows...")
 
