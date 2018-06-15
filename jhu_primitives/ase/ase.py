@@ -115,6 +115,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             - The number of dimensions in which to embed the data
         """
 
+        print("test")
         max_dimension = self.hyperparams['max_dimension']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
