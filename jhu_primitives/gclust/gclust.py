@@ -16,6 +16,7 @@ from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+from sklearn.mixture import GaussianMixture
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -25,33 +26,6 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-
-def file_path_conversion(abs_file_path, uri="file"):
-    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
-    path_sep = file_path[0]
-    file_path = file_path[1:]  # Remove initial separator
-    if len(file_path) == 0:
-        print("Invalid file path: len(file_path) == 0")
-        return
-
-    s = ""
-    if path_sep == "/":
-        s = file_path
-    elif path_sep == "\\":
-        splits = file_path.split("\\")
-        data_folder = splits[-1]
-        for i in splits:
-            if i != "":
-                s += "/" + i
-    else:
-        print("Unsupported path separator!")
-        return
-
-    if uri == "file":
-        return "file://localhost" + s
-    else:
-        return local_drive + ":" + s   
-
 
 class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -130,71 +104,39 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
             - The number of clusters in which to assign the data
         """
 
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "gclust.interface.R")
-        path = file_path_conversion(path, uri = "")
+        if type(inputs) not np.ndarray:
+            return
 
-        max_clusters = self.hyperparams['max_clusters'] #change this to differentiate
+        max_clusters = self.hyperparams['max_clusters']
 
-        cmd = """
-        source("%s")
-        fn <- function(X, max_clusters) {
-            gclust.interface(X, max_clusters)
-        }
-        """ % path
+        cov_types = ['full', 'tied', 'diag', 'spherical']
 
-        #print(cmd)
+        BIC_values = nd.array(shape = (max_clusters, len(cov_types)))
 
-        #result = int(robjects.r(cmd)(inputs, dim)[0])
-        result = robjects.r(cmd)(inputs, max_clusters)
+        BIC_max = 0
+        cluster_likelihood_max = 0
+        cov_type_likelihood_max = ""
 
-        outputs = container.ndarray(result)
+        for i in range(1, max_clusters + 1):
+            for k in cov_types
+                clf = GaussianMixture(n_components=i, 
+                                    covariance_type=k)
+
+                clf.fit(inputs)
+
+                current_bic = clf.bic(inputs)
+
+                if current_bic > BIC_max:
+                    BIC_max = current_bic
+                    cluster_likelihood_max = i
+                    cov_type_likelihood_max = cov_types[k]
+
+        clf = GaussianMixture(n_components = cluster_likelihood_max,
+                            covariance_type = cov_type_likelihood_max)
+        clf.fit(inputs)
+
+        predictions = clf.predict(inputs)
+
+        outputs = container.ndarray(predictions)
 
         return base.CallResult(outputs)
-
-
-
-
-'''
-import os
-import numpy as np
-import rpy2.robjects as robjects
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
-
-from typing import Sequence, TypeVar
-from primitive_interfaces.transformer import TransformerPrimitiveBase
-
-Input = np.ndarray
-Output = np.ndarray
-Params = TypeVar('Params')
-
-class GaussianClustering(TransformerPrimitiveBase[Input, Output, Params]):
-    def cluster(self, *, inputs: Input) -> int:
-        """
-        TODO: YP description
-
-        **Positional Arguments:**
-
-        inputs:
-            - A matrix
-
-        **Optional Arguments:**
-
-        dim:
-            - The number of clusters in which to assign the data
-        """
-
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "gclust.interface.R")
-        cmd = """
-        source("%s")
-        fn <- function(X, dim) {
-            gclust.interface(X, dim)
-        }
-        """ % path
-        return int(robjects.r(cmd)(inputs, dim)[0])
-
-    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
-        self.cluster(inputs=inputs)
-'''
