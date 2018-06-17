@@ -99,6 +99,9 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             labels - Class labels for each unlabeled vertex
         """
 
+        if type(inputs) not np.ndarray:
+            return
+        
         K = self.hyperparams['number_of_clusters']
         seeds = self.hyperparams['seeds']
         labels = self.hyperparams['labels']
