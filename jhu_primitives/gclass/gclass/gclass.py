@@ -156,7 +156,7 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             mcfv_squared = temp_feature_vector.T.dot(temp_feature_vector)
             mean_centered_sums[temp_label, :, :] += mcfv_squared
 
-        estimated_cov = [mean_centered_sums[i,:,:]/label_counts[i] for i in range(K)]
+        estimated_cov = [mean_centered_sums[i,:,:]/(label_counts[i] - 1) for i in range(K)]
 
         final_labels = np.zeros(n)
 
