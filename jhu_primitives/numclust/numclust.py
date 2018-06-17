@@ -16,6 +16,7 @@ from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+from sklearn.mixture import GaussianMixture
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -25,34 +26,7 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     #hp = hyperparams.Hyperparameter[None](default = None)
-    hp = None
-
-def file_path_conversion(abs_file_path, uri="file"):
-    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
-    path_sep = file_path[0]
-    file_path = file_path[1:]  # Remove initial separator
-    if len(file_path) == 0:
-        print("Invalid file path: len(file_path) == 0")
-        return
-
-    s = ""
-    if path_sep == "/":
-        s = file_path
-    elif path_sep == "\\":
-        splits = file_path.split("\\")
-        data_folder = splits[-1]
-        for i in splits:
-            if i != "":
-                s += "/" + i
-    else:
-        print("Unsupported path separator!")
-        return
-
-    if uri == "file":
-        return "file://localhost" + s
-    else:
-        return local_drive + ":" + s
-
+    max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
 class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -103,26 +77,42 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
-        Select the number of clusters
-
-        **Positional Arguments:**
-
-        X:
-            - Data matrix
+        Inputs
+            D - n x d feature matrix
+        Return
+            An array with the max BIC and AIC values for each number of clusters (1, .., max_clusters)
         """
         
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "numclust.interface.R")
-        cmd = """
-        source("%s")
-        fn <- function(X) {
-            numclust.interface(X)
-        }
-        """ % path
+        if type(inputs) not np.ndarray:
+            return
 
-        #result = np.array(robjects.r(cmd)(inputs)[0])
-        result = np.array(robjects.r(cmd)(inputs))
+        max_clusters = self.hyperparams['max_clusters']
 
-        outputs = container.ndarray(result)
+        cov_types = ['full', 'tied', 'diag', 'spherical']
+
+        example = ('num_clust', 'BIC', 'AIC')
+
+        results = np.array(example)
+
+        for i in range(1, max_clusters + 1):
+
+            temp_max_BIC, temp_max_AIC = 0, 0
+            for k in cov_types
+                clf = GaussianMixture(n_components=i, 
+                                    covariance_type=k)
+
+                clf.fit(inputs)
+
+                temp_BIC, temp_AIC = clf.bic(inputs), clf.aic(inputs)
+
+                if temp_BIC > temp_max_BIC:
+                    temp_max_BIC = temp_BIC
+
+                if temp_AIC > temp_max_AIC:
+                    temp_max_AIC = temp_AIC
+
+            results.append((i, temp_max_BIC, temp_max_AIC))
+
+        outputs = container.ndarray(results)
 
         return base.CallResult(outputs)
