@@ -104,7 +104,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
             - The number of clusters in which to assign the data
         """
 
-        if type(inputs) not np.ndarray:
+        if type(inputs) != np.ndarray:
             return
 
         max_clusters = self.hyperparams['max_clusters']
@@ -118,7 +118,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         cov_type_likelihood_max = ""
 
         for i in range(1, max_clusters + 1):
-            for k in cov_types
+            for k in cov_types:
                 clf = GaussianMixture(n_components=i, 
                                     covariance_type=k)
 

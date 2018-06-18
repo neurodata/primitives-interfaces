@@ -83,7 +83,7 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
             An array with the max BIC and AIC values for each number of clusters (1, .., max_clusters)
         """
         
-        if type(inputs) not np.ndarray:
+        if type(inputs) != np.ndarray:
             return
 
         max_clusters = self.hyperparams['max_clusters']
@@ -97,7 +97,7 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         for i in range(1, max_clusters + 1):
 
             temp_max_BIC, temp_max_AIC = 0, 0
-            for k in cov_types
+            for k in cov_types:
                 clf = GaussianMixture(n_components=i, 
                                     covariance_type=k)
 

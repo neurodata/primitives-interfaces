@@ -32,7 +32,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.LargestConnectedComponent',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['spectral clustering'],
+        'keywords': ['graphs', 'connected', 'largest connected component', 'graph'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -62,16 +62,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             'package': 'libpcre3-dev',
             'version': '2.9.4'
             },
-#            {
-#            'type': 'UBUNTU',
-#            'package': 'r-base-dev',
-#            'version': '3.4.2'
-#            },
-#            {
-#            'type': 'UBUNTU',
-#            'package': 'r-recommended',
-#            'version': '3.4.2'
-#            },
             {
             'type': 'PIP',
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=jhu_primitives'.format(
@@ -98,47 +88,33 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
         Input
-            g: an n x n matrix, n x 2 edge list, n x 3 edge list, a networkx Graph, or igraph Graph 
+            G: an n x n matrix or a networkx Graph 
         Return
             The largest connected component of g
 
         """
 
-        g = inputs
+        G = inputs
 
-        if type(g) == list:
-            g = igraph.Graph(g)
+        if type(G) == igraph.Graph:
+            raise TypeError("Networkx graphs or n x n numpy arrays only")
 
-        if type(g) == numpy.ndarray:
-            if g.shape[0] == g.shape[1]: # n x n matrix
-                g = networkx.Graph(g) # convert to networkx graph to be able to extract edge list 
-            elif g.shape[1] == 2: # n x 2 matrix
-                g = igraph.Graph(list(g))
-            else:
-                print("Neither n x n nor n x 2. Please submit a square matrix or edge list.")
-                return
+        if type(G) == numpy.ndarray:
+            if G.ndim == 2:
+                if G.shape[0] == G.shape[1]: # n x n matrix
+                    G = networkx.Graph(G)
+                else:
+                    raise TypeError("Networkx graphs or n x n numpy arrays only") 
                 
-        if type(g) == networkx.classes.graph.Graph: # networkx graph
-            g = igraph.Graph(list(g.edges)) # convert to igraph graph, find the clusters
-            
-        if type(g) == igraph.Graph: # igraph graph
-            components = g.clusters()
-            components_len = [len(components[i]) for i in range(len(components))] # find lengths of components (faster way?)
-            largest_component = components[numpy.argmax(components_len)]
+        if type(G) == networkx.classes.graph.Graph: # networkx graph
+            g = igraph.Graph(list(G.edges)) # convert to igraph graph, find the clusters
         else:
-            print("Unsupported graph type")
-            return
+            raise TypeError("Networkx graphs or n x n numpy arrays only")
+            
+        components = g.clusters()
+        components_len = [len(components[i]) for i in range(len(components))] # find lengths of components (faster way?)
+        largest_component = components[numpy.argmax(components_len)]
+        
+        G_connected = G.subgraph(largest_component).copy()
 
-        g_subgraph = g.subgraph(largest_component)
-
-        g_subgraph_edges = g_subgraph.get_edgelist()
-
-        g_subgraph_nx = networkx.DiGraph(g_subgraph_edges)
-
-        g_subgraph_nx = networkx.Graph(g_subgraph_nx)
-
-        result = numpy.array(g_subgraph_nx)
-
-        outputs = container.ndarray(result)
-
-        return base.CallResult(outputs)
+        return base.CallResult(G_connected)
