@@ -98,9 +98,6 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         Returns
             labels - Class labels for each unlabeled vertex
         """
-
-        if type(inputs) not np.ndarray:
-            return
         
         K = self.hyperparams['number_of_clusters']
         seeds = self.hyperparams['seeds']
@@ -126,11 +123,20 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
             clf = GaussianMixture(n_components = K,
                             covariance_type = cov_type_likelihood_max)
+
+            print(clf)
+
             clf.fit(inputs)
+
+            print(clf)
 
             predictions = clf.predict(inputs)
 
+            print(predictions)
+
             outputs = container.ndarray(predictions)
+
+            print("unsupervised return")
 
             return base.CallResult(outputs)
 
@@ -162,6 +168,7 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         estimated_cov = [mean_centered_sums[i,:,:]/(label_counts[i] - 1) for i in range(K)]
 
         final_labels = np.zeros(n)
+        print(final_labels)
 
         for i in range(n):
             if i not in seeds:
@@ -171,6 +178,10 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             else:
                 final_labels[i] = labels[i]
 
-        outputs = container.ndarray(labels)
+        print(final_labels)
+
+        outputs = container.ndarray(final_labels)
+
+        print("supervised return")
 
         return base.CallResult(outputs)

@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 
 __all__ = ["AdjacencySpectralEmbedding",
-           "LaplacianSpectralEmbedding", "DimensionSelection",
+           "LaplacianSpectralEmbedding", "DimensionSelection", "GaussianClassification",
            "GaussianClustering", "LargestConnectedComponent","NonParametricClustering",
            "NumberOfClusters", "OutOfCoreAdjacencySpectralEmbedding", "PassToRanks",
            "SpectralGraphClustering", "SeededGraphMatching",
@@ -11,6 +11,7 @@ __all__ = ["AdjacencySpectralEmbedding",
 from .ase import AdjacencySpectralEmbedding
 from .lse import LaplacianSpectralEmbedding
 from .dimselect import DimensionSelection
+from .gclass import GaussianClassification
 from .gclust import GaussianClustering
 from .lcc import LargestConnectedComponent
 from .nonpar import NonParametricClustering
