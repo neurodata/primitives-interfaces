@@ -104,23 +104,20 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
             - The number of clusters in which to assign the data
         """
 
-        if type(inputs) != np.ndarray:
-            return
-
         max_clusters = self.hyperparams['max_clusters']
 
         cov_types = ['full', 'tied', 'diag', 'spherical']
 
-        BIC_values = nd.array(shape = (max_clusters, len(cov_types)))
+        BIC_values = np.zeros(shape = (max_clusters, len(cov_types)))
 
         BIC_max = 0
         cluster_likelihood_max = 0
         cov_type_likelihood_max = ""
 
         for i in range(1, max_clusters + 1):
-            for k in cov_types:
+            for k in range(len(cov_types)):
                 clf = GaussianMixture(n_components=i, 
-                                    covariance_type=k)
+                                    covariance_type=cov_types[k])
 
                 clf.fit(inputs)
 
@@ -138,5 +135,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         predictions = clf.predict(inputs)
 
         outputs = container.ndarray(predictions)
+
+        print("return")
 
         return base.CallResult(outputs)

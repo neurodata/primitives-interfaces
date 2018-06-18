@@ -5,21 +5,24 @@
 # Email: disa@jhu.edu
 # Copyright (c) 2017. All rights reserved.
 
-from rpy2 import robjects
+
 from typing import Sequence, TypeVar, Union, Dict
+import networkx
+import igraph
+from rpy2 import robjects
+import rpy2.robjects.numpy2ri
+robjects.numpy2ri.activate()
 import os
+
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 import numpy as np
 from d3m import utils, container
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+
 from ..utils.util import file_path_conversion
-import networkx
-import igraph
-import rpy2.robjects as ro
-import rpy2.robjects.numpy2ri
-ro.numpy2ri.activate()
+
 
 Inputs = container.matrix
 Outputs = container.ndarray
@@ -121,15 +124,14 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         if type(G) == networkx.classes.graph.Graph:
             G = networkx.to_numpy_array(G)
 
-        A = ro.Matrix(G) 
-        ro.r.assign("A", A)
+        A = robjects.Matrix(G) 
+        robjects.r.assign("A", A)
 
         embedding_dimension = self.hyperparams['embedding_dimension']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "ase.interface.R")
         path = file_path_conversion(path, uri = "")
-        print(path)
         
         cmd = """
         source("%s")

@@ -3,21 +3,22 @@
 # lse.py
 # Copyright (c) 2017. All rights reserved.
 
-from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
-
+from rpy2 import robjects
+import rpy2.robjects.numpy2ri
+rpy2.robjects.numpy2ri.activate()
+import numpy as np
+import networkx
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-import numpy as np
-
-
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
-
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+
+from ..utils.util import file_path_conversion
 
 Inputs = container.matrix
 Outputs = container.ndarray
@@ -107,20 +108,28 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         dim:
             - The number of dimensions in which to embed the data
         """
+        G = inputs
 
-        max_dimension = self.hyperparams['max_dimension']
+        if type(G) == networkx.classes.graph.Graph:
+            G = networkx.to_numpy_array(G)
+
+        A = robjects.Matrix(G) 
+        robjects.r.assign("A", A)
+
+        embedding_dimension = self.hyperparams['embedding_dimension']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "lse.interface.R")
+        path = file_path_conversion(path, uri = "")
+
         cmd = """
         source("%s")
-        fn <- function(inputs, max_dimension) {
-            lse.interface(inputs, max_dimension)
+        fn <- function(inputs, embedding_dimension) {
+            lse.interface(inputs, embedding_dimension)
         }
         """ % path
-        #print(cmd)
 
-        result = robjects.r(cmd)(inputs, max_dimension)
+        result = robjects.r(cmd)(A, embedding_dimension)
         
         vectors = container.ndarray(result[0])
         eig_values = container.ndarray(result[1])

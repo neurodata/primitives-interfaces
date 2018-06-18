@@ -124,28 +124,21 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             clf = GaussianMixture(n_components = K,
                             covariance_type = cov_type_likelihood_max)
 
-            print(clf)
-
             clf.fit(inputs)
-
-            print(clf)
 
             predictions = clf.predict(inputs)
 
-            print(predictions)
-
             outputs = container.ndarray(predictions)
-
-            print("unsupervised return")
 
             return base.CallResult(outputs)
 
         unique_labels, label_counts = np.unique(labels, return_counts = True)
 
-        pi = labels_counts/len(seeds)
+        pi = label_counts/len(seeds)
 
         for i in range(len(labels)): # reset labels to [0,.., K-1]
-            labels[i] = int(unique_labels.index(i))
+            itemindex = np.where(unique_labels==labels[i])[0][0]
+            labels[i] = int(itemindex)
 
         x_sums = np.zeros(shape = (K, d))
 
@@ -165,16 +158,27 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             mcfv_squared = temp_feature_vector.T.dot(temp_feature_vector)
             mean_centered_sums[temp_label, :, :] += mcfv_squared
 
-        estimated_cov = [mean_centered_sums[i,:,:]/(label_counts[i] - 1) for i in range(K)]
+        estimated_cov = np.zeros(shape = (K, d, d))
+        for i in range(K):
+            estimated_cov[i] = mean_centered_sums[i,:,:]/(label_counts[i] - 1)
 
         final_labels = np.zeros(n)
-        print(final_labels)
+
+        print(estimated_cov.shape, type(estimated_cov))
 
         for i in range(n):
             if i not in seeds:
-                weighted_pdfs = [pi[i]*MVN(inputs[unlabeled,:], estimated_means[i], estimated_cov[i, :, :]) for i in range(K)]
-                label = argmax(weighted_pdfs)
-                final_labels[i] = label
+                weighted_pdfs = np.zeros(K)
+                for j in range(K):
+                    try:
+                        #weighted_pdfs = [pi[j]*MVN(inputs[i,:], estimated_means[j], estimated_cov[j, :, :]) for j in range(K)]
+                        weighted_pdf_temp = pi[j]*MVN(inputs[i,:], estimated_means[j], estimated_cov[j, :, :]) # avoiding non-PD covariances...
+                        weighted_pdfs[j] = weighted_pdf_temp
+                        label = argmax(weighted_pdfs)
+                        final_labels[i] = label
+                    except:
+                        weighted_pdfs[j] = 0
+
             else:
                 final_labels[i] = labels[i]
 
