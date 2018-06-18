@@ -186,6 +186,4 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
         outputs = container.ndarray(final_labels)
 
-        print("supervised return")
-
         return base.CallResult(outputs)
