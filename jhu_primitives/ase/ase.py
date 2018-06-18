@@ -17,6 +17,9 @@ from d3m.primitive_interfaces.base import CallResult
 from ..utils.util import file_path_conversion
 import networkx
 import igraph
+import rpy2.robjects as ro
+import rpy2.robjects.numpy2ri
+ro.numpy2ri.activate()
 
 Inputs = container.matrix
 Outputs = container.ndarray
@@ -37,7 +40,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         'version': "0.3.0",
         'name': "jhu.ase",
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['ase primitive', 'graph', 'spectral', 'embedding', 'spectral method', 'adjacency'],
+        'keywords': ['ase primitive', 'graph', 'spectral', 'embedding', 'spectral method', 'adjacency', 'matrix'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -114,11 +117,19 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             The eigenvectors [0] and values [1] corresponding to G's SVD
         """
 
+        G = inputs
+        if type(G) == networkx.classes.graph.Graph:
+            G = networkx.to_numpy_array(G)
+
+        A = ro.Matrix(G) 
+        ro.r.assign("A", A)
+
         embedding_dimension = self.hyperparams['embedding_dimension']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "ase.interface.R")
-        path = file_path_conversion(path)
+        path = file_path_conversion(path, uri = "")
+        print(path)
         
         cmd = """
         source("%s")
@@ -127,7 +138,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         }
         """ % path
 
-        result = robjects.r(cmd)(inputs, embedding_dimension)
+        result = robjects.r(cmd)(A, embedding_dimension)
         vectors = container.ndarray(result[0])
         eig_values = container.ndarray(result[1])
 

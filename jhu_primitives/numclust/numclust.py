@@ -38,7 +38,7 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.NumberOfClusters',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['number clustering'],
+        'keywords': ['number clustering', 'gaussian clustering', 'model selection', 'clusters', 'community', 'clustering', 'cluster selection'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -82,17 +82,18 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         Return
             An array with the max BIC and AIC values for each number of clusters (1, .., max_clusters)
         """
-        
-        if type(inputs) != np.ndarray:
-            return
 
         max_clusters = self.hyperparams['max_clusters']
 
         cov_types = ['full', 'tied', 'diag', 'spherical']
 
-        example = ('num_clust', 'BIC', 'AIC')
+        example = ('number of clusters', 'BIC', 'AIC')
 
-        results = np.array(example)
+        BICs = []
+
+        AICs = []
+
+        results = [example]
 
         for i in range(1, max_clusters + 1):
 
@@ -112,7 +113,30 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
                     temp_max_AIC = temp_AIC
 
             results.append((i, temp_max_BIC, temp_max_AIC))
+            BICs.append(temp_max_BIC)
+            AICs.append(temp_max_AIC)
 
-        outputs = container.ndarray(results)
+        BICs2 = list(BICs)
+        AICs2 = list(AICs)
+
+        KBICs = []
+
+        KAICs = []
+
+        while len(BICs2) > 0:
+            temp, temp_index = max(BICs2), np.argmax(BICs2)
+            index = BICs.index(temp)
+            KBICs.append(index + 1)
+            BICs2.pop(temp_index)
+
+            temp, temp_index = max(AICs2), np.argmax(AICs2)
+            index = AICs.index(temp)
+            KAICs.append(index + 1)
+            AICs2.pop(temp_index)
+
+        KBICs = ['Ranked number of clusters (BIC)'] + KBICs
+        KAICs = ['Ranked number of clusters (AIC)'] + KAICs
+
+        outputs = [KBICs, KAICs, results]
 
         return base.CallResult(outputs)
