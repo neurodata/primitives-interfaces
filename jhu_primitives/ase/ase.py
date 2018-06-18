@@ -14,6 +14,7 @@ from d3m import utils, container
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+from ..utils.util import file_path_conversion
 import networkx
 import igraph
 
@@ -117,13 +118,14 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "ase.interface.R")
+        path = file_path_conversion(path)
+        
         cmd = """
         source("%s")
         fn <- function(inputs, embedding_dimension) {
             ase.interface(inputs, embedding_dimension)
         }
         """ % path
-
 
         result = robjects.r(cmd)(inputs, embedding_dimension)
         vectors = container.ndarray(result[0])
