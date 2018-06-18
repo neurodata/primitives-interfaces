@@ -36,7 +36,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         'version': "0.3.0",
         'name': "jhu.ase",
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['ase primitive'],
+        'keywords': ['ase primitive', 'graph', 'spectral', 'embedding', 'spectral method', 'adjacency'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -104,50 +104,32 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 #    def embed(self, *, g : JHUGraph, dim: int):
         """
         Perform Adjacency Spectral Embedding on a graph
-        TODO: YP description
 
-        **Positional Arguments:**
+        Inputs
+            G - The graph on which to perform ASE.
+            embedding_dimension - The dimension to embed in.
 
-        g:
-            - Graph in JHUGraph format
-
-        **Optional Arguments:**
-
-        dim:
-            - The number of dimensions in which to embed the data
+        Return
+            The eigenvectors [0] and values [1] corresponding to G's SVD
         """
 
         embedding_dimension = self.hyperparams['embedding_dimension']
 
-        g = inputs
-
-        if type(g) == networkx.graph.Graph:
-            return
-
-
-        if type(g) == np.ndarray:
-            if g.ndim == 2:
-                if g.shape[0] == g.shape[1]: # n x n 
-                    g = igraph.Graph.Adjacency((A > 0).tolist())
-                elif g.shape[1] == 2: # (unweighted) edge list
-                    g = igraph.Graph(list(g))
-                elif g.shape[1] == 3: # (weighted) edge list
-                    edges = g[:, :2]
-                    weights = g[:,2]
-                    g = igraph.Graph(edges = edges, weight = weights)
+        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                "ase.interface.R")
+        cmd = """
+        source("%s")
+        fn <- function(inputs, embedding_dimension) {
+            ase.interface(inputs, embedding_dimension)
+        }
+        """ % path
 
 
-
-
-
-
-        result = robjects.r(cmd)(inputs, max_dimension)
+        result = robjects.r(cmd)(inputs, embedding_dimension)
         vectors = container.ndarray(result[0])
         eig_values = container.ndarray(result[1])
 
         return base.CallResult([vectors, eig_values])
-        
-
 
     def set_training_data(self) -> None:  # type: ignore
         """
