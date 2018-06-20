@@ -97,14 +97,17 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
         for i in range(1, max_clusters + 1):
 
-            temp_max_BIC, temp_max_AIC = 0, 0
+            clf = GaussianMixture(n_components=i, 
+                                    covariance_type='spherical')
+            clf.fit(inputs)
+            temp_max_BIC, temp_max_AIC = -clf.bic(inputs), -clf.aic(inputs)
             for k in cov_types:
                 clf = GaussianMixture(n_components=i, 
                                     covariance_type=k)
 
                 clf.fit(inputs)
 
-                temp_BIC, temp_AIC = clf.bic(inputs), clf.aic(inputs)
+                temp_BIC, temp_AIC = -clf.bic(inputs), -clf.aic(inputs)
 
                 if temp_BIC > temp_max_BIC:
                     temp_max_BIC = temp_BIC

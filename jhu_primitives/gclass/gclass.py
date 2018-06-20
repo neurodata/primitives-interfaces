@@ -93,6 +93,8 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
+        Gaussian classification (i.e. seeded gaussian "clustering").
+
         Inputs
             D - An n x d feature numpy array
         Returns
@@ -104,6 +106,8 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         labels = self.hyperparams['labels']
 
         n, d = inputs.shape
+
+        ENOUGH_SEEDS = True # For full estimation
 
         if len(seeds) == 0: # run EM if no seeds are given
             cov_types = ['full', 'tied', 'diag', 'spherical']
@@ -134,6 +138,11 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
         unique_labels, label_counts = np.unique(labels, return_counts = True)
 
+        for i in range(K):
+            if label_counts[i] < d*(d + 1)/2:
+                ENOUGH_SEEDS = False
+                break
+
         pi = label_counts/len(seeds)
 
         for i in range(len(labels)): # reset labels to [0,.., K-1]
@@ -154,35 +163,50 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         for i in range(len(seeds)):
             temp_feature_vector = inputs[int(seeds[i]), :]
             temp_label = labels[i]
-            mean_centered_feature_vector = temp_feature_vector - estimated_means[temp_label]
-            mcfv_squared = temp_feature_vector.T.dot(temp_feature_vector)
+            mean_centered_feature_vector = temp_feature_vector - estimated_means[labels[i]]
+            temp_feature_vector = np.reshape(temp_feature_vector, (len(temp_feature_vector), 1))
+            mcfv_squared = temp_feature_vector.dot(temp_feature_vector.T)
             mean_centered_sums[temp_label, :, :] += mcfv_squared
+        
+        if ENOUGH_SEEDS:
+            estimated_cov = np.zeros(shape = (K, d, d))
+            for i in range(K):
+                estimated_cov[i] = mean_centered_sums[i,:]/(label_counts[i] - 1)
+        else:
+            estimated_cov = np.zeros(shape = (d,d))
+            for i in range(K):
+                estimated_cov += mean_centered_sums[i, :]*(label_counts[i] - 1)
+            estimated_cov = estimated_cov / (n - d)
 
-        estimated_cov = np.zeros(shape = (K, d, d))
-        for i in range(K):
-            estimated_cov[i] = mean_centered_sums[i,:,:]/(label_counts[i] - 1)
+        PD = True
+        if ENOUGH_SEEDS:
+            for i in range(K):
+                try:
+                    eig_values = np.linalg.svd(estimated_cov[i, :, :])[1]
+                    if len(eig_values) > len(eig_values[eig_values > 0]):
+                        PD = False
+                        break
+                except:
+                    PD = False
+                    break
 
         final_labels = np.zeros(n)
 
-        print(estimated_cov.shape, type(estimated_cov))
-
-        for i in range(n):
-            if i not in seeds:
-                weighted_pdfs = np.zeros(K)
-                for j in range(K):
-                    try:
-                        #weighted_pdfs = [pi[j]*MVN(inputs[i,:], estimated_means[j], estimated_cov[j, :, :]) for j in range(K)]
-                        weighted_pdf_temp = pi[j]*MVN(inputs[i,:], estimated_means[j], estimated_cov[j, :, :]) # avoiding non-PD covariances...
-                        weighted_pdfs[j] = weighted_pdf_temp
-                        label = argmax(weighted_pdfs)
-                        final_labels[i] = label
-                    except:
-                        weighted_pdfs[j] = 0
-
-            else:
-                final_labels[i] = labels[i]
-
-        print(final_labels)
+        if PD and ENOUGH_SEEDS:
+            for i in range(n): 
+                if i not in seeds:
+                    weighted_pdfs = np.array([pi[j]*MVN.pdf(inputs[i,:], estimated_means[j], estimated_cov[j, :, :]) for j in range(K)]) 
+                    label = np.argmax(weighted_pdfs)
+                    final_labels[i] = label
+        else:
+            for i in range(n):
+                if i not in seeds:
+                    weighted_pdfs = np.array([pi[j]*MVN.pdf(inputs[i,:], estimated_means[j], estimated_cov) for j in range(K)])
+                    label = np.argmax(weighted_pdfs)
+                    final_labels[i] = label
+        
+        for i in range(len(seeds)):
+            final_labels[int(seeds[i])] = labels[i]
 
         outputs = container.ndarray(final_labels)
 

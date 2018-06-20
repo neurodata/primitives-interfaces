@@ -87,7 +87,7 @@ def profile_likelihood_maximization(U, n_elbows, threshold):
                 elbow = d
             d += 1
         if len(elbows) == 0:
-            elbows.append(elbow - 1)
+            elbows.append(elbow)
         else:
             elbows.append(elbow + elbows[-1])
         U = U[elbow:]
@@ -98,7 +98,7 @@ def profile_likelihood_maximization(U, n_elbows, threshold):
     if len(U) == 0:
         return np.array(elbows)
     else:
-        elbows.append(n - 1)
+        elbows.append(n)
         return np.array(elbows)
 
 class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
@@ -178,7 +178,6 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         """
 
         U = inputs
-        print(type(U))
 
         if type(U) == list:
             U = np.array(X)

@@ -27,7 +27,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    max_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types=[
+    embedding_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 

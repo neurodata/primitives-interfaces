@@ -26,7 +26,7 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-
+    seeds = hyperparams.Hyperparameter[int]
 class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({

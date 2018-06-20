@@ -122,7 +122,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         G = inputs
         if type(G) == networkx.classes.graph.Graph:
-            G = networkx.to_numpy_array(G)
+            if len(G) < 10000:
+                G = networkx.to_numpy_array(G)
 
         A = robjects.Matrix(G) 
         robjects.r.assign("A", A)
