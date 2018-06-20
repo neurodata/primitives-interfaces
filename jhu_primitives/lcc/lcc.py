@@ -76,9 +76,9 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # ],
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
-        'algorithm_types': [
-            "GAUSSIAN_PROCESS"
-        ],
+        #'algorithm_types': [
+        #    "GAUSSIAN_PROCESS"
+        #],
         'primitive_family': "GRAPH_CLUSTERING"
     })
 

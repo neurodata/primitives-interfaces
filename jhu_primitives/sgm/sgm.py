@@ -16,6 +16,7 @@ from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
+from ..utils.util import file_path_conversion
 
 
 
@@ -83,9 +84,9 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "FRANK_WOLFE_ALGORITHM"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "GRAPH_MATCHING"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
@@ -117,6 +118,7 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "sgm.interface.R")
+        path = file_path_conversion(path,uri = "")
         cmd = """
         source("%s")
         fn <- function(g1, g2, seeds) {
