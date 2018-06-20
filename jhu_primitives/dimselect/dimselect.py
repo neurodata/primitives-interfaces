@@ -156,7 +156,7 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "FEATURE_SELECTION"
+            "LOW_RANK_MATRIX_APPROXIMATIONS"
         ],
         'primitive_family': "FEATURE_SELECTION"
     })

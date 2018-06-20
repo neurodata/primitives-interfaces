@@ -122,7 +122,7 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         cmd = """
         source("%s")
         fn <- function(g1, g2, seeds) {
-            sgm.interface(g1, g2, seeds)
+            sgm.interface(g1, g2, seeds,reps = 100)
         }
         """ % path
         #print(cmd)
