@@ -107,6 +107,10 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
         n, d = inputs.shape
 
+        if K < d:
+            inputs = inputs[:, :K].copy()
+            d = K
+
         ENOUGH_SEEDS = True # For full estimation
 
         if len(seeds) == 0: # run EM if no seeds are given
