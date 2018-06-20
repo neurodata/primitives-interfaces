@@ -12,6 +12,19 @@ if(!require(igraph)) {
     suppressMessages(library(igraph))
 }
 
+rsp<-function(n,g){
+  s <- sample(n);s
+  I <- diag(n);I
+  P <- I[s,];P
+  alpha <- runif(1,0,g);alpha
+  J <- matrix(1,n,n); # J
+  bc <- (1/n)*J #this is the barycenter
+  #    bc
+  P <- (1-alpha)*bc + alpha*P
+  
+  return(P)
+}  
+
 sgm <- function (A,B,seeds,hard=TRUE,pad=0,start="barycenter",maxiter=20){
   gamma <- 0.1
   nv1<-nrow(A)
@@ -32,6 +45,11 @@ sgm <- function (A,B,seeds,hard=TRUE,pad=0,start="barycenter",maxiter=20){
     B.ind <- c(seeds[,2], setdiff(1:nv2, seeds[,2]))
     AA <- A[A.ind, A.ind]
     BB <- B[B.ind, B.ind]
+    mappingA <- cbind(original=c(1:nv1),A.ind)
+    mappingB <- cbind(original=c(1:nv2),B.ind)
+    mappingA <- mappingA[order(A.ind),]
+    mappingB <- mappingB[order(B.ind),]
+    #now we have the mapping stored
     
     m <- nrow(seeds)
     if (hard==TRUE) {
@@ -128,6 +146,14 @@ sgm2 <- function (A,B,seeds,hard=TRUE,pad=0,start="barycenter",maxiter=20){
   }
   
   P <- sgm.ordered(AA,BB,m,S,pad,maxiter)
+  if (!is.null(seeds)) {
+     permutation_matrix_B <- as.matrix(Matrix::sparseMatrix(j= mappingB[,'B.ind'],i = mappingB[,'original'],x=1))
+     permutation_matrix_A <- as.matrix(Matrix::sparseMatrix(j= mappingA[,'A.ind'],i = mappingA[,'original'],x=1))
+     #B_new <- BB[mappingB[,'original'],mappingB[,'original']]
+     P$P <- t(permutation_matrix_A) %*% P$P %*% permutation_matrix_B
+ }
+  
+  
   return(P)
 }
 
@@ -1037,12 +1063,12 @@ parallelMatch <- function(graph) {
 
 
 
-sgm.interface <- function(g1, g2, S)
+sgm.interface <- function(g1, g2, S,reps = 1)
 {
-    if (class(g1) == "dgCMatrix") {
+    if (class(g1) == "dgCMatrix" || class(g1) == "matrix") {
         g1 = igraph::graph_from_adjacency_matrix(g1)
     }
-    if (class(g2) == "dgCMatrix") {
+    if (class(g2) == "dgCMatrix" || class(g2) == "matrix") {
         g2 = igraph::graph_from_adjacency_matrix(g2)
     }
 
@@ -1061,6 +1087,12 @@ sgm.interface <- function(g1, g2, S)
         S <- S[,c(2,1)]
     }
 
-    out <- sgm(A2, A1, S)$P
+    
+    out <- matrix(0,max(n,m),max(n,m))
+    for (j in c(1:reps)) {
+          out <- sgm(A2,A1,S,start = "not")$P + out
+    }
+    out <- out/reps
+   
     return(out)
 }

@@ -14,6 +14,8 @@ from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+import rpy2.robjects.numpy2ri
+rpy2.robjects.numpy2ri.activate()
 
 
 
@@ -109,6 +111,9 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         """
 
         seeds = self.hyperparams['seeds']
+        nr,nc = seeds.shape
+        seeds = robjects.r.matrix(seeds, nrow=nr, ncol=nc)
+        robjects.r.assign("seeds",seeds)
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "sgm.interface.R")
