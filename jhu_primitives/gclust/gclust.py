@@ -26,7 +26,9 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-    seeds = hyperparams.Hyperparameter[int]
+    seeds = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
+    labels = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
+
 class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
@@ -105,34 +107,94 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         """
 
         max_clusters = self.hyperparams['max_clusters']
+        seeds = self.hyperparams['seeds']
+        seeds = np.array([int(seeds[i]) for i in range(len(seeds))])
+
+        labels = self.hyperparams['labels']
+        labels = np.array([int(labels[i]) for i in range(len(labels))])
 
         cov_types = ['full', 'tied', 'diag', 'spherical']
 
-        BIC_values = np.zeros(shape = (max_clusters, len(cov_types)))
+        if len(seeds) == 0:
+            clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
+            clf.fit(inputs)
+            BIC_max = clf.bic(inputs)
+            cluster_likelihood_max = 1
+            cov_type_likelihood_max = "spherical"
 
-        BIC_max = 0
-        cluster_likelihood_max = 0
-        cov_type_likelihood_max = ""
+            for i in range(1, max_clusters + 1):
 
-        for i in range(1, max_clusters + 1):
-            for k in range(len(cov_types)):
-                clf = GaussianMixture(n_components=i, 
-                                    covariance_type=cov_types[k])
+                for k in cov_types:
+                    clf = GaussianMixture(n_components=i, 
+                                    covariance_type=k)
 
-                clf.fit(inputs)
+                    clf.fit(inputs)
 
-                current_bic = clf.bic(inputs)
+                    current_bic = clf.bic(inputs)
 
-                if current_bic > BIC_max:
-                    BIC_max = current_bic
-                    cluster_likelihood_max = i
-                    cov_type_likelihood_max = cov_types[k]
+                    if current_bic > BIC_max:
+                        BIC_max = current_bic
+                        cluster_likelihood_max = i
+                        cov_type_likelihood_max = k
 
-        clf = GaussianMixture(n_components = cluster_likelihood_max,
+            clf = GaussianMixture(n_components = cluster_likelihood_max,
                             covariance_type = cov_type_likelihood_max)
-        clf.fit(inputs)
+            clf.fit(inputs)
 
-        predictions = clf.predict(inputs)
+            predictions = clf.predict(inputs)
+
+        else:
+            for i in range(1, max_clusters + 1):
+                clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
+                clf.fit(inputs[seeds, :])
+                BIC_max = clf.bic(inputs[seeds, :])
+                cluster_likelihood_max = 1
+                cov_type_likelihood_max = "spherical"
+
+                for k in cov_types:
+                    clf = GaussianMixture(n_components=i, 
+                                    covariance_type=k)
+
+                    clf.fit(inputs)
+
+                    current_bic = clf.bic(inputs[seeds, :])
+
+                    if current_bic > BIC_max:
+                        BIC_max = current_bic
+                        cluster_likelihood_max = i
+                        cov_type_likelihood_max = k
+
+                estimated_clf = GaussianMixture(n_components = cluster_likelihood_max, 
+                                                covariance_type = cov_type_likelihood_max)
+
+                estimated_clf.fit(inputs[seeds, :])
+                estimated_labels = estimated_clf.predict(inputs[seeds, :])
+
+                estimated_K = len(np.unique(estimated_labels))
+                true_labels = [[] for i in range(estimated_K)]
+
+                for i in range(len(estimated_labels)):
+                    for k in range(estimated_K):
+                        if int(estimated_labels[i]) == k:
+                            true_labels[k].append(labels[i])
+
+                true_labels = [np.array(true_labels[i]) for i in range(estimated_K)]
+
+                label_mapping = -1*np.ones(estimated_K)
+
+                for i in range(estimated_K):
+                    temp_unique, temp_unique_counts = np.unique(true_labels[i])
+                    temp_counts_argmax = np.argmax(temp_unique_counts)
+                    label_mapping[i] = temp_unique[temp_counts_argmax]
+
+                estimated_K_labels = clf.predict(inputs)
+                applied_label_mapping = -1*np.ones(inputs.shape[0])
+
+                for i in range(estimated_K_labels):
+                    temp_label = int(estimated_K_labels[i])
+                    applied_label_mapping = label_mapping[temp_label]
+
+                predictions = applied_label_mapping
 
         outputs = container.ndarray(predictions)
 
