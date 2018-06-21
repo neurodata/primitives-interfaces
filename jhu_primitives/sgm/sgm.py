@@ -39,7 +39,7 @@ class Hyperparams(hyperparams.Hyperparams):
     )
 
 
-class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class SeededGraphMatching( TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -90,13 +90,14 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         self._training_dataset = None
 
 
-    def set_training_data(self,*,inputs: Inputs):
+    def set_training_data(self,*,inputs: Inputs) -> None:
         self._training_dataset = inputs
         #technically, this is unsupervised, as there is no fit function
         #instead, we just hang on to the training data and run produce with the two graphs and seeds
         #and use that to predict later on.
 
 
+    #UnsupervisedLearner
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         #produce takes the training dataset and runs seeded graph matching using the seeds
         #then predicts using the resulting permutation_matrix

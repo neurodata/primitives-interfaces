@@ -12,7 +12,7 @@ import igraph
 import networkx
 
 
-Inputs = container.ndarray
+Inputs = container.List
 Outputs = container.ndarray
 
 class Params(params.Params):
@@ -68,14 +68,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),),
             },
             ],
-        # URIs at which one can obtain code for the primitive, if available.
-        # 'location_uris': [
-        #     'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
-        #         git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-        #     ),
-        # ],
-        # Choose these from a controlled vocabulary in the schema. If anything is missing which would
-        # best describe the primitive, make a merge request.
         'algorithm_types': [
             "NONOVERLAPPING_COMMUNITY_DETECTION"
         ],
@@ -94,7 +86,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         """
 
-        G = inputs
+        G = inputs['0']
 
         if type(G) == igraph.Graph:
             raise TypeError("Networkx graphs or n x n numpy arrays only")
@@ -117,4 +109,5 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         
         G_connected = G.subgraph(largest_component).copy()
 
-        return base.CallResult(G_connected)
+
+        return base.CallResult(container.List([G_connected]))

@@ -3,7 +3,7 @@
 import argparse
 import os
 import jhu_primitives
-from . import SeededGraphMatchingPipeline
+from sgc_pipeline import SGC_pipeline
 
 def load_args():
     parser = argparse.ArgumentParser(description = "Output a pipeline's JSON")
@@ -20,7 +20,7 @@ def load_args():
 def main():
     pipeline_name = load_args()
 
-    pipeline = SeededGraphMatchingPipeline()
+    pipeline = SGC_pipeline()
     #for pipeline_class in sri.pipelines.all.get_pipelines():
     #    if (pipeline_class.__name__ == pipeline_name):
     #        pipeline = pipeline_class()
