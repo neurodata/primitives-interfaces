@@ -16,7 +16,7 @@ from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-
+from d3m.primitive_interfaces.base import CallResult
 from rpy2 import robjects
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
@@ -33,8 +33,8 @@ class Hyperparams(hyperparams.Hyperparams):
             default = .1,
             semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter']
     ),
-    reps = hyperparams.Hyperparams[int](
-            default = 100,
+    reps = hyperparams.Hyperparameter[int](
+            default = 1,
             semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter']
     )
 
@@ -80,10 +80,10 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
                 ),
         }],
         'algorithm_types': [
-            "FRANK_WOLFE_ALGORITHM"
+            metadata_module.PrimitiveAlgorithmType.FRANK_WOLFE_ALGORITHM
         ],
-        'primitive_family': "GRAPH_MATCHING"
-    })
+        'primitive_family': metadata_module.PrimitiveFamily.GRAPH_MATCHING
+       })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
@@ -101,12 +101,12 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         #produce takes the training dataset and runs seeded graph matching using the seeds
         #then predicts using the resulting permutation_matrix
 
-        permutation_matrix = numpy.asmatrix(self._seeded_graph_match(training_data=self._training_dataset))
+        permutation_matrix = np.asmatrix(self._seeded_graph_match(training_data=self._training_dataset))
         predictions = self._get_predictions(permutation_matrix=permutation_matrix,testing= inputs)
 
         return base.CallResult(predictions)
 
-    def _get_predictions(self, permutation_matrix: numpy.matrix, inputs: Inputs):
+    def _get_predictions(self,*, permutation_matrix: np.matrix, inputs: Inputs):
         testing = inputs['2']
 
         threshold = self.hyperparams['threshold']
@@ -139,7 +139,9 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         df = container.DataFrame({"d3mIndex": testing['d3mIndex'], "match": testing['match']})
         return df
 
-    def _seeded_graph_match(self,training_data = self._training_dataset):
+    def _seeded_graph_match(self,*,training_data = None):
+        if training_data is None:
+            training_data = self._training_dataset
         g1 = training_data['0']
         g2 = training_data['1']
         seeds = training_data['2']
