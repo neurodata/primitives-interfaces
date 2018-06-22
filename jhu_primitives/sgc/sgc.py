@@ -15,8 +15,11 @@ from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
-
-
+from .. import LargestConnectedComponent
+from .. import PassToRanks
+from .. import AdjacencySpectralEmbedding
+from .. import DimensionSelection
+from .. import GaussianClustering
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -80,9 +83,9 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "SPECTRAL_CLUSTERING"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "GRAPH_CLUSTERING"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
@@ -92,59 +95,36 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
         """
         Perform spectral graph clustering
 
-        **Positional Arguments:**
+        Inputs
+            n x 2, n x n
 
         inputs:
             - JHUGraph adjacency matrix
         """
 
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "sgc.interface.R")
-        cmd = """
-        source("%s")
-        fn <- function(inputs) {
-            sgc.interface(inputs)
-        }
-        """ % path
-        #print(cmd)
+        G = inputs
 
-        result = np.array(robjects.r(cmd)(inputs))
+        hp_lcc = LargestConnectedComponent.Hyperparams.defaults()
+        lcc = LargestConnectedComponent(hyerparams = hp_lcc).produce(inputs = G).value
 
-        outputs = container.ndarray(result)
+        hp_ptr = PassToRanks.Hyperparams.defaults()
+        ptr = PassToRanks(hyperparams = hp_ptr).produce(inputs = lcc).value
+
+        max_dim = min(100, len(ptr)/2) 
+        hp_ase = AdjacencySpectralEmbedding.Hyperparams({'embedding_dimension': max_dim})
+        ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = ptr).value
+
+        vectors = ase[0]
+        values = ase[1]
+
+        hp_dimselect = DimensionSelection.Hyperparams({'n_elbows': 2})
+        ds = DimensionSelection(hyperparams = hp_dimselect).produce(inputs = values).value
+
+        elbow_2 = ds[1]
+
+        hp_gclust = GaussianClustering.Hyperparams({'max_clusters': 30})
+        labels = GaussianClustering(hyperparams = hp_gclust).produce(inputs = vectors[:, elbow_2]).value
+
+        outputs = container.ndarray(labels)
 
         return base.CallResult(outputs)
-
-'''
-import os
-from rpy2 import robjects
-from typing import Sequence, TypeVar
-import numpy as np
-
-from primitive_interfaces.transformer import TransformerPrimitiveBase
-from jhu_primitives.core.JHUGraph import JHUGraph
-
-Input = JHUGraph
-Output = np.ndarray
-Params = TypeVar('Params')
-
-class SpectralGraphClustering(TransformerPrimitiveBase[Input, Output, Params]):
-    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
-        """
-        TODO: YP description
-
-        **Positional Arguments:**
-
-        g:
-            - A graph in R 'igraph' format
-        """
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "sgc.interface.R")
-        cmd = """
-        source("%s")
-        fn <- function(g) {
-            sgc.interface(g)
-        }
-        """ % path
-
-        return np.array(robjects.r(cmd)(inputs._object))
-'''

@@ -12,7 +12,7 @@ import igraph
 import networkx
 
 
-Inputs = container.ndarray
+Inputs = container.List
 Outputs = container.ndarray
 
 class Params(params.Params):
@@ -21,32 +21,6 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     #dim = hyperparams.Hyperparameter[None](default=None)
     dim = None
-
-def file_path_conversion(abs_file_path, uri="file"):
-    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
-    path_sep = file_path[0]
-    file_path = file_path[1:]  # Remove initial separator
-    if len(file_path) == 0:
-        print("Invalid file path: len(file_path) == 0")
-        return
-
-    s = ""
-    if path_sep == "/":
-        s = file_path
-    elif path_sep == "\\":
-        splits = file_path.split("\\")
-        data_folder = splits[-1]
-        for i in splits:
-            if i != "":
-                s += "/" + i
-    else:
-        print("Unsupported path separator!")
-        return
-
-    if uri == "file":
-        return "file://localhost" + s
-    else:
-        return local_drive + ":" + s
 
 class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -58,7 +32,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.LargestConnectedComponent',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['spectral clustering'],
+        'keywords': ['graphs', 'connected', 'largest connected component', 'graph','graph transformation','transformation'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -88,32 +62,14 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             'package': 'libpcre3-dev',
             'version': '2.9.4'
             },
-#            {
-#            'type': 'UBUNTU',
-#            'package': 'r-base-dev',
-#            'version': '3.4.2'
-#            },
-#            {
-#            'type': 'UBUNTU',
-#            'package': 'r-recommended',
-#            'version': '3.4.2'
-#            },
             {
             'type': 'PIP',
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=jhu_primitives'.format(
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),),
             },
             ],
-        # URIs at which one can obtain code for the primitive, if available.
-        # 'location_uris': [
-        #     'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
-        #         git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-        #     ),
-        # ],
-        # Choose these from a controlled vocabulary in the schema. If anything is missing which would
-        # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "GAUSSIAN_PROCESS"
+            "NONOVERLAPPING_COMMUNITY_DETECTION"
         ],
         'primitive_family': "GRAPH_CLUSTERING"
     })
@@ -123,50 +79,35 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
-        Input: g: an n x n matrix, n x 2 edge list, a networkx Graph, or igraph Graph 
-        Output: The largest connected component of g
+        Input
+            G: an n x n matrix or a networkx Graph 
+        Return
+            The largest connected component of g
 
         """
 
-        g = inputs
+        G = inputs['0']
 
-        if type(g) == list:
-            g = igraph.Graph(g)
+        if type(G) == igraph.Graph:
+            raise TypeError("Networkx graphs or n x n numpy arrays only")
 
-        if type(g) == numpy.ndarray:
-            if g.shape[0] == g.shape[1]: # n x n matrix
-                g = networkx.Graph(g) # convert to networkx graph to be able to extract edge list 
-            elif g.shape[1] == 2: # n x 2 matrix
-                g = igraph.Graph(list(g))
-            else:
-                print("Neither n x n nor n x 2. Please submit a square matrix or edge list.")
-                return
+        if type(G) == numpy.ndarray:
+            if G.ndim == 2:
+                if G.shape[0] == G.shape[1]: # n x n matrix
+                    G = networkx.Graph(G)
+                else:
+                    raise TypeError("Networkx graphs or n x n numpy arrays only") 
                 
-        if type(g) == networkx.classes.graph.Graph: # networkx graph
-            g = igraph.Graph(list(g.edges)) # convert to igraph graph, find the clusters
-            
-        if type(g) == igraph.Graph: # igraph graph
-            components = g.clusters()
-            components_len = [len(components[i]) for i in range(len(components))] # find lengths of components (faster way?)
-            largest_component = components[numpy.argmax(components_len)]
+        if type(G) == networkx.classes.graph.Graph: # networkx graph
+            g = igraph.Graph(list(G.edges)) # convert to igraph graph, find the clusters
         else:
-            print("Unsupported graph type")
-            return
+            raise TypeError("Networkx graphs or n x n numpy arrays only")
+            
+        components = g.clusters()
+        components_len = [len(components[i]) for i in range(len(components))] # find lengths of components (faster way?)
+        largest_component = components[numpy.argmax(components_len)]
+        
+        G_connected = G.subgraph(largest_component).copy()
 
-        print(type(largest_component))
 
-        g_subgraph = g.subgraph(largest_component)
-
-        g_subgraph_edges = g_subgraph.get_edgelist()
-
-        g_subgraph_nx = networkx.DiGraph(g_subgraph_edges)
-
-        g_subgraph_nx = networkx.Graph(g_subgraph_nx)
-
-        print(type(g_subgraph_nx))
-
-        result = numpy.array(g_subgraph_nx)
-
-        outputs = container.ndarray(result)
-
-        return base.CallResult(outputs)
+        return base.CallResult(container.List([G_connected]))

@@ -16,6 +16,7 @@ from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+from sklearn.mixture import GaussianMixture
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -25,33 +26,8 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-
-def file_path_conversion(abs_file_path, uri="file"):
-    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
-    path_sep = file_path[0]
-    file_path = file_path[1:]  # Remove initial separator
-    if len(file_path) == 0:
-        print("Invalid file path: len(file_path) == 0")
-        return
-
-    s = ""
-    if path_sep == "/":
-        s = file_path
-    elif path_sep == "\\":
-        splits = file_path.split("\\")
-        data_folder = splits[-1]
-        for i in splits:
-            if i != "":
-                s += "/" + i
-    else:
-        print("Unsupported path separator!")
-        return
-
-    if uri == "file":
-        return "file://localhost" + s
-    else:
-        return local_drive + ":" + s   
-
+    seeds = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
+    labels = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
 class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -130,71 +106,104 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
             - The number of clusters in which to assign the data
         """
 
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "gclust.interface.R")
-        path = file_path_conversion(path, uri = "")
+        max_clusters = self.hyperparams['max_clusters']
+        if max_clusters < inputs.shape[1]:
+            inputs = inputs[:, :max_clusters].copy()
 
-        max_clusters = self.hyperparams['max_clusters'] #change this to differentiate
+        seeds = self.hyperparams['seeds']
+        seeds = np.array([int(seeds[i]) for i in range(len(seeds))])
 
-        cmd = """
-        source("%s")
-        fn <- function(X, max_clusters) {
-            gclust.interface(X, max_clusters)
-        }
-        """ % path
+        labels = self.hyperparams['labels']
+        labels = np.array([int(labels[i]) for i in range(len(labels))])
 
-        #print(cmd)
+        cov_types = ['full', 'tied', 'diag', 'spherical']
 
-        #result = int(robjects.r(cmd)(inputs, dim)[0])
-        result = robjects.r(cmd)(inputs, max_clusters)
+        if len(seeds) == 0:
+            clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
+            clf.fit(inputs)
+            BIC_max = -clf.bic(inputs)
+            cluster_likelihood_max = 1
+            cov_type_likelihood_max = "spherical"
 
-        outputs = container.ndarray(result)
+            for i in range(1, max_clusters + 1):
+
+                for k in cov_types:
+                    clf = GaussianMixture(n_components=i, 
+                                    covariance_type=k)
+
+                    clf.fit(inputs)
+
+                    current_bic = -clf.bic(inputs)
+
+                    if current_bic > BIC_max:
+                        BIC_max = current_bic
+                        cluster_likelihood_max = i
+                        cov_type_likelihood_max = k
+
+            clf = GaussianMixture(n_components = cluster_likelihood_max,
+                            covariance_type = cov_type_likelihood_max)
+            clf.fit(inputs)
+
+            predictions = clf.predict(inputs)
+
+        else:
+            clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
+            clf.fit(inputs[seeds, :])
+            BIC_max = -clf.bic(inputs[seeds, :])
+            cluster_likelihood_max = 1
+            cov_type_likelihood_max = "spherical"
+
+            for i in range(1, max_clusters + 1):
+                for k in cov_types:
+                    clf = GaussianMixture(n_components=i, 
+                                    covariance_type=k)
+
+                    clf.fit(inputs)
+
+                    current_bic = -clf.bic(inputs[seeds, :])
+
+                    if current_bic > BIC_max:
+                        BIC_max = current_bic
+                        cluster_likelihood_max = i
+                        cov_type_likelihood_max = k
+
+            estimated_clf = GaussianMixture(n_components = cluster_likelihood_max, 
+                                                covariance_type = cov_type_likelihood_max)
+
+            estimated_clf.fit(inputs[seeds, :])
+            estimated_labels = estimated_clf.predict(inputs[seeds, :])
+
+            unique_labels = np.unique(estimated_labels)
+            estimated_K = len(unique_labels)
+            votes = [[] for i in range(estimated_K)]
+
+            for i in range(len(estimated_labels)):
+                for k in range(estimated_K):
+                    if int(estimated_labels[i]) == k:
+                        votes[k].append(labels[i])
+
+            print(votes)
+
+            votes = [np.array(votes[i]) for i in range(estimated_K)]
+
+            label_mapping = -1*np.ones(estimated_K)
+
+            for i in range(estimated_K): # majority wins
+                temp_unique, temp_unique_counts = np.unique(votes[i], return_counts = True)
+                temp_counts_argmax = np.argmax(temp_unique_counts)
+                label_mapping[i] = temp_unique[temp_counts_argmax]
+
+            estimated_K_labels = estimated_clf.predict(inputs)
+            applied_label_mapping = -1*np.ones(inputs.shape[0])
+
+            for i in range(len(estimated_K_labels)):
+                temp_label = int(estimated_K_labels[i])
+                applied_label_mapping[i] = label_mapping[temp_label]
+
+            predictions = applied_label_mapping
+
+        outputs = container.ndarray(predictions)
+
+        print("return")
 
         return base.CallResult(outputs)
-
-
-
-
-'''
-import os
-import numpy as np
-import rpy2.robjects as robjects
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
-
-from typing import Sequence, TypeVar
-from primitive_interfaces.transformer import TransformerPrimitiveBase
-
-Input = np.ndarray
-Output = np.ndarray
-Params = TypeVar('Params')
-
-class GaussianClustering(TransformerPrimitiveBase[Input, Output, Params]):
-    def cluster(self, *, inputs: Input) -> int:
-        """
-        TODO: YP description
-
-        **Positional Arguments:**
-
-        inputs:
-            - A matrix
-
-        **Optional Arguments:**
-
-        dim:
-            - The number of clusters in which to assign the data
-        """
-
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "gclust.interface.R")
-        cmd = """
-        source("%s")
-        fn <- function(X, dim) {
-            gclust.interface(X, dim)
-        }
-        """ % path
-        return int(robjects.r(cmd)(inputs, dim)[0])
-
-    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
-        self.cluster(inputs=inputs)
-'''

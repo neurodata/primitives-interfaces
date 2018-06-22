@@ -43,9 +43,6 @@ def profile_likelihood_maximization(U, n_elbows, threshold):
     if type(U) == list: # cast to array for functionality later
         U = np.array(U)
     
-    if type(U) is not np.ndarray: # only support arrays, lists
-        return np.array([])
-    
     if n_elbows == 0: # nothing to do..
         return np.array([])
     
@@ -65,7 +62,8 @@ def profile_likelihood_maximization(U, n_elbows, threshold):
     # select values greater than the threshold
     U.sort() # sort
     U = U[::-1] # reverse array so that it is sorted in descending order
-    
+    n = len(U)
+
     while len(elbows) < n_elbows and len(U) > 1:
         d = 1
         sample_var = np.var(U, ddof = 1)
@@ -88,7 +86,10 @@ def profile_likelihood_maximization(U, n_elbows, threshold):
                 likelihood_elbow = likelihood 
                 elbow = d
             d += 1
-        elbows.append(U[elbow - 1])
+        if len(elbows) == 0:
+            elbows.append(elbow)
+        else:
+            elbows.append(elbow + elbows[-1])
         U = U[elbow:]
         
     if len(elbows) == n_elbows:
@@ -97,7 +98,7 @@ def profile_likelihood_maximization(U, n_elbows, threshold):
     if len(U) == 0:
         return np.array(elbows)
     else:
-        elbows.append(U[0])
+        elbows.append(n)
         return np.array(elbows)
 
 class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
@@ -110,7 +111,7 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.DimensionSelection',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['dimselect primitive'],
+        'keywords': ['dimselect primitive', 'dimension selection', 'dimension reduction', 'subspace', 'elbow', 'scree plot'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -155,9 +156,9 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "LOW_RANK_MATRIX_APPROXIMATIONS"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "FEATURE_SELECTION"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
@@ -175,40 +176,13 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         Return
             elbows - A numpy array containing elbows
         """
-        
-        #TODO: If a graph, use ASE...
 
-        X = inputs
+        #convert U to a matrix:
+        U = self._convert_inputs(inputs=inputs)
 
-        if type(X) == list:
-            U = np.array(X)
 
-        if type(X) == networkx.graph.Graph:
-            hp_ase = AdjacencySpectralEmbedding.Hyperparams({'max_dimension': min(100, len(X))})
-            U = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = X).value[1]
-
-        if type(X) == np.ndarray:
-            if X.ndim > 2:
-                print("Unsupported input type")
-                return
-            if X.ndim == 1: # list
-                U = X
-            elif X.shape[0] == X.shape[1]: # n x n 
-                hp_ase = AdjacencySpectralEmbedding.Hyperparams({'max_dimension': min(100, X.shape[1])})
-                U = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = X).value[1]
-            elif X.shape[1] == 2: # edge list
-                G = networkx.Graph(X)
-                hp_ase = AdjacencySpectralEmbedding.Hyperparams({'max_dimension': min(100, len(G))})
-                U = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G).value[1]
-            else:
-                print("Unsupported input type; only n x n and m x 2 numpy arrays supported")
-                return
-
-        if type(X) == igraph.Graph:
-            print("igraph.Graph unsupported")
-
-        print("finding elbows...")
 
         elbows = profile_likelihood_maximization(U, self.hyperparams['n_elbows'], self.hyperparams['error_threshold'])
 
         return base.CallResult(container.ndarray(elbows))
+

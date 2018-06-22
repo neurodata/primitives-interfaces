@@ -16,6 +16,7 @@ from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+from sklearn.mixture import GaussianMixture
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -25,34 +26,7 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     #hp = hyperparams.Hyperparameter[None](default = None)
-    hp = None
-
-def file_path_conversion(abs_file_path, uri="file"):
-    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
-    path_sep = file_path[0]
-    file_path = file_path[1:]  # Remove initial separator
-    if len(file_path) == 0:
-        print("Invalid file path: len(file_path) == 0")
-        return
-
-    s = ""
-    if path_sep == "/":
-        s = file_path
-    elif path_sep == "\\":
-        splits = file_path.split("\\")
-        data_folder = splits[-1]
-        for i in splits:
-            if i != "":
-                s += "/" + i
-    else:
-        print("Unsupported path separator!")
-        return
-
-    if uri == "file":
-        return "file://localhost" + s
-    else:
-        return local_drive + ":" + s
-
+    max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
 class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -64,7 +38,7 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.NumberOfClusters',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['number clustering'],
+        'keywords': ['number clustering', 'gaussian clustering', 'model selection', 'clusters', 'community', 'clustering', 'cluster selection'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -93,9 +67,9 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "LOW_RANK_MATRIX_APPROXIMATIONS"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "GRAPH_CLUSTERING"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
@@ -103,26 +77,69 @@ class NumberOfClusters(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
-        Select the number of clusters
-
-        **Positional Arguments:**
-
-        X:
-            - Data matrix
+        Inputs
+            D - n x d feature matrix
+        Return
+            An array with the max BIC and AIC values for each number of clusters (1, .., max_clusters)
         """
-        
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "numclust.interface.R")
-        cmd = """
-        source("%s")
-        fn <- function(X) {
-            numclust.interface(X)
-        }
-        """ % path
 
-        #result = np.array(robjects.r(cmd)(inputs)[0])
-        result = np.array(robjects.r(cmd)(inputs))
+        max_clusters = self.hyperparams['max_clusters']
 
-        outputs = container.ndarray(result)
+        cov_types = ['full', 'tied', 'diag', 'spherical']
+
+        example = ('number of clusters', 'BIC', 'AIC')
+
+        BICs = []
+
+        AICs = []
+
+        results = [example]
+
+        for i in range(1, max_clusters + 1):
+
+            clf = GaussianMixture(n_components=i, 
+                                    covariance_type='spherical')
+            clf.fit(inputs)
+            temp_max_BIC, temp_max_AIC = -clf.bic(inputs), -clf.aic(inputs)
+            for k in cov_types:
+                clf = GaussianMixture(n_components=i, 
+                                    covariance_type=k)
+
+                clf.fit(inputs)
+
+                temp_BIC, temp_AIC = -clf.bic(inputs), -clf.aic(inputs)
+
+                if temp_BIC > temp_max_BIC:
+                    temp_max_BIC = temp_BIC
+
+                if temp_AIC > temp_max_AIC:
+                    temp_max_AIC = temp_AIC
+
+            results.append((i, temp_max_BIC, temp_max_AIC))
+            BICs.append(temp_max_BIC)
+            AICs.append(temp_max_AIC)
+
+        BICs2 = list(BICs)
+        AICs2 = list(AICs)
+
+        KBICs = []
+
+        KAICs = []
+
+        while len(BICs2) > 0:
+            temp, temp_index = max(BICs2), np.argmax(BICs2)
+            index = BICs.index(temp)
+            KBICs.append(index + 1)
+            BICs2.pop(temp_index)
+
+            temp, temp_index = max(AICs2), np.argmax(AICs2)
+            index = AICs.index(temp)
+            KAICs.append(index + 1)
+            AICs2.pop(temp_index)
+
+        KBICs = ['Ranked number of clusters (BIC)'] + KBICs
+        KAICs = ['Ranked number of clusters (AIC)'] + KAICs
+
+        outputs = [KBICs, KAICs, results]
 
         return base.CallResult(outputs)

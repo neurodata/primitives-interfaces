@@ -5,9 +5,8 @@ if(!require(igraph)){
 
 ase.interface <- function(g, dim)
 {
-
     ## embedding into "dim"
-    if (class(g) == "dgCMatrix") {
+    if (class(g) == "dgCMatrix" || class(g) == "matrix") {
         g = igraph::graph_from_adjacency_matrix(g)
     }
     SVD <- embed_adjacency_matrix(g, dim)
