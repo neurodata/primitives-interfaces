@@ -39,7 +39,7 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.GaussianClassification',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['gaussian classification'],
+        'keywords': ['gaussian classification', 'graph','Maximum Likelihood','classification'],
         'source': {
             'name': "JHU",
             'uris': [

@@ -32,13 +32,10 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    d_max = hyperparams.Hyperparameter[int](default=100, semantic_types=[
+    max_dimension = hyperparams.Hyperparameter[int](default=100, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ]),
     n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=
-        ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ]),
-    error_threshold = hyperparams.Hyperparameter[float](default = 0.001, semantic_types=
         ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ]),
     which_elbow = hyperparams.Hyperparameter[int](default = 2, semantic_types=
@@ -104,7 +101,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         'primitive_family': "DATA_TRANSFORMATION"
     })
 
-    def _profile_likelihood_maximization(self,U, n_elbows, threshold):
+    def _profile_likelihood_maximization(self,U, n_elbows):
         """
         Inputs
             U - An ordered or unordered list of eigenvalues
@@ -121,8 +118,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         if U.ndim == 2:
             U = np.std(U, axis=0)
-
-        U = U[U > threshold]
 
         if len(U) == 0:
             return np.array([])
@@ -186,7 +181,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         A = robjects.Matrix(G)
         robjects.r.assign("A", A)
 
-        d_max = self.hyperparams['d_max']
+        d_max = self.hyperparams['max_dimension']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "ase.interface.R")
@@ -210,5 +205,5 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def _get_elbows(self,  eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
                         , n_elbows=self.hyperparams['n_elbows']
-                        , threshold=self.hyperparams['error_threshold'])
+                       )
         return(elbows[self.hyperparams['which_elbow'] - 1])

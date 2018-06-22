@@ -32,7 +32,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.LargestConnectedComponent',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graphs', 'connected', 'largest connected component', 'graph'],
+        'keywords': ['graphs', 'connected', 'largest connected component', 'graph','graph transformation','transformation'],
         'source': {
             'name': "JHU",
             'uris': [

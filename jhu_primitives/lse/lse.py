@@ -33,9 +33,6 @@ class Hyperparams(hyperparams.Hyperparams):
     n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=
     ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
      ]),
-    error_threshold = hyperparams.Hyperparameter[float](default=0.001, semantic_types=
-    ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
-     ]),
     which_elbow = hyperparams.Hyperparameter[int](default=2, semantic_types=
     ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
      ])
@@ -118,8 +115,6 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         if U.ndim == 2:
             U = np.std(U, axis=0)
-
-        U = U[U > threshold]
 
         if len(U) == 0:
             return np.array([])
@@ -209,5 +204,5 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def _get_elbows(self, eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
                                                    , n_elbows=self.hyperparams['n_elbows']
-                                                   , threshold=self.hyperparams['error_threshold'])
+                                                   )
         return (elbows[self.hyperparams['which_elbow'] - 1])

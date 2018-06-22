@@ -15,7 +15,7 @@ from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m.primitive_interfaces.base import CallResult
 from rpy2 import robjects
 import rpy2.robjects.numpy2ri
@@ -39,7 +39,7 @@ class Hyperparams(hyperparams.Hyperparams):
     )
 
 
-class SeededGraphMatching( TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
