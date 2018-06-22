@@ -131,10 +131,10 @@ class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,
         if self._fitted:
             return base.CallResult(None)
 
-        G = container.List([self._training_inputs['0']])
+        #G = container.List([self._training_inputs['0']])
 
         hp_lcc = jhu.ase.ase.Hyperparams.defaults()
-        G_lcc = LargestConnectedComponent(hyperpararms = hp_lcc).produce(inputs = G)
+        G_lcc = LargestConnectedComponent(hyperpararms = hp_lcc).produce(inputs = self._training_inputs)
 
         hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': len(G_lcc[0]) - 1})
         G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc)

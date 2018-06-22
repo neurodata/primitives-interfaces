@@ -12,7 +12,7 @@ import igraph
 import networkx
 
 
-Inputs = container.List
+Inputs = container.Dataset
 Outputs = container.ndarray
 
 class Params(params.Params):
@@ -86,22 +86,22 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         """
 
-        G = inputs['0']
+        G = inputs['1']
 
-        if type(G) == igraph.Graph:
-            raise TypeError("Networkx graphs or n x n numpy arrays only")
+        #if type(G) == igraph.Graph:
+        #    raise TypeError("Networkx graphs or n x n numpy arrays only")
 
-        if type(G) == numpy.ndarray:
-            if G.ndim == 2:
-                if G.shape[0] == G.shape[1]: # n x n matrix
-                    G = networkx.Graph(G)
-                else:
-                    raise TypeError("Networkx graphs or n x n numpy arrays only") 
+        #if type(G) == numpy.ndarray:
+        #    if G.ndim == 2:
+        #        if G.shape[0] == G.shape[1]: # n x n matrix
+        #            G = networkx.Graph(G)
+        #        else:
+        #            raise TypeError("Networkx graphs or n x n numpy arrays only") 
                 
         if type(G) == networkx.classes.graph.Graph: # networkx graph
             g = igraph.Graph(list(G.edges)) # convert to igraph graph, find the clusters
         else:
-            raise TypeError("Networkx graphs or n x n numpy arrays only")
+            raise TypeError("Networkx graphs only")# or n x n numpy arrays only")
             
         components = g.clusters()
         components_len = [len(components[i]) for i in range(len(components))] # find lengths of components (faster way?)
