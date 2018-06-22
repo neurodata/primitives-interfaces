@@ -9,11 +9,11 @@ from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 import igraph
-import networkx
+from networkx import Graph
 
 
-Inputs = container.ndarray
-Outputs = container.ndarray
+Inputs = Graph
+Outputs = Graph
 
 class Params(params.Params):
     pass
@@ -102,7 +102,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         if type(G) == numpy.ndarray:
             if G.ndim == 2:
                 if G.shape[0] == G.shape[1]: # n x n matrix
-                    G = networkx.Graph(G)
+                    G = Graph(G)
                 else:
                     raise TypeError("Networkx graphs or n x n numpy arrays only") 
                 

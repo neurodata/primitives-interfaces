@@ -83,9 +83,9 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "EXPECTATION_MAXIMIZATION_ALGORITHM"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "CLUSTERING"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
@@ -107,45 +107,43 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         """
 
         max_clusters = self.hyperparams['max_clusters']
-        if max_clusters < inputs.shape[1]:
+
+        if max_clusters < inputs[0].shape[1]:
             inputs = inputs[:, :max_clusters].copy()
-
-        seeds = self.hyperparams['seeds']
-        seeds = np.array([int(seeds[i]) for i in range(len(seeds))])
-
-        labels = self.hyperparams['labels']
-        labels = np.array([int(labels[i]) for i in range(len(labels))])
 
         cov_types = ['full', 'tied', 'diag', 'spherical']
 
-        if len(seeds) == 0:
-            clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
-            clf.fit(inputs)
-            BIC_max = -clf.bic(inputs)
-            cluster_likelihood_max = 1
-            cov_type_likelihood_max = "spherical"
+        clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
+        clf.fit(inputs)
+        BIC_max = -clf.bic(inputs)
+        cluster_likelihood_max = 1
+        cov_type_likelihood_max = "spherical"
 
-            for i in range(1, max_clusters + 1):
+        for i in range(1, max_clusters + 1):
+            for k in cov_types:
+                clf = GaussianMixture(n_components=i, 
+                                    covariance_type=k, n_init = 25)
 
-                for k in cov_types:
-                    clf = GaussianMixture(n_components=i, 
-                                    covariance_type=k)
+                clf.fit(inputs)
 
-                    clf.fit(inputs)
+                current_bic = -clf.bic(inputs)
 
-                    current_bic = -clf.bic(inputs)
+                if current_bic > BIC_max:
+                    BIC_max = current_bic
+                    cluster_likelihood_max = i
+                    cov_type_likelihood_max = k
 
-                    if current_bic > BIC_max:
-                        BIC_max = current_bic
-                        cluster_likelihood_max = i
-                        cov_type_likelihood_max = k
+        clf = GaussianMixture(n_components = cluster_likelihood_max,
+                        covariance_type = cov_type_likelihood_max)
+        clf.fit(inputs)
 
-            clf = GaussianMixture(n_components = cluster_likelihood_max,
-                            covariance_type = cov_type_likelihood_max)
-            clf.fit(inputs)
+        predictions = clf.predict(inputs)
 
-            predictions = clf.predict(inputs)
+        outputs = container.ndarray(predictions)
 
+        return base.CallResult(outputs)
+
+        """
         else:
             clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
             clf.fit(inputs[seeds, :])
@@ -156,7 +154,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
             for i in range(1, max_clusters + 1):
                 for k in cov_types:
                     clf = GaussianMixture(n_components=i, 
-                                    covariance_type=k)
+                                    covariance_type=k, n_init = 50)
 
                     clf.fit(inputs)
 
@@ -168,7 +166,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
                         cov_type_likelihood_max = k
 
             estimated_clf = GaussianMixture(n_components = cluster_likelihood_max, 
-                                                covariance_type = cov_type_likelihood_max)
+                                                covariance_type = cov_type_likelihood_max, n_init = 50)
 
             estimated_clf.fit(inputs[seeds, :])
             estimated_labels = estimated_clf.predict(inputs[seeds, :])
@@ -181,8 +179,6 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
                 for k in range(estimated_K):
                     if int(estimated_labels[i]) == k:
                         votes[k].append(labels[i])
-
-            print(votes)
 
             votes = [np.array(votes[i]) for i in range(estimated_K)]
 
@@ -201,9 +197,4 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
                 applied_label_mapping[i] = label_mapping[temp_label]
 
             predictions = applied_label_mapping
-
-        outputs = container.ndarray(predictions)
-
-        print("return")
-
-        return base.CallResult(outputs)
+            """

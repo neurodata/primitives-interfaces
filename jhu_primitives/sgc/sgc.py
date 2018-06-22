@@ -6,26 +6,30 @@
 from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
-
+import networkx
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-import numpy as np
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
-from .. import LargestConnectedComponent
-from .. import PassToRanks
-from .. import AdjacencySpectralEmbedding
-from .. import DimensionSelection
-from .. import GaussianClustering
 
-Inputs = container.ndarray
-Outputs = container.ndarray
+from jhu_primitives import LargestConnectedComponent
+from jhu_primitives import AdjacencySpectralEmbedding
+from jhu_primitives import GaussianClustering
+from jhu_primitives import GaussianClassification
+
+import jhu_primitives as jhu
+
+Inputs = container.Dataset
+Outputs = container.Dataframe
 
 class Params(params.Params):
-    pass
+    supervised: bool
+    pis: container.ndarray
+    means: container.ndarray
+    covariances: container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
     dim = None
@@ -40,7 +44,7 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.SpectralGraphClustering',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['spectral clustering'],
+        'keywords': ['graph', 'spectral clustering', 'clustering', 'classification'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -91,40 +95,76 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
+        self._training_inputs: Inputs = None
+        self._training_outputs: Outputs = None
+
+        self._supervised: bool = None
+        self._fitted: bool = False 
+
+        self._CLASSIFICATION: GaussianClassification = None
+        self._CLUSTERING: GaussianClustering = None
+
+        self._embedding: container.ndarray = None
+
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
-        Perform spectral graph clustering
+        Performs spectral graph clustering: {GCLUST, GCLASS} o DIMSELECT o ASE o PTR o LCC
 
         Inputs
-            n x 2, n x n
+            d3m Dataset
 
-        inputs:
-            - JHUGraph adjacency matrix
+        Outputs
+            class predictions
+
         """
 
-        G = inputs
-
-        hp_lcc = LargestConnectedComponent.Hyperparams.defaults()
-        lcc = LargestConnectedComponent(hyerparams = hp_lcc).produce(inputs = G).value
-
-        hp_ptr = PassToRanks.Hyperparams.defaults()
-        ptr = PassToRanks(hyperparams = hp_ptr).produce(inputs = lcc).value
-
-        max_dim = min(100, len(ptr)/2) 
-        hp_ase = AdjacencySpectralEmbedding.Hyperparams({'embedding_dimension': max_dim})
-        ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = ptr).value
-
-        vectors = ase[0]
-        values = ase[1]
-
-        hp_dimselect = DimensionSelection.Hyperparams({'n_elbows': 2})
-        ds = DimensionSelection(hyperparams = hp_dimselect).produce(inputs = values).value
-
-        elbow_2 = ds[1]
-
-        hp_gclust = GaussianClustering.Hyperparams({'max_clusters': 30})
-        labels = GaussianClustering(hyperparams = hp_gclust).produce(inputs = vectors[:, elbow_2]).value
+        if self._supervised:
+            predictions = self._CLASSIFICATION.produce(inputs = self._embedding)
+        else:
+            predictions = self._CLUSTERING.produce(inputs = self._embedding)
 
         outputs = container.ndarray(labels)
 
         return base.CallResult(outputs)
+
+    def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
+        if self._fitted:
+            return base.CallResult(None)
+
+        G = container.List([self._training_inputs['0']])
+
+        hp_lcc = jhu.ase.ase.Hyperparams.defaults()
+        G_lcc = LargestConnectedComponent(hyperpararms = hp_lcc).produce(inputs = G)
+
+        hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': len(G_lcc[0]) - 1})
+        G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc)
+
+        self._embedding = G_ase
+
+        csv = self._training_inputs['1']
+
+        if len(csv) == 0: # if passed an empty training set, we will use EM (gclust)
+            self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': 100}))
+            self._supervised = False
+            self._fitted = True
+            return base.CallResult(None)
+
+        self._supervised = True
+
+        seeds = container.ndarray(csv['1']['G1.nodeID'])
+        #labels = container.ndarray(csv['1']['classLabel'])
+
+        self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
+
+        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds]), outputs = self._training_outputs)
+
+        self._CLASSIFICATION = self._CLASSIFICATION.fit()
+
+        self._fitted = True
+
+        return base.CallResult(None)
+
+    def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
+        self._training_inputs = inputs
+        self._training_outputs = outputs
+        self._fitted = False
