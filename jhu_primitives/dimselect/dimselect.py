@@ -15,6 +15,11 @@ from d3m import utils, container
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+from jhu_primitives.utils.util import file_path_conversion
+from .. import AdjacencySpectralEmbedding
+import networkx
+import igraph
+from scipy.stats import norm
 
 Inputs = container.ndarray
 Outputs = container.ndarray
@@ -24,34 +29,77 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
+    error_threshold = hyperparams.Hyperparameter[float](default = 0.001, semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
-def file_path_conversion(abs_file_path, uri="file"):
-    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
-    path_sep = file_path[0]
-    file_path = file_path[1:]  # Remove initial separator
-    if len(file_path) == 0:
-        print("Invalid file path: len(file_path) == 0")
-        return
+def profile_likelihood_maximization(U, n_elbows, threshold):
+    """
+    Inputs
+        U - An ordered or unordered list of eigenvalues
+        n - The number of elbows to return
 
-    s = ""
-    if path_sep == "/":
-        s = file_path
-    elif path_sep == "\\":
-        splits = file_path.split("\\")
-        data_folder = splits[-1]
-        for i in splits:
-            if i != "":
-                s += "/" + i
+    Return
+        elbows - A numpy array containing elbows
+    """
+    if type(U) == list: # cast to array for functionality later
+        U = np.array(U)
+    
+    if n_elbows == 0: # nothing to do..
+        return np.array([])
+    
+    if U.ndim == 2:
+        U = np.std(U, axis = 0)
+    
+    U = U[U > threshold]
+    
+    if len(U) == 0:
+        return np.array([])
+    
+    elbows = []
+    
+    if len(U) == 1:
+        return np.array(elbows.append(U[0]))
+    
+    # select values greater than the threshold
+    U.sort() # sort
+    U = U[::-1] # reverse array so that it is sorted in descending order
+    n = len(U)
+
+    while len(elbows) < n_elbows and len(U) > 1:
+        d = 1
+        sample_var = np.var(U, ddof = 1)
+        sample_scale = sample_var**(1/2)
+        elbow = 0
+        likelihood_elbow = 0
+        while d < len(U):
+            mean_sig = np.mean(U[:d])
+            mean_noise = np.mean(U[d:])
+            sig_likelihood = 0
+            noise_likelihood = 0
+            for i in range(d):
+                sig_likelihood += norm.pdf(U[i], mean_sig, sample_scale)
+            for i in range(d, len(U)):
+                noise_likelihood += norm.pdf(U[i], mean_noise, sample_scale)
+            
+            likelihood = noise_likelihood + sig_likelihood
+        
+            if likelihood > likelihood_elbow:
+                likelihood_elbow = likelihood 
+                elbow = d
+            d += 1
+        if len(elbows) == 0:
+            elbows.append(elbow)
+        else:
+            elbows.append(elbow + elbows[-1])
+        U = U[elbow:]
+        
+    if len(elbows) == n_elbows:
+        return np.array(elbows)
+    
+    if len(U) == 0:
+        return np.array(elbows)
     else:
-        print("Unsupported path separator!")
-        return
-
-    if uri == "file":
-        return "file://localhost" + s
-    else:
-        return local_drive + ":" + s
-
-
+        elbows.append(n)
+        return np.array(elbows)
 
 class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -63,7 +111,7 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.DimensionSelection',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['dimselect primitive'],
+        'keywords': ['dimselect primitive', 'dimension selection', 'dimension reduction', 'subspace', 'elbow', 'scree plot'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -108,9 +156,9 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "LOW_RANK_MATRIX_APPROXIMATIONS"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "FEATURE_SELECTION"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
@@ -121,29 +169,20 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         Select the right number of dimensions within which to embed given
         an adjacency matrix
 
-        **Positional Arguments:**
+        Inputs
+            X - An n x n matrix or an ordered/unordered list of eigenvalues
+            n - The number of elbows to return
 
-        X:
-            - Adjacency matrix
+        Return
+            elbows - A numpy array containing elbows
         """
-        
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "dimselect.interface.R")
 
-        path = file_path_conversion(path, uri="")
-        n_elbows = self.hyperparams['n_elbows']
+        #convert U to a matrix:
+        U = self._convert_inputs(inputs=inputs)
 
-        cmd = """
-        source("%s")
-        fn <- function(X, n_elbows) {
-            dimselect.interface(X, n_elbows)
-        }
-        """ % path
 
-        #print(cmd)
 
-        result = np.array(robjects.r(cmd)(inputs, n_elbows))
+        elbows = profile_likelihood_maximization(U, self.hyperparams['n_elbows'], self.hyperparams['error_threshold'])
 
-        outputs = container.ndarray(result)
+        return base.CallResult(container.ndarray(elbows))
 
-        return base.CallResult(outputs)
