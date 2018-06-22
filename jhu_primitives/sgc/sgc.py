@@ -8,7 +8,7 @@ from typing import Sequence, TypeVar, Union, Dict
 import os
 import networkx
 
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
@@ -34,7 +34,7 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     dim = None
 
-class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -152,11 +152,12 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
         self._supervised = True
 
         seeds = container.ndarray(csv['1']['G1.nodeID'])
-        #labels = container.ndarray(csv['1']['classLabel'])
+        labels = container.ndarray(csv['1']['classLabel'])
+
 
         self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
 
-        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds]), outputs = self._training_outputs)
+        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds]), outputs = csv)
 
         self._CLASSIFICATION = self._CLASSIFICATION.fit()
 
@@ -164,7 +165,13 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
 
         return base.CallResult(None)
 
-    def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
+    def get_params(self) -> None:
+        return Params
+
+    def set_params(self, *, params: Params) -> None:
+        pass
+
+    def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
-        self._training_outputs = outputs
+        #self._training_outputs = outputs
         self._fitted = False

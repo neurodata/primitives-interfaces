@@ -26,7 +26,7 @@ Inputs = container.Dataset
 Outputs = container.DataFrame
 
 class Params(params.Params):
-    pass
+    None
 
 class Hyperparams(hyperparams.Hyperparams):
     threshold = hyperparams.Hyperparameter[float](
@@ -89,6 +89,8 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
         self._training_dataset = None
 
+    def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
+        return CallResult[None]
 
     def set_training_data(self,*,inputs: Inputs) -> None:
         self._training_dataset = inputs
@@ -96,7 +98,11 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         #instead, we just hang on to the training data and run produce with the two graphs and seeds
         #and use that to predict later on.
 
+    def get_params(self) -> None:
+        return Params
 
+    def set_params(self, *, params: Params) -> None:
+        pass
     #UnsupervisedLearner
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         #produce takes the training dataset and runs seeded graph matching using the seeds

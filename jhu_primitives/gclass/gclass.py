@@ -10,7 +10,7 @@ from rpy2 import robjects
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.supervised_learning import SupervisedLearnerPrimitiveBase
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
@@ -36,7 +36,7 @@ class Hyperparams(hyperparams.Hyperparams):
     #seeds = hyperparams.Hyperparameter[np.ndarray](default=np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
     #labels = hyperparams.Hyperparameter[np.ndarray](default=np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
-class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class GaussianClassification(SupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -268,3 +268,8 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
             return base.CallResult(outputs)
         """
+
+    def get_params(self) -> None:
+        base.CallResult[None]
+    def set_params(self, *, params: Params) -> None:
+        None
