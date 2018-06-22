@@ -23,7 +23,7 @@ import numpy as np
 from networkx import Graph
 
 Inputs = container.List
-Outputs = container.Dataframe
+Outputs = container.DataFrame
 
 class Params(params.Params):
     pis: container.ndarray
@@ -102,7 +102,7 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         self._training_inputs: Inputs = None
         self._training_outputs: Outputs = None
 
-        self._embedding
+        self._embedding: container.ndarray = None
 
         self._seeds: container.ndarray = None
         self._labels: container.ndarray = None

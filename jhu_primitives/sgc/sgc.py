@@ -23,7 +23,7 @@ from jhu_primitives import GaussianClassification
 import jhu_primitives as jhu
 
 Inputs = container.Dataset
-Outputs = container.Dataframe
+Outputs = container.DataFrame
 
 class Params(params.Params):
     supervised: bool
