@@ -39,7 +39,7 @@ class Hyperparams(hyperparams.Hyperparams):
     )
 
 
-class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Params, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
