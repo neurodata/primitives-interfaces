@@ -13,7 +13,7 @@ import networkx
 
 
 Inputs = container.Dataset
-Outputs = container.ndarray
+Outputs = container.List
 
 class Params(params.Params):
     pass
