@@ -1,7 +1,7 @@
 {
-    "id": "f36c1375-c8b6-4036-a115-50e4324aa86a",
+    "id": "b9671b47-4acd-4349-b573-7bb516bfe7da",
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
-    "created": "2018-06-22T17:58:44.258015Z",
+    "created": "2018-06-23T14:47:24.939030Z",
     "context": "TESTING",
     "inputs": [
         {
@@ -29,11 +29,11 @@
                 }
             ],
             "primitive": {
-                "id": "b940ccbd-9e9b-3166-af50-210bfd79251b",
-                "version": "0.3.0",
-                "python_path": "d3m.primitives.jhu_primitives.AdjacencySpectralEmbedding",
-                "name": "jhu.ase",
-                "digest": "535325d51c61ba05b2dab8f9230e5759efbdc53dc564fb4e3f7cfae6819f36a5"
+                "id": "32fec24f-6861-4a4c-88f3-d4ec2bc1b486",
+                "version": "0.1.0",
+                "python_path": "d3m.primitives.jhu_primitives.LargestConnectedComponent",
+                "name": "jhu.lcc",
+                "digest": "6ff74d185cf17d9ed5ff5476cda9d238096527612cdbbe6bc819c44ee17fdaa3"
             }
         },
         {
@@ -42,10 +42,27 @@
                 "inputs": {
                     "type": "CONTAINER",
                     "data": "steps.0.produce"
-                },
-                "outputs": {
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "id": "b940ccbd-9e9b-3166-af50-210bfd79251b",
+                "version": "0.3.0",
+                "python_path": "d3m.primitives.jhu_primitives.AdjacencySpectralEmbedding",
+                "name": "jhu.ase",
+                "digest": "6ff74d185cf17d9ed5ff5476cda9d238096527612cdbbe6bc819c44ee17fdaa3"
+            }
+        },
+        {
+            "type": "PRIMITIVE",
+            "arguments": {
+                "inputs": {
                     "type": "CONTAINER",
-                    "data": "inputs.0"
+                    "data": "steps.1.produce"
                 }
             },
             "outputs": [
@@ -58,7 +75,7 @@
                 "version": "0.1.0",
                 "python_path": "d3m.primitives.jhu_primitives.GaussianClassification",
                 "name": "jhu.gclass",
-                "digest": "535325d51c61ba05b2dab8f9230e5759efbdc53dc564fb4e3f7cfae6819f36a5"
+                "digest": "6ff74d185cf17d9ed5ff5476cda9d238096527612cdbbe6bc819c44ee17fdaa3"
             }
         }
     ]

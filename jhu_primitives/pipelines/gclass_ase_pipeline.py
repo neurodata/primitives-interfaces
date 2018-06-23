@@ -10,7 +10,7 @@ DATASETS = {
 }
 
 
-class GMMoLSE_pipeline(BasePipeline):
+class GCLASSoASE_pipeline(BasePipeline):
     def __init__(self):
         super().__init__(DATASETS)
 
@@ -38,15 +38,12 @@ class GMMoLSE_pipeline(BasePipeline):
         step_1.add_output('produce')
         pipeline.add_step(step_1)
 
-
-        #need to run fit
-
-        #step_2 = meta_pipeline.PrimitiveStep(primitive_description=GaussianClassification.metadata.query())
-        #step_2.add_argument(
-        #    name='inputs',
-        #    argument_type=meta_pipeline.ArgumentType.CONTAINER,
-        #    data_reference='steps.1.produce'
-        #)
+        step_2 = meta_pipeline.PrimitiveStep(primitive_description=GaussianClassification.metadata.query())
+        step_2.add_argument(
+            name='inputs',
+            argument_type=meta_pipeline.ArgumentType.CONTAINER,
+            data_reference='steps.1.produce'
+        )
 
         step_2.add_output('produce')
         pipeline.add_step(step_2)

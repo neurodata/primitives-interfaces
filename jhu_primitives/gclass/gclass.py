@@ -10,7 +10,7 @@ from rpy2 import robjects
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 
-from d3m.primitive_interfaces.supervised_learning import SupervisedLearnerPrimitiveBase
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
@@ -36,7 +36,7 @@ class Hyperparams(hyperparams.Hyperparams):
     #seeds = hyperparams.Hyperparameter[np.ndarray](default=np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
     #labels = hyperparams.Hyperparameter[np.ndarray](default=np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
-class GaussianClassification(SupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
+class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -235,9 +235,9 @@ class GaussianClassification(SupervisedLearnerPrimitiveBase[Inputs, Outputs, Par
 
         return base.CallResult(None)
 
-    def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
+    def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
-        self._training_outputs = outputs
+        #self._training_outputs = outputs
         self._fitted = False
 
         """
