@@ -22,7 +22,7 @@ from scipy.stats import multivariate_normal as MVN
 import numpy as np
 from networkx import Graph
 
-Inputs = container.List
+Inputs = container.ndarray
 Outputs = container.DataFrame
 
 class Params(params.Params):
