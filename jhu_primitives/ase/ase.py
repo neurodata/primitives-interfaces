@@ -229,13 +229,13 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
 
         #grab the number of edges
-        nedges = edges.shape[0]
-        ranked_values = np.argsort(edges) #get the index of the sorted elements
+        nedges = networkx.number_of_edges(G)
+        ranked_values = np.argsort(edges) + 1#get the index of the sorted elements
 
         #loop through the edges and assign the new weight:
         j = 0
         for u, v, d in G.edges(data=True):
-            edges[j] = ranked_values[j]*2/(nedges + 1)
+            edges[j] = (ranked_values[j]*2)/(nedges + 1)
             d['weight'] = edges[j]
             j += 1
 
