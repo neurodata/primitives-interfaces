@@ -173,7 +173,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        G = inputs['0']
+        G = inputs
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
                 G = self._pass_to_ranks(G)
