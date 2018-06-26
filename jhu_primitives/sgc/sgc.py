@@ -8,11 +8,7 @@ from typing import Sequence, TypeVar, Union, Dict
 import os
 import networkx
 
-<<<<<<< HEAD
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-=======
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
->>>>>>> 95a9db57909f856ee3741f8622c80b0175d8db2d
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
@@ -135,33 +131,11 @@ class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,
         if self._fitted:
             return base.CallResult(None)
 
-        G = container.List([self._training_inputs['0']])
-
         hp_lcc = jhu.ase.ase.Hyperparams.defaults()
-        G_lcc = LargestConnectedComponent(hyperpararms = hp_lcc).produce(inputs = G)
+        G_lcc = LargestConnectedComponent(hyperparams = hp_lcc).produce(inputs = self._training_inputs).value
 
-        hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': len(G_lcc[0]) - 1})
-        G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc)
-
-        self._embedding = G_ase
-
-        csv = self._training_inputs['1']
-
-        outputs = container.ndarray(labels)
-
-        return base.CallResult(outputs)
-
-    def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
-        if self._fitted:
-            return base.CallResult(None)
-
-        #G = container.List([self._training_inputs['0']])
-
-        hp_lcc = jhu.ase.ase.Hyperparams.defaults()
-        G_lcc = LargestConnectedComponent(hyperpararms = hp_lcc).produce(inputs = self._training_inputs)
-
-        hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': len(G_lcc[0]) - 1})
-        G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc)
+        hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': len(G_lcc[0]) - 1, 'which_elbow': 2})
+        G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc).value
 
         self._embedding = G_ase
 

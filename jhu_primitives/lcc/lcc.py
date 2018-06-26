@@ -85,7 +85,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         """
 
-        G = inputs['1']
+        G = inputs['0']
 
         #if type(G) == igraph.Graph:
         #    raise TypeError("Networkx graphs or n x n numpy arrays only")
@@ -97,7 +97,8 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 else:
                     raise TypeError("Networkx graphs or n x n numpy arrays only") 
                 
-        if type(G) == networkx.classes.graph.Graph: # networkx graph
+        print(type(G))
+        if type(G) == Graph: # networkx graph
             g = igraph.Graph(list(G.edges)) # convert to igraph graph, find the clusters
         else:
             raise TypeError("Networkx graphs only")# or n x n numpy arrays only")
