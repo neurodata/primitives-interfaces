@@ -1,0 +1,40 @@
+{
+    "id": "6a72233b-631f-45d9-8725-3ea8de73f750",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2018-06-22T17:42:20.505603Z",
+    "context": "TESTING",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.0.produce",
+            "name": "results"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "id": "fde90b15-155a-3c2a-866c-4a19354cf0c7",
+                "version": "0.1.0",
+                "python_path": "d3m.primitives.jhu_primitives.SpectralGraphClustering",
+                "name": "jhu.sgc",
+                "digest": "535325d51c61ba05b2dab8f9230e5759efbdc53dc564fb4e3f7cfae6819f36a5"
+            }
+        }
+    ]
+}

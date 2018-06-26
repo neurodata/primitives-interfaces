@@ -2,36 +2,44 @@
 # sgm.py
 # Copyright (c) 2017. All rights reserved.
 
-from rpy2 import robjects
+#special thanks to Eriq Augustine from UCSC for helping us
+#(Hayden and Joshua) understand how all this works
+
 from typing import Sequence, TypeVar, Union, Dict
 import os
-
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-#from jhu_primitives.core.JHUGraph import JHUGraph
+import pandas as pd
 import numpy as np
+import networkx
+
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m.primitive_interfaces.base import CallResult
+from rpy2 import robjects
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 from ..utils.util import file_path_conversion
 
-
-
-Inputs = container.ndarray
-Outputs = container.ndarray
+Inputs = container.Dataset
+Outputs = container.DataFrame
 
 class Params(params.Params):
-    pass
+    None
 
 class Hyperparams(hyperparams.Hyperparams):
-    seeds = hyperparams.Hyperparameter[np.ndarray](default=np.array([0]), semantic_types=[
-        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ])
+    threshold = hyperparams.Hyperparameter[float](
+            default = .1,
+            semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter']
+    ),
+    reps = hyperparams.Hyperparameter[int](
+            default = 1,
+            semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter']
+    )
 
-class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+
+class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Params, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -51,10 +59,6 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
         },
-        # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
-        # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
-        # install a Python package first to be even able to run setup.py of another package. Or you have
-        # a dependency which is not on PyPi.
         'installation': [{
                 'type': 'UBUNTU',
                 'package': 'r-base',
@@ -75,108 +79,144 @@ class SeededGraphMatching(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
                 ),
         }],
-        # URIs at which one can obtain code for the primitive, if available.
-        # 'location_uris': [
-        #     'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
-        #         git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-        #     ),
-        # ],
-        # Choose these from a controlled vocabulary in the schema. If anything is missing which would
-        # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "FRANK_WOLFE_ALGORITHM"
+            metadata_module.PrimitiveAlgorithmType.FRANK_WOLFE_ALGORITHM
         ],
-        'primitive_family': "GRAPH_MATCHING"
-    })
+        'primitive_family': metadata_module.PrimitiveFamily.GRAPH_MATCHING
+       })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
+        self._training_dataset = None
 
-    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-#    def embed(self, *, g : JHUGraph, dim: int):
-        """
-        Perform seeded graph matching
+    def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
+        return CallResult[None]
 
-        **Positional Arguments:**
+    def set_training_data(self,*,inputs: Inputs) -> None:
+        self._training_dataset = inputs
+        #technically, this is unsupervised, as there is no fit function
+        #instead, we just hang on to the training data and run produce with the two graphs and seeds
+        #and use that to predict later on.
 
-        inputs:
-            - ndarray of two graph adjacency matrices
+    def get_params(self) -> None:
+        return Params
 
-        **Optional Arguments:**
-
-        seed:
-            - The matrix of seed indices. The first column corresponds to seed index
-              for graph 1 and second column corresponds to seed index for
-              graph 2, where each row corresponds to a seed pair.
-              If empty, assumes no seeds are used.
-        """
-
-        seeds = self.hyperparams['seeds']
-        nr,nc = seeds.shape
-        seeds = robjects.r.matrix(seeds, nrow=nr, ncol=nc)
-        robjects.r.assign("seeds",seeds)
-
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "sgm.interface.R")
-        path = file_path_conversion(path,uri = "")
-        cmd = """
-        source("%s")
-        fn <- function(g1, g2, seeds) {
-            sgm.interface(g1, g2, seeds,reps = 100)
-        }
-        """ % path
-        #print(cmd)
-
-        result = np.array(robjects.r(cmd)(inputs[0], inputs[1], seeds))
-
-        outputs = container.ndarray(result)
-
-        return base.CallResult(outputs)
-
-'''
-from rpy2 import robjects
-from typing import Sequence, TypeVar, Any
-import os
-import numpy as np
-
-from primitive_interfaces.transformer import TransformerPrimitiveBase
-from jhu_primitives.core.JHUGraph import JHUGraph
-
-Input = TypeVar('Input')
-Output = TypeVar('Output')
-Params = TypeVar('Params')
-
-class SeededGraphMatching(TransformerPrimitiveBase[Input, Output, Params]):
-    def produce(self, *, inputs: Sequence[Input]) -> Sequence[Output]:
+    def set_params(self, *, params: Params) -> None:
         pass
+    #UnsupervisedLearner
+    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
+        #produce takes the training dataset and runs seeded graph matching using the seeds
+        #then predicts using the resulting permutation_matrix
 
-    def match(self, *, g1: JHUGraph, g2: JHUGraph, seeds: Any = 0):
-        """
-        TODO: YP description
+        permutation_matrix = np.asmatrix(self._seeded_graph_match(training_data=self._training_dataset))
+        predictions = self._get_predictions(permutation_matrix=permutation_matrix,testing= inputs)
 
-        **Positional Arguments:**
+        return base.CallResult(predictions)
 
-        g1:
-            - The first input graph object - in JHUGraph format
-        g2:
-            - The second input graph object - in JHUGraph format
+    def _get_predictions(self,*, permutation_matrix: np.matrix, inputs: Inputs):
+        testing = inputs['2']
 
-        seeds:
-            - The matrix of seed indices. The first column corresponds to seed index
-              for graph 1 and second column corresponds to seed index for
-              graph 2, where each row corresponds to a seed pair.
-              If empty, assumes no seeds are used.
-        """
+        threshold = self.hyperparams['threshold']
+        for i in range(testing.shape[0]):
+            testing['match'][i] = 0
+            v1 = testing['G1.nodeID'][i]
+            v2 = testing['G2.nodeID'][i]
+            found = False
+            j = 0
+            while not found:
+                if g1_node_attributes[j] == int(v1):
+                    found = True
+                    v1 = j
+                j += 1
+            # print(found)
+            found = False
+            j = 0
 
+            while not found:
+                if g2_node_attributes[j] == int(v2):
+                    found = True
+                    v2 = j
+                j += 1
+
+            if permutation_matrix[v1, v2] > threshold:
+                testing['match'][i] = 1
+            else:
+                testing['match'][i] = 0
+
+        df = container.DataFrame({"d3mIndex": testing['d3mIndex'], "match": testing['match']})
+        return df
+
+    def _seeded_graph_match(self,*,training_data = None):
+        if training_data is None:
+            training_data = self._training_dataset
+        g1 = training_data['0']
+        g2 = training_data['1']
+        seeds = training_data['2']
+        g1_node_attributes = list(networkx.get_node_attributes(g1, 'nodeID').values())
+        g2_node_attributes = list(networkx.get_node_attributes(g2, 'nodeID').values())
+
+        new_seeds = pd.DataFrame(
+            {'G1.nodeID': seeds['G1.nodeID'], 'G2.nodeID': seeds['G2.nodeID'], 'match': seeds['match']})
+        new_seeds = new_seeds[new_seeds['match'] == '1']
+        # we now have a seeds correspondence of nodeIDs,
+        #  but we need a seed correspondence of actual vertex numbers
+
+        # initialize the integer values to nothing:
+        new_seeds['g1_vertex'] = ""
+        new_seeds['g2_vertex'] = ""
+
+        # for every seed, locate the corresponding vertex integer
+        for j in range(new_seeds.shape[0]):
+            found = False
+            i = 0
+            while not found:
+                if (int(new_seeds['G1.nodeID'][j]) == g1_node_attributes[i]):
+                    new_seeds['g1_vertex'][j] = i
+                    found = True
+                i += 1
+
+        for j in range(new_seeds.shape[0]):
+            found = False
+            i = 0
+            while not found:
+                if (int(new_seeds['G2.nodeID'][j]) == g2_node_attributes[i]):
+                    new_seeds['g2_vertex'][j] = i
+                    found = True
+                i += 1
+
+        # store the vertex pairs as an m x 2 array and convert to a matrix
+        seeds_array = numpy.array(new_seeds[['g1_vertex', 'g2_vertex']])
+        seeds_array = seeds_array.astype(int)
+
+        seeds = seeds_array
+        nr, nc = seeds.shape
+        seeds = robjects.r.matrix(seeds, nrow=nr, ncol=nc)
+        robjects.r.assign("seeds", seeds)
+
+        g1_matrix = networkx.to_numpy_array(g1)
+        nr, nc = g1_matrix.shape
+        g1_matrix = ro.r.matrix(g1_matrix, nrow=nr, ncol=nc)
+        ro.r.assign("g1_matrix", g1_matrix)
+
+        g2_matrix = networkx.to_numpy_array(g2)
+        nr, nc = g2_matrix.shape
+        g2_matrix = ro.r.matrix(g2_matrix, nrow=nr, ncol=nc)
+        ro.r.assign("g2_matrix", g2_matrix)
+
+        reps = self.hyperparams['reps']
+        ro.r.assign("reps",reps)
+
+        # run the R code:
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "sgm.interface.R")
-
+                            "sgm.interface.R")
+        path = file_path_conversion(path, uri="")
         cmd = """
-        source("%s")
-        fn <- function(g1, g2, s) {
-            sgm.interface(g1, g2, s)
-        }
-        """ % path
+                source("%s")
+                fn <- function(g1_matrix, g2_matrix, seeds) {
+                    sgm.interface(g1_matrix, g2_matrix, seeds,reps)
+                }
+                """ % path
+        # print(cmd)
+        result = np.array(robjects.r(cmd)(g1_matrix, g2_matrix, seeds,reps))
 
-        return np.array(robjects.r(cmd)(g1._object, g2._object, seeds))
-'''
+        return container.ndarray(result)

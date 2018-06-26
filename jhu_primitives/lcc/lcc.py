@@ -11,9 +11,8 @@ from d3m.primitive_interfaces.base import CallResult
 import igraph
 from networkx import Graph
 
-
-Inputs = Graph
-Outputs = Graph
+Inputs = container.Dataset
+Outputs = container.List
 
 class Params(params.Params):
     pass
@@ -32,7 +31,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.LargestConnectedComponent',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graphs', 'connected', 'largest connected component', 'graph'],
+        'keywords': ['graphs', 'connected', 'largest connected component', 'graph','graph transformation','transformation'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -68,14 +67,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),),
             },
             ],
-        # URIs at which one can obtain code for the primitive, if available.
-        # 'location_uris': [
-        #     'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
-        #         git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-        #     ),
-        # ],
-        # Choose these from a controlled vocabulary in the schema. If anything is missing which would
-        # best describe the primitive, make a merge request.
         'algorithm_types': [
             "NONOVERLAPPING_COMMUNITY_DETECTION"
         ],
@@ -94,10 +85,10 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         """
 
-        G = inputs
+        G = inputs['1']
 
-        if type(G) == igraph.Graph:
-            raise TypeError("Networkx graphs or n x n numpy arrays only")
+        #if type(G) == igraph.Graph:
+        #    raise TypeError("Networkx graphs or n x n numpy arrays only")
 
         if type(G) == numpy.ndarray:
             if G.ndim == 2:
@@ -109,7 +100,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         if type(G) == networkx.classes.graph.Graph: # networkx graph
             g = igraph.Graph(list(G.edges)) # convert to igraph graph, find the clusters
         else:
-            raise TypeError("Networkx graphs or n x n numpy arrays only")
+            raise TypeError("Networkx graphs only")# or n x n numpy arrays only")
             
         components = g.clusters()
         components_len = [len(components[i]) for i in range(len(components))] # find lengths of components (faster way?)
@@ -117,4 +108,5 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         
         G_connected = G.subgraph(largest_component).copy()
 
-        return base.CallResult(G_connected)
+
+        return base.CallResult(container.List([G_connected]))

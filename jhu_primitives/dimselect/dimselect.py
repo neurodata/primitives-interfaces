@@ -177,23 +177,12 @@ class DimensionSelection(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
             elbows - A numpy array containing elbows
         """
 
-        U = inputs
+        #convert U to a matrix:
+        U = self._convert_inputs(inputs=inputs)
 
-        if type(U) == list:
-            U = np.array(X)
 
-        if type(U) == networkx.graph.Graph:
-            hp_ase = AdjacencySpectralEmbedding.Hyperparams({'max_dimension': min(100, len(U))})
-            U = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = U).value[1]**(1/2)
-
-        if type(U) == np.ndarray:
-            if U.ndim == 2:
-                if U.shape[0] == U.shape[1]: # n x n 
-                    hp_ase = AdjacencySpectralEmbedding.Hyperparams({'max_dimension': min(100, U.shape[0])})
-                    U = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = U).value[1]**(1/2)
-            elif U.ndim > 2:
-                raise TypeError("n x d numpy arrays, lists, and networkx graphs supported")
 
         elbows = profile_likelihood_maximization(U, self.hyperparams['n_elbows'], self.hyperparams['error_threshold'])
 
         return base.CallResult(container.ndarray(elbows))
+

@@ -10,7 +10,7 @@ from rpy2 import robjects
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
@@ -23,7 +23,7 @@ import numpy as np
 from networkx import Graph
 
 Inputs = container.List
-Outputs = container.Dataframe
+Outputs = container.DataFrame
 
 class Params(params.Params):
     pis: container.ndarray
@@ -31,11 +31,12 @@ class Params(params.Params):
     covariances: container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
+    hp = None
     #number_of_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
     #seeds = hyperparams.Hyperparameter[np.ndarray](default=np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
     #labels = hyperparams.Hyperparameter[np.ndarray](default=np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
-class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -101,8 +102,8 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         self._training_inputs: Inputs = None
         self._training_outputs: Outputs = None
 
-        self._embedding
 
+        self._embedding: container.ndarray = None
         self._seeds: container.ndarray = None
         self._labels: container.ndarray = None
 
@@ -234,10 +235,10 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
         return base.CallResult(None)
 
-    def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
+    def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
-        self._training_outputs = outputs
-        self._fitted = False
+        #self._training_outputs = outputs
+
 
         """
         if len(seeds) == 0: # run EM if no seeds are given
@@ -255,6 +256,7 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                 if current_bic > BIC_max:
                     BIC_max = current_bic
                     cov_type_likelihood_max = i
+<<<<<<< HEAD
 
             clf = GaussianMixture(n_components = K,
                             covariance_type = cov_type_likelihood_max)
@@ -267,3 +269,22 @@ class GaussianClassification(TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
             return base.CallResult(outputs)
         """
+=======
+
+            clf = GaussianMixture(n_components = K,
+                            covariance_type = cov_type_likelihood_max)
+
+            clf.fit(inputs)
+
+            predictions = clf.predict(inputs)
+
+            outputs = container.ndarray(predictions)
+
+            return base.CallResult(outputs)
+        """
+
+    def get_params(self) -> None:
+        base.CallResult[None]
+    def set_params(self, *, params: Params) -> None:
+        None
+>>>>>>> 95a9db57909f856ee3741f8622c80b0175d8db2d

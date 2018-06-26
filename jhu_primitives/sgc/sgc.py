@@ -8,7 +8,11 @@ from typing import Sequence, TypeVar, Union, Dict
 import os
 import networkx
 
+<<<<<<< HEAD
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
+=======
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
+>>>>>>> 95a9db57909f856ee3741f8622c80b0175d8db2d
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
@@ -23,7 +27,7 @@ from jhu_primitives import GaussianClassification
 import jhu_primitives as jhu
 
 Inputs = container.Dataset
-Outputs = container.Dataframe
+Outputs = container.DataFrame
 
 class Params(params.Params):
     supervised: bool
@@ -34,7 +38,7 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     dim = None
 
-class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -143,6 +147,26 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
 
         csv = self._training_inputs['1']
 
+        outputs = container.ndarray(labels)
+
+        return base.CallResult(outputs)
+
+    def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
+        if self._fitted:
+            return base.CallResult(None)
+
+        #G = container.List([self._training_inputs['0']])
+
+        hp_lcc = jhu.ase.ase.Hyperparams.defaults()
+        G_lcc = LargestConnectedComponent(hyperpararms = hp_lcc).produce(inputs = self._training_inputs)
+
+        hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': len(G_lcc[0]) - 1})
+        G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc)
+
+        self._embedding = G_ase
+
+        csv = self._training_inputs['1']
+
         if len(csv) == 0: # if passed an empty training set, we will use EM (gclust)
             self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': 100}))
             self._supervised = False
@@ -157,7 +181,12 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
         self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
 
         self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds]), outputs = self._training_outputs)
+        labels = container.ndarray(csv['1']['classLabel'])
 
+
+        self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
+
+        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds]), outputs = csv)
         self._CLASSIFICATION = self._CLASSIFICATION.fit()
 
         self._fitted = True
@@ -167,4 +196,14 @@ class SpectralGraphClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperpar
     def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
         self._training_inputs = inputs
         self._training_outputs = outputs
+
+    def get_params(self) -> None:
+        return Params
+
+    def set_params(self, *, params: Params) -> None:
+        pass
+
+    def set_training_data(self, *, inputs: Inputs) -> None:
+        self._training_inputs = inputs
+        #self._training_outputs = outputs
         self._fitted = False
