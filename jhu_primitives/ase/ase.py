@@ -35,6 +35,9 @@ class Hyperparams(hyperparams.Hyperparams):
     max_dimension = hyperparams.Hyperparameter[int](default=100, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ]),
+    n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=
+        ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    ]),
     which_elbow = hyperparams.Hyperparameter[int](default = 2, semantic_types=
         ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
@@ -201,6 +204,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
     def _get_elbows(self,  eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
-                        , n_elbows=self.hyperparams['which_elbow']
+                        , n_elbows=self.hyperparams['n_elbows']
                        )
-        return(elbows[-1])
+        return(elbows[self.hyperparams['which_elbow'] - 1])
