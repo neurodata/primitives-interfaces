@@ -34,10 +34,8 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     max_dimension = hyperparams.Hyperparameter[int](default=100, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ]),
-    n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=
-        ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ]),
+    ])
+    
     which_elbow = hyperparams.Hyperparameter[int](default = 2, semantic_types=
         ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
@@ -173,10 +171,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        G = inputs['0']
+        G = inputs[0]
         if type(G) == networkx.classes.graph.Graph:
-            if len(G) < 10000:
-                G = networkx.to_numpy_array(G)
+            G = networkx.to_numpy_array(G)
 
         A = robjects.Matrix(G)
         robjects.r.assign("A", A)
@@ -204,6 +201,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
     def _get_elbows(self,  eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
-                        , n_elbows=self.hyperparams['n_elbows']
+                        , n_elbows=self.hyperparams['which_elbow']
                        )
-        return(elbows[self.hyperparams['which_elbow'] - 1])
+        return(elbows[-1])
