@@ -175,8 +175,16 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         G = inputs['0']
         if type(G) == networkx.classes.graph.Graph:
+            if networkx.is_weighted(G):
+                G = self._pass_to_ranks(G)
             if len(G) < 10000:
                 G = networkx.to_numpy_array(G)
+        elif type(G) is np.ndarray:
+            G = networkx.to_networkx_graph(G)
+            G = self._pass_to_ranks(G)
+        else:
+            return
+
 
         A = robjects.Matrix(G)
         robjects.r.assign("A", A)
@@ -207,3 +215,28 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                         , n_elbows=self.hyperparams['n_elbows']
                        )
         return(elbows[self.hyperparams['which_elbow'] - 1])
+    def _pass_to_ranks(self,G):
+        #iterates through edges twice
+
+        #initialize edges
+        edges = np.repeat(0,networkx.number_of_edges(G))
+
+        #loop over the edges and store in an array
+        j = 0
+        for u, v, d in G.edges(data=True):
+            edges[j] = d['weight']
+            j += 1
+
+
+        #grab the number of edges
+        nedges = edges.shape[0]
+        ranked_values = np.argsort(edges) #get the index of the sorted elements
+
+        #loop through the edges and assign the new weight:
+        j = 0
+        for u, v, d in G.edges(data=True):
+            edges[j] = ranked_values[j]*2/(nedges + 1)
+            d['weight'] = edges[j]
+            j += 1
+
+        return networkx.to_numpy_array(G)
