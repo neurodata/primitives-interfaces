@@ -1087,12 +1087,16 @@ sgm.interface <- function(g1, g2, S,reps = 1)
         S <- S[,c(2,1)]
     }
 
-    
-    out <- matrix(0,max(n,m),max(n,m))
-    for (j in c(1:reps)) {
-          out <- sgm(A2,A1,S,start = "not")$P + out
+    if (reps == 1) {
+      out <- sgm(A2,A1,S)$P
+    } else {
+      out <- matrix(0,max(n,m),max(n,m))
+      for (j in c(1:reps)) {
+        out <- sgm(A2,A1,S,start = "not")$P + out
+      }
+      
+      out <- out / reps
     }
-    out <- out/reps
    
     return(out)
 }
