@@ -119,7 +119,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         cluster_likelihood_max = 1
         cov_type_likelihood_max = "spherical"
 
-        for i in range(1, max_clusters + 1):
+        for i in range(1, max_clusters + 5):
             for k in cov_types:
                 clf = GaussianMixture(n_components=i, 
                                     covariance_type=k)
