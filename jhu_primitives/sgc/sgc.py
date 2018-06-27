@@ -7,6 +7,7 @@ from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
 import networkx
+import numpy as np
 
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m import container
@@ -34,7 +35,7 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     dim = None
 
-class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
+class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -119,11 +120,11 @@ class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,
         """
 
         if self._supervised:
-            predictions = self._CLASSIFICATION.produce(inputs = self._embedding)
+            predictions = self._CLASSIFICATION.produce(inputs = self._embedding).value
         else:
-            predictions = self._CLUSTERING.produce(inputs = self._embedding)
+            predictions = self._CLUSTERING.produce(inputs = self._embedding).value
 
-        outputs = container.ndarray(labels)
+        outputs = container.ndarray(predictions)
 
         return base.CallResult(outputs)
 
@@ -131,47 +132,44 @@ class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,
         if self._fitted:
             return base.CallResult(None)
 
-        #G = container.List([self._training_inputs['0']])
-
         hp_lcc = jhu.ase.ase.Hyperparams.defaults()
-        G_lcc = LargestConnectedComponent(hyperpararms = hp_lcc).produce(inputs = self._training_inputs)
+        G_lcc = LargestConnectedComponent(hyperparams = hp_lcc).produce(inputs = self._training_inputs).value
 
-        hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': len(G_lcc[0]) - 1})
-        G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc)
+        hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': min(len(G_lcc[0]) - 1, 100), 'which_elbow': 2})
+        G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc).value
 
         self._embedding = G_ase
 
         csv = self._training_inputs['1']
 
         if len(csv) == 0: # if passed an empty training set, we will use EM (gclust)
-            self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': 100}))
             self._supervised = False
+            self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': int(np.floor(np.log(len(G_lcc[0])))),
+                                                                                                'seeds': np.array([]), 
+                                                                                                'labels': np.array([])}
+                                                                                                ))
             self._fitted = True
             return base.CallResult(None)
 
         self._supervised = True
 
-        seeds = container.ndarray(csv['1']['G1.nodeID'])
-        labels = container.ndarray(csv['1']['classLabel'])
-
-
+        seeds = container.ndarray(csv['G1.nodeID'])
+        labels = container.ndarray(csv['classLabel'])
+        
         self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
 
-        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds]), outputs = csv)
-
-        self._CLASSIFICATION = self._CLASSIFICATION.fit()
+        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds, labels]))
+        self._CLASSIFICATION.fit()
 
         self._fitted = True
 
         return base.CallResult(None)
+
+    def set_training_data(self, *, inputs: Inputs) -> None:
+        self._training_inputs = inputs
 
     def get_params(self) -> None:
         return Params
 
     def set_params(self, *, params: Params) -> None:
         pass
-
-    def set_training_data(self, *, inputs: Inputs) -> None:
-        self._training_inputs = inputs
-        #self._training_outputs = outputs
-        self._fitted = False
