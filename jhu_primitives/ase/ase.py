@@ -28,7 +28,7 @@ from ..utils.util import file_path_conversion
 
 
 Inputs = container.List
-Outputs = container.ndarray
+Outputs = container.List
 
 class Params(params.Params):
     pass
@@ -207,7 +207,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         d = self._get_elbows(eigenvalues=eig_values)
         vectors = container.ndarray(result[0])[:,0:d]
 
-        return base.CallResult(vectors)
+        return base.CallResult(container.List([vectors]))
 
     def _get_elbows(self,  eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues

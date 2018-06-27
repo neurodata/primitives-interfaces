@@ -8,7 +8,7 @@ from typing import Sequence, TypeVar, Union, Dict
 import os
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 import numpy as np
 
 from d3m import container
@@ -18,8 +18,8 @@ from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 from sklearn.mixture import GaussianMixture
 
-Inputs = container.ndarray
-Outputs = container.ndarray
+Inputs = container.List
+Outputs = container.DataFrame
 
 class Params(params.Params):
     pass
@@ -29,7 +29,7 @@ class Hyperparams(hyperparams.Hyperparams):
     seeds = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
     labels = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
-class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -106,6 +106,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
             - The number of clusters in which to assign the data
         """
 
+        inputs = inputs[0]
         max_clusters = self.hyperparams['max_clusters']
 
         if max_clusters < inputs.shape[1]:

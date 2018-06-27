@@ -120,9 +120,9 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         """
 
         if self._supervised:
-            predictions = self._CLASSIFICATION.produce(inputs = self._embedding).value
+            predictions = self._CLASSIFICATION.produce(inputs = container.List([self._embedding])).value # dummy input
         else:
-            predictions = self._CLUSTERING.produce(inputs = self._embedding).value
+            predictions = self._CLUSTERING.produce(inputs = container.List([self._embedding])).value
 
         outputs = container.ndarray(predictions)
 
