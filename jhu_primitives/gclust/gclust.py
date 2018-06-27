@@ -144,6 +144,15 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
         return base.CallResult(outputs)
 
+    def set_training_data(self, *, inputs: Inputs) -> None:
+        self._training_inputs = inputs
+        
+    def get_params(self) -> None:
+        return Params
+
+    def set_params(self, *, params: Params) -> None:
+        pass
+
         """
         else:
             clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
