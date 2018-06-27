@@ -24,7 +24,7 @@ def load_args():
 def main():
     pipeline_name = load_args()
 
-    pipeline = GCLASSoASE_pipeline()
+    #pipeline = GMMoASE_pipeline()
     #for pipeline_class in sri.pipelines.all.get_pipelines():
     #    if (pipeline_class.__name__ == pipeline_name):
     #        pipeline = pipeline_class()

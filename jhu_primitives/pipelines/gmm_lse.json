@@ -1,0 +1,82 @@
+{
+    "id": "fb5457d0-40b3-4700-91b3-59e3db4e4089",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2018-06-27T18:37:45.255328Z",
+    "context": "TESTING",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.1.produce",
+            "name": "Predictions"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "id": "32fec24f-6861-4a4c-88f3-d4ec2bc1b486",
+                "version": "0.1.0",
+                "python_path": "d3m.primitives.jhu_primitives.LargestConnectedComponent",
+                "name": "jhu.lcc",
+                "digest": "eb79454e0ecb8e83a7c8fcad86f7a62ff1ca4782eab99b164053fba75eb803bb"
+            }
+        },
+        {
+            "type": "PRIMITIVE",
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.0.produce"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "id": "8fa6178b-84f7-37d8-87e8-4d3a44c86569",
+                "version": "0.3.0",
+                "python_path": "d3m.primitives.jhu_primitives.LaplacianSpectralEmbedding",
+                "name": "jhu.lse",
+                "digest": "eb79454e0ecb8e83a7c8fcad86f7a62ff1ca4782eab99b164053fba75eb803bb"
+            }
+        },
+        {
+            "type": "PRIMITIVE",
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.1.produce"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "id": "5194ef94-3683-319a-9d8d-5c3fdd09de24",
+                "version": "0.1.0",
+                "python_path": "d3m.primitives.jhu_primitives.GaussianClustering",
+                "name": "jhu.gclust",
+                "digest": "eb79454e0ecb8e83a7c8fcad86f7a62ff1ca4782eab99b164053fba75eb803bb"
+            }
+        }
+    ]
+}

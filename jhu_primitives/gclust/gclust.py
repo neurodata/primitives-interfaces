@@ -208,3 +208,6 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
             predictions = applied_label_mapping
             """
+
+    def fit(self, *, timeout: float = None, iterations: int = None) -> None:
+        pass
