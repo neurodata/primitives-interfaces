@@ -108,7 +108,7 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
 
         max_clusters = self.hyperparams['max_clusters']
 
-        if max_clusters < inputs[0].shape[1]:
+        if max_clusters < inputs.shape[1]:
             inputs = inputs[:, :max_clusters].copy()
 
         cov_types = ['full', 'tied', 'diag', 'spherical']
@@ -119,10 +119,10 @@ class GaussianClustering(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams])
         cluster_likelihood_max = 1
         cov_type_likelihood_max = "spherical"
 
-        for i in range(1, max_clusters + 1):
+        for i in range(1, 15):
             for k in cov_types:
                 clf = GaussianMixture(n_components=i, 
-                                    covariance_type=k, n_init = 25)
+                                    covariance_type=k)
 
                 clf.fit(inputs)
 

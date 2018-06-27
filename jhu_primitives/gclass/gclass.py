@@ -22,7 +22,7 @@ from scipy.stats import multivariate_normal as MVN
 import numpy as np
 from networkx import Graph
 
-Inputs = container.ndarray
+Inputs = container.List
 Outputs = container.DataFrame
 
 class Params(params.Params):
@@ -102,8 +102,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._training_inputs: Inputs = None
         self._training_outputs: Outputs = None
 
-        self._embedding: container.ndarray = None
 
+        self._embedding: container.ndarray = None
         self._seeds: container.ndarray = None
         self._labels: container.ndarray = None
 
@@ -129,6 +129,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         n = self._embedding.shape[0]
         final_labels = np.zeros(n)
+
+        unique_labels = np.unique(self._labels)
+        K = len(unique_labels)
 
         if self._PD and self._ENOUGH_SEEDS:
             for i in range(n): 
@@ -159,7 +162,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._seeds = self._training_inputs[1]
         self._seeds = np.array([int(i) for i in self._seeds])
 
-        self._labels = self._training_outputs
+        self._labels = self._training_inputs[2]
         self._labels = np.array([int(i) for i in self._labels])
 
         unique_labels, label_counts = np.unique(self._labels, return_counts = True)
@@ -197,8 +200,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         mean_centered_sums = np.zeros(shape = (K, d, d))
 
-        for i in range(len(seeds)):
-            temp_feature_vector = inputs[self._seeds[i], :]
+        for i in range(len(self._seeds)):
+            temp_feature_vector = self._embedding[self._seeds[i], :].copy()
             temp_label = self._labels[i]
             mean_centered_feature_vector = temp_feature_vector - estimated_means[self._labels[i]]
             temp_feature_vector = np.reshape(temp_feature_vector, (len(temp_feature_vector), 1))
@@ -237,39 +240,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
-        #self._training_outputs = outputs
-        self._fitted = False
-
-        """
-        if len(seeds) == 0: # run EM if no seeds are given
-            cov_types = ['full', 'tied', 'diag', 'spherical']
-
-            BIC_max = 0
-            cov_type_likelihood_max = ""
-            for i in cov_types:
-                clf = GaussianMixture(n_components=K, 
-                                    covariance_type=i, n_init = 50)
-                clf.fit(inputs)
-
-                current_bic = clf.bic(inputs)
-
-                if current_bic > BIC_max:
-                    BIC_max = current_bic
-                    cov_type_likelihood_max = i
-
-            clf = GaussianMixture(n_components = K,
-                            covariance_type = cov_type_likelihood_max)
-
-            clf.fit(inputs)
-
-            predictions = clf.predict(inputs)
-
-            outputs = container.ndarray(predictions)
-
-            return base.CallResult(outputs)
-        """
-
+        
     def get_params(self) -> None:
-        base.CallResult[None]
+        return Params
+
     def set_params(self, *, params: Params) -> None:
-        None
+        pass
