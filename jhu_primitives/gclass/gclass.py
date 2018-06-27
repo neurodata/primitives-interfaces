@@ -130,6 +130,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         n = self._embedding.shape[0]
         final_labels = np.zeros(n)
 
+        unique_labels = np.unique(self._labels)
+        K = len(unique_labels)
+
         if self._PD and self._ENOUGH_SEEDS:
             for i in range(n): 
                 if i not in self._seeds:
@@ -159,7 +162,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._seeds = self._training_inputs[1]
         self._seeds = np.array([int(i) for i in self._seeds])
 
-        self._labels = self._training_outputs
+        self._labels = self._training_inputs[2]
         self._labels = np.array([int(i) for i in self._labels])
 
         unique_labels, label_counts = np.unique(self._labels, return_counts = True)
@@ -197,8 +200,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         mean_centered_sums = np.zeros(shape = (K, d, d))
 
-        for i in range(len(seeds)):
-            temp_feature_vector = inputs[self._seeds[i], :]
+        for i in range(len(self._seeds)):
+            temp_feature_vector = self._embedding[self._seeds[i], :].copy()
             temp_label = self._labels[i]
             mean_centered_feature_vector = temp_feature_vector - estimated_means[self._labels[i]]
             temp_feature_vector = np.reshape(temp_feature_vector, (len(temp_feature_vector), 1))
@@ -237,8 +240,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
-        #self._training_outputs = outputs
-
+        
     def get_params(self) -> None:
         return Params
 

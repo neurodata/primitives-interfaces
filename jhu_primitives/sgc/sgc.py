@@ -35,7 +35,7 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     dim = None
 
-class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
+class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -119,9 +119,6 @@ class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,
 
         """
 
-        print(self._embedding)
-        print(self._embedding.shape)
-
         if self._supervised:
             predictions = self._CLASSIFICATION.produce(inputs = self._embedding).value
         else:
@@ -157,33 +154,22 @@ class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,
         self._supervised = True
 
         seeds = container.ndarray(csv['G1.nodeID'])
-
+        labels = container.ndarray(csv['classLabel'])
+        
         self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
 
-        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds]), outputs = self._training_outputs)
-        labels = container.ndarray(csv['1']['classLabel'])
-
-
-        self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
-
-        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds]), outputs = csv)
-        self._CLASSIFICATION = self._CLASSIFICATION.fit()
+        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds, labels]))
+        self._CLASSIFICATION.fit()
 
         self._fitted = True
 
         return base.CallResult(None)
 
-    def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
+    def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
-        self._training_outputs = outputs
 
     def get_params(self) -> None:
         return Params
 
     def set_params(self, *, params: Params) -> None:
         pass
-
-    def set_training_data(self, *, inputs: Inputs) -> None:
-        self._training_inputs = inputs
-        #self._training_outputs = outputs
-        self._fitted = False
