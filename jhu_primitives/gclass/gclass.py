@@ -238,3 +238,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
         #self._training_outputs = outputs
+
+    def get_params(self) -> None:
+        return Params
+
+    def set_params(self, *, params: Params) -> None:
+        pass

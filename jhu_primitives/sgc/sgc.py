@@ -7,6 +7,7 @@ from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
 import networkx
+import numpy as np
 
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m import container
@@ -118,12 +119,15 @@ class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,
 
         """
 
-        if self._supervised:
-            predictions = self._CLASSIFICATION.produce(inputs = self._embedding)
-        else:
-            predictions = self._CLUSTERING.produce(inputs = self._embedding)
+        print(self._embedding)
+        print(self._embedding.shape)
 
-        outputs = container.ndarray(labels)
+        if self._supervised:
+            predictions = self._CLASSIFICATION.produce(inputs = self._embedding).value
+        else:
+            predictions = self._CLUSTERING.produce(inputs = self._embedding).value
+
+        outputs = container.ndarray(predictions)
 
         return base.CallResult(outputs)
 
@@ -134,7 +138,7 @@ class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,
         hp_lcc = jhu.ase.ase.Hyperparams.defaults()
         G_lcc = LargestConnectedComponent(hyperparams = hp_lcc).produce(inputs = self._training_inputs).value
 
-        hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': len(G_lcc[0]) - 1, 'which_elbow': 2})
+        hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': min(len(G_lcc[0]) - 1, 100), 'which_elbow': 2})
         G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc).value
 
         self._embedding = G_ase
@@ -142,15 +146,17 @@ class SpectralGraphClustering( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,
         csv = self._training_inputs['1']
 
         if len(csv) == 0: # if passed an empty training set, we will use EM (gclust)
-            self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': 100}))
             self._supervised = False
+            self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': int(np.floor(np.log(len(G_lcc[0])))),
+                                                                                                'seeds': np.array([]), 
+                                                                                                'labels': np.array([])}
+                                                                                                ))
             self._fitted = True
             return base.CallResult(None)
 
         self._supervised = True
 
-        seeds = container.ndarray(csv['1']['G1.nodeID'])
-        #labels = container.ndarray(csv['1']['classLabel'])
+        seeds = container.ndarray(csv['G1.nodeID'])
 
         self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
 

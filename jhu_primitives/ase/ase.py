@@ -6,21 +6,23 @@
 # Copyright (c) 2017. All rights reserved.
 
 
+import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
 import networkx
 import igraph
+import os
+import networkx
+from scipy.stats import norm
+
 from rpy2 import robjects
 import rpy2.robjects.numpy2ri
 robjects.numpy2ri.activate()
-import os
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-import numpy as np
 from d3m import utils, container
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
-import networkx
 
 from ..utils.util import file_path_conversion
 
@@ -35,7 +37,7 @@ class Hyperparams(hyperparams.Hyperparams):
     max_dimension = hyperparams.Hyperparameter[int](default=100, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
-    
+
     which_elbow = hyperparams.Hyperparameter[int](default = 2, semantic_types=
         ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
