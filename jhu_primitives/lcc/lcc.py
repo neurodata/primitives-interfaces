@@ -9,8 +9,7 @@ from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 import igraph
-import networkx
-
+from networkx import Graph
 
 Inputs = container.Dataset
 Outputs = container.List
@@ -86,19 +85,19 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         """
 
-        G = inputs['1']
+        G = inputs['0']
 
         #if type(G) == igraph.Graph:
         #    raise TypeError("Networkx graphs or n x n numpy arrays only")
 
-        #if type(G) == numpy.ndarray:
-        #    if G.ndim == 2:
-        #        if G.shape[0] == G.shape[1]: # n x n matrix
-        #            G = networkx.Graph(G)
-        #        else:
-        #            raise TypeError("Networkx graphs or n x n numpy arrays only") 
-                
-        if type(G) == networkx.classes.graph.Graph: # networkx graph
+        if type(G) == numpy.ndarray:
+            if G.ndim == 2:
+                if G.shape[0] == G.shape[1]: # n x n matrix
+                    G = Graph(G)
+                else:
+                    raise TypeError("Networkx graphs or n x n numpy arrays only") 
+
+        if type(G) == Graph: # networkx graph
             g = igraph.Graph(list(G.edges)) # convert to igraph graph, find the clusters
         else:
             raise TypeError("Networkx graphs only")# or n x n numpy arrays only")

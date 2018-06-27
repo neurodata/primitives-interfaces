@@ -6,21 +6,23 @@
 # Copyright (c) 2017. All rights reserved.
 
 
+import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
 import networkx
 import igraph
+import os
+import networkx
+from scipy.stats import norm
+
 from rpy2 import robjects
 import rpy2.robjects.numpy2ri
 robjects.numpy2ri.activate()
-import os
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-import numpy as np
 from d3m import utils, container
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
-import networkx
 
 from ..utils.util import file_path_conversion
 
@@ -34,10 +36,8 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     max_dimension = hyperparams.Hyperparameter[int](default=100, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ]),
-    n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=
-        ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ]),
+    ])
+
     which_elbow = hyperparams.Hyperparameter[int](default = 2, semantic_types=
         ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
@@ -173,12 +173,11 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        G = inputs
+
+        G = inputs[0]
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
                 G = self._pass_to_ranks(G)
-            if len(G) < 10000:
-                G = networkx.to_numpy_array(G)
         elif type(G) is np.ndarray:
             G = networkx.to_networkx_graph(G)
             G = self._pass_to_ranks(G)
@@ -212,9 +211,12 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
     def _get_elbows(self,  eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
-                        , n_elbows=self.hyperparams['n_elbows']
+                        , n_elbows=self.hyperparams['which_elbow']
                        )
-        return(elbows[self.hyperparams['which_elbow'] - 1])
+
+        return(elbows[-1])
+
+        
     def _pass_to_ranks(self,G):
         #iterates through edges twice
 
@@ -240,3 +242,4 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             j += 1
 
         return networkx.to_numpy_array(G)
+
