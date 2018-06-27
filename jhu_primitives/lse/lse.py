@@ -29,10 +29,7 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     d_max = hyperparams.Hyperparameter[int](default=100, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ]),
-    n_elbows = hyperparams.Hyperparameter[int](default=3, semantic_types=
-    ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
-     ]),
+    ])
     which_elbow = hyperparams.Hyperparameter[int](default=2, semantic_types=
     ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
      ])
@@ -169,13 +166,11 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
 #    def embed(self, *, g : JHUGraph, dim: int):
 
-        G = inputs
+        G = inputs[0]
 
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
                 G = self._pass_to_ranks(G)
-            if len(G) < 10000:
-                G = networkx.to_numpy_array(G)
         elif type(G) is np.ndarray:
             G = networkx.to_networkx_graph(G)
             G = self._pass_to_ranks(G)
@@ -210,9 +205,9 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
     def _get_elbows(self, eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
-                                                   , n_elbows=self.hyperparams['n_elbows']
+                                                   , n_elbows=self.hyperparams['which_elbow']
                                                    )
-        return (elbows[self.hyperparams['which_elbow'] - 1])
+        return (elbows[- 1])
 
     def _pass_to_ranks(self,G):
         #iterates through edges twice
