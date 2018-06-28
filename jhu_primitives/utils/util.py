@@ -33,7 +33,6 @@ def file_path_conversion(abs_file_path, uri="file"):
         return local_drive + ":" + s
 
 def generate_json():
-
     version = "-1"
 
     while version == "-1":
