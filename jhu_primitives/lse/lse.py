@@ -10,6 +10,8 @@ import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 import numpy as np
 import networkx
+from scipy.stats import rankdata
+from scipy.stats import norm
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from d3m import container
@@ -224,8 +226,10 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         #grab the number of edges
         nedges = edges.shape[0]
-        ranked_values = np.argsort(edges) #get the index of the sorted elements
-        ranked_values = np.argsort(ranked_values) + 1
+        #ranked_values = np.argsort(edges) #get the index of the sorted elements
+        #ranked_values = np.argsort(ranked_values) + 1
+        ranked_values = rankdata(edges)
+
         #loop through the edges and assign the new weight:
         j = 0
         for u, v, d in G.edges(data=True):
