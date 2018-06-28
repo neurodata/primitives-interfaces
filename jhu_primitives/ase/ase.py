@@ -233,34 +233,50 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                         , n_elbows=self.hyperparams['which_elbow']
                        )
         return(elbows[-1])
-
         
-    def _pass_to_ranks(self,G):
+    def _pass_to_ranks(self, G, matrix = False):
         #iterates through edges twice
 
         #initialize edges
-        edges = np.repeat(0,networkx.number_of_edges(G))
+        if not matrix:
+            edges = np.repeat(0,networkx.number_of_edges(G))
 
-        #loop over the edges and store in an array
-        j = 0
-        for u, v, d in G.edges(data=True):
-            edges[j] = d['weight']
-            j += 1
+            #loop over the edges and store in an array
+            j = 0
+            for u, v, d in G.edges(data=True):
+                edges[j] = d['weight']
+                j += 1
 
 
-        #grab the number of edges
-        nedges = networkx.number_of_edges(G)
-        #ranked_values = np.argsort(edges) #+ 1#get the index of the sorted elements
-        #ranked_values = np.argsort(ranked_values) + 1
-        ranked_values = rankdata(edges)
-        #loop through the edges and assign the new weight:
-        j = 0
-        for u, v, d in G.edges(data=True):
-            edges[j] = (ranked_values[j]*2)/(nedges + 1)
-            d['weight'] = edges[j]
-            j += 1
+            #grab the number of edges
+            nedges = networkx.number_of_edges(G)
+            #ranked_values = np.argsort(edges) #+ 1#get the index of the sorted elements
+            #ranked_values = np.argsort(ranked_values) + 1
+            ranked_values = rankdata(edges)
+            #loop through the edges and assign the new weight:
+            j = 0
+            for u, v, d in G.edges(data=True):
+                edges[j] = (ranked_values[j]*2)/(nedges + 1)
+                d['weight'] = edges[j]
+                j += 1
 
-        return networkx.to_numpy_array(G)
+            return networkx.to_numpy_array(G)
+        else:
+            n = len(G)
+            similarity_mat = numpy.zeros(shape = (n, n))
+            for i in range(n):
+                for k in range(i + 1, n):
+                    temp = -np.sqrt((G[i] - G[k])**2)
+                    similarity_mat[i,k] = np.exp(temp)
+                    similarity_mat[k,i] = similarity_mat[i,k]
+            unraveled_sim = similarity_sim.ravel()
+            sorted_indices = numpy.argsort(unraveled_sim)
+            E = int((n**2 - n)/2) # or E = int(len(single)/a1_sim.shape[0]) 
+            for i in range(E):
+                unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1)]] = i/E
+                unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1) + 1]] = i/E
+            ptr = unraveled_sim.reshape((n,n))
+            return ptr
 
     def _ommni(self, list_of_sim_matrices):
         """
