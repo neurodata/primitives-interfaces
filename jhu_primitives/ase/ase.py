@@ -275,8 +275,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             for i in range(E):
                 unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1)]] = i/E
                 unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1) + 1]] = i/E
-            ptr = unraveled_sim.reshape((n,n))
-            return ptr
+            ptred = unraveled_sim.reshape((n,n))
+            return ptred
 
     def _ommni(self, list_of_sim_matrices):
         """
@@ -286,20 +286,17 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         Returns
             omni - The omni of the adjacency matrix and its attributes
         """
-
-        adj = [G]
-
-
         omni = zeros(shape = (300,300))
 
-        for i in range(len(adj)):
-            for j in range(i, len(adj)):
-                for k in range(A.shape[0]):
-                    for m in range(k + 1, A.shape[1]):
+        for i in range(len(list_of_sim_matrices)):
+            for j in range(i, len(list_of_sim_matrices)):
+                for k in range(list_of_sim_matrices.shape[0]):
+                    for m in range(k + 1, list_of_sim_matrices.shape[1]):
                         if i == j:
-                            omni[i*100 + k, j*100 + m] = adj[i][k, m] 
-                            omni[j*100 + m, i*100 + k] = adj[i][k, m] # symmetric
+                            omni[i*100 + k, j*100 + m] = list_of_sim_matrices[i][k, m] 
+                            omni[j*100 + m, i*100 + k] = list_of_sim_matrices[i][k, m] # symmetric
                         else:
-                            omni[i*100 + k, j*100 + m] = (adj[i][k,m] + adj[j][k,m])/2
-                            omni[j*100 + m, i*100 + k] = (adj[i][k,m] + adj[j][k,m])/2
+                            omni[i*100 + k, j*100 + m] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
+                            omni[j*100 + m, i*100 + k] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
 
+        return omni

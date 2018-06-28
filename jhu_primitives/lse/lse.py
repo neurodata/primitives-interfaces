@@ -32,9 +32,14 @@ class Hyperparams(hyperparams.Hyperparams):
     d_max = hyperparams.Hyperparameter[int](default=100, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
-    which_elbow = hyperparams.Hyperparameter[int](default=2, semantic_types=
-    ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
-     ])
+
+    which_elbow = hyperparams.Hyperparameter[int](default=2, semantic_types=[
+        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    ])
+
+    use_attributes = hyperparams.Hyperparameter[bool](default = False, semantic_types = [
+        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    ])
 
 class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -172,14 +177,30 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
-                G = self._pass_to_ranks(G)
+                g = self._pass_to_ranks(G)
         elif type(G) is np.ndarray:
             G = networkx.to_networkx_graph(G)
-            G = self._pass_to_ranks(G)
+            g = self._pass_to_ranks(G)
         else:
             return
 
-        A = robjects.Matrix(G)
+        if use_attributes:
+            adj = [g]
+            MORE_ATTR = True
+            attr_number = 1
+            while MORE_ATTR:
+                temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + attr_number).values()))
+                if len(temp_attr) == 0:
+                    MORE_ATTR = False
+                else:
+                    adj.append(temp_attr)
+                    attr_number += 1
+            for i in range(1, len(adj)):
+                adj[i] = self._pass_to_ranks(self, G, matrix = True)
+
+            g = self._omni(adj)
+
+        A = robjects.Matrix(g)
         robjects.r.assign("A", A)
 
         d_max = self.hyperparams['d_max']
@@ -195,7 +216,6 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         }
         """ % path
 
-
         result = robjects.r(cmd)(A, d_max)
         eig_values = container.ndarray(result[1])
 
@@ -204,37 +224,53 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         return base.CallResult(container.List([vectors]))
 
-
     def _get_elbows(self, eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
                                                    , n_elbows=self.hyperparams['which_elbow']
                                                    )
         return (elbows[- 1])
 
-    def _pass_to_ranks(self,G):
+    def _pass_to_ranks(self, G, matrix = False):
         #iterates through edges twice
 
         #initialize edges
-        edges = np.repeat(0,networkx.number_of_edges(G))
+        if not matrix:
+            edges = np.repeat(0,networkx.number_of_edges(G))
 
-        #loop over the edges and store in an array
-        j = 0
-        for u, v, d in G.edges(data=True):
-            edges[j] = d['weight']
-            j += 1
+            #loop over the edges and store in an array
+            j = 0
+            for u, v, d in G.edges(data=True):
+                edges[j] = d['weight']
+                j += 1
 
 
-        #grab the number of edges
-        nedges = edges.shape[0]
-        #ranked_values = np.argsort(edges) #get the index of the sorted elements
-        #ranked_values = np.argsort(ranked_values) + 1
-        ranked_values = rankdata(edges)
+            #grab the number of edges
+            nedges = networkx.number_of_edges(G)
+            #ranked_values = np.argsort(edges) #+ 1#get the index of the sorted elements
+            #ranked_values = np.argsort(ranked_values) + 1
+            ranked_values = rankdata(edges)
+            #loop through the edges and assign the new weight:
+            j = 0
+            for u, v, d in G.edges(data=True):
+                edges[j] = (ranked_values[j]*2)/(nedges + 1)
+                d['weight'] = edges[j]
+                j += 1
 
-        #loop through the edges and assign the new weight:
-        j = 0
-        for u, v, d in G.edges(data=True):
-            edges[j] = ranked_values[j]*2/(nedges + 1)
-            d['weight'] = edges[j]
-            j += 1
+            return networkx.to_numpy_array(G)
 
-        return networkx.to_numpy_array(G)
+        else:
+            n = len(G)
+            similarity_mat = numpy.zeros(shape = (n, n))
+            for i in range(n):
+                for k in range(i + 1, n):
+                    temp = -np.sqrt((G[i] - G[k])**2)
+                    similarity_mat[i,k] = np.exp(temp)
+                    similarity_mat[k,i] = similarity_mat[i,k]
+            unraveled_sim = similarity_sim.ravel()
+            sorted_indices = numpy.argsort(unraveled_sim)
+            E = int((n**2 - n)/2) # or E = int(len(single)/a1_sim.shape[0]) 
+            for i in range(E):
+                unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1)]] = i/E
+                unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1) + 1]] = i/E
+            ptred = unraveled_sim.reshape((n,n))
+            return ptred
