@@ -13,7 +13,7 @@ import igraph
 import os
 import networkx
 from scipy.stats import norm
-
+from scipy.stats import rankdata
 from rpy2 import robjects
 import rpy2.robjects.numpy2ri
 robjects.numpy2ri.activate()
@@ -232,8 +232,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         #grab the number of edges
         nedges = networkx.number_of_edges(G)
-        ranked_values = np.argsort(edges) #+ 1#get the index of the sorted elements
-        ranked_values = np.argsort(ranked_values) + 1
+        #ranked_values = np.argsort(edges) #+ 1#get the index of the sorted elements
+        #ranked_values = np.argsort(ranked_values) + 1
+        ranked_values = rankdata(edges)
         #loop through the edges and assign the new weight:
         j = 0
         for u, v, d in G.edges(data=True):
