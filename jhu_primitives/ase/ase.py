@@ -181,28 +181,54 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         G = inputs[0]
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
-                g = self._pass_to_ranks(G)
+                E = int(network.get_number_of_edges(G))
+                g = self._pass_to_ranks(G, nedges = E)
+            else:
+                g = networkx.to_numpy_array(G)
+                E = int(sum(g.ravel()))
         elif type(G) is np.ndarray:
             G = networkx.to_networkx_graph(G)
-            g = self._pass_to_ranks(G)
+            E = int(network.get_number_of_edges(G))
+            g = self._pass_to_ranks(G, nedges = E)
         else:
             raise ValueError("networkx Graph and n x d numpy arrays only")
 
-        if use_attributes:
+        n = g.shape[0]
+
+        if self.hyperparams['use_attributes']:
             adj = [g]
             MORE_ATTR = True
             attr_number = 1
             while MORE_ATTR:
-                temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + attr_number).values()))
+                attr = 'attr' 
+                temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + str(attr_number)).values()))
                 if len(temp_attr) == 0:
                     MORE_ATTR = False
                 else:
                     adj.append(temp_attr)
                     attr_number += 1
             for i in range(1, len(adj)):
-                adj[i] = self._pass_to_ranks(self, G, matrix = True)
+                adj[i] = self._pass_to_ranks(adj[i], nedges = E, matrix = True)
 
             g = self._omni(adj)
+            M = len(adj)
+
+            eig_vectors, eig_values, _ = np.linalg.svd(g)
+            d = self._get_elbows(eigenvalues=eig_values)
+
+            X_hat = eig_vectors[:, :d]
+
+            avg = np.zeros(shape = (n, d))
+
+            for i in range(M):
+                for j in range(n):
+                    avg[j] += X_hat[i*n + j]
+            for j in range(n):
+                avg[j, :] = avg[j,:]/M
+
+            embedding = avg.copy()
+
+            return base.CallResult(container.List([container.ndarray(embedding)]))
 
         A = robjects.Matrix(g)
         robjects.r.assign("A", A)
@@ -222,11 +248,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         result = robjects.r(cmd)(A, d_max)
         eig_values = container.ndarray(result[1])
+        eig_vectors = container.ndarray(result[0])
 
-        d = self._get_elbows(eigenvalues=eig_values)
-        vectors = container.ndarray(result[0])[:,0:d]
-
-        return base.CallResult(container.List([vectors]))
+        return base.CallResult(container.List([container.ndarray(embedding)]))        
 
     def _get_elbows(self,  eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
@@ -234,12 +258,12 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                        )
         return(elbows[-1])
         
-    def _pass_to_ranks(self, G, matrix = False):
+    def _pass_to_ranks(self, G, nedges = 0, matrix = False):
         #iterates through edges twice
 
         #initialize edges
         if not matrix:
-            edges = np.repeat(0,networkx.number_of_edges(G))
+            edges = np.repeat(0, nedges)
 
             #loop over the edges and store in an array
             j = 0
@@ -247,9 +271,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 edges[j] = d['weight']
                 j += 1
 
-
-            #grab the number of edges
-            nedges = networkx.number_of_edges(G)
             #ranked_values = np.argsort(edges) #+ 1#get the index of the sorted elements
             #ranked_values = np.argsort(ranked_values) + 1
             ranked_values = rankdata(edges)
@@ -263,22 +284,33 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             return networkx.to_numpy_array(G)
         else:
             n = len(G)
-            similarity_mat = numpy.zeros(shape = (n, n))
+            similarity_mat = np.zeros(shape = (n, n))
             for i in range(n):
                 for k in range(i + 1, n):
                     temp = -np.sqrt((G[i] - G[k])**2)
                     similarity_mat[i,k] = np.exp(temp)
                     similarity_mat[k,i] = similarity_mat[i,k]
-            unraveled_sim = similarity_sim.ravel()
-            sorted_indices = numpy.argsort(unraveled_sim)
-            E = int((n**2 - n)/2) # or E = int(len(single)/a1_sim.shape[0]) 
+            unraveled_sim = similarity_mat.ravel()
+            sorted_indices = np.argsort(unraveled_sim)
+
+            #if nedges == 0:
+            E = int((n**2 - n)/2) # or E = int(len(single)/a1_sim.shape[0])
             for i in range(E):
                 unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1)]] = i/E
                 unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1) + 1]] = i/E
+
+            #else:
+            #    for i in range(nedges):
+            #        unraveled_sim[sorted_indices[-2*i - 1]] = (nedges - i)/nedges
+            #        unraveled_sim[sorted_indices[-2*i - 2]] = (nedges - i)/nedges
+
+            #    for i in range(n**2 - nedges):
+            #        unraveled_sim[sorted_indices[i]] = 0
+
             ptred = unraveled_sim.reshape((n,n))
             return ptred
 
-    def _ommni(self, list_of_sim_matrices):
+    def _omni(self, list_of_sim_matrices):
         """
         Inputs
             list_of_sim_matrices - The adjacencies to create the omni for
@@ -286,17 +318,22 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         Returns
             omni - The omni of the adjacency matrix and its attributes
         """
-        omni = zeros(shape = (300,300))
 
-        for i in range(len(list_of_sim_matrices)):
-            for j in range(i, len(list_of_sim_matrices)):
-                for k in range(list_of_sim_matrices.shape[0]):
-                    for m in range(k + 1, list_of_sim_matrices.shape[1]):
+        M = len(list_of_sim_matrices)
+        n = len(list_of_sim_matrices[0])
+        omni = np.zeros(shape = (M*n, M*n))
+
+        for i in range(M):
+            for j in range(i, M):
+                for k in range(n):
+                    for m in range(k + 1, n):
                         if i == j:
-                            omni[i*100 + k, j*100 + m] = list_of_sim_matrices[i][k, m] 
-                            omni[j*100 + m, i*100 + k] = list_of_sim_matrices[i][k, m] # symmetric
+                            omni[i*n + k, j*n + m] = list_of_sim_matrices[i][k, m] 
+                            omni[j*n + m, i*n + k] = list_of_sim_matrices[i][k, m] # symmetric
                         else:
-                            omni[i*100 + k, j*100 + m] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
-                            omni[j*100 + m, i*100 + k] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
+                            omni[i*n + k, j*n + m] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
+                            omni[j*n + m, i*n + k] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
+
+
 
         return omni
