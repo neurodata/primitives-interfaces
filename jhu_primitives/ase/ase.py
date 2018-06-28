@@ -34,12 +34,16 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    max_dimension = hyperparams.Hyperparameter[int](default=100, semantic_types=[
+    max_dimension = hyperparams.Hyperparameter[int](default=100, semantic_types= [
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
-    which_elbow = hyperparams.Hyperparameter[int](default = 2, semantic_types=
-        ['https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    which_elbow = hyperparams.Hyperparameter[int](default = 2, semantic_types= [
+        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    ])
+
+    use_attributes = hyperparams.Hyperparameter[bool](default = False, semantic_types = [
+        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
 class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
@@ -177,15 +181,30 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         G = inputs[0]
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
-                G = self._pass_to_ranks(G)
+                g = self._pass_to_ranks(G)
         elif type(G) is np.ndarray:
             G = networkx.to_networkx_graph(G)
-            G = self._pass_to_ranks(G)
+            g = self._pass_to_ranks(G)
         else:
-            return
+            raise ValueError("networkx Graph and n x d numpy arrays only")
 
+        if use_attributes:
+            adj = [g]
+            MORE_ATTR = True
+            attr_number = 1
+            while MORE_ATTR:
+                temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + attr_number).values()))
+                if len(temp_attr) == 0:
+                    MORE_ATTR = False
+                else:
+                    adj.append(temp_attr)
+                    attr_number += 1
+            for i in range(1, len(adj)):
+                adj[i] = self._pass_to_ranks(self, G, matrix = True)
 
-        A = robjects.Matrix(G)
+            g = self._omni(adj)
+
+        A = robjects.Matrix(g)
         robjects.r.assign("A", A)
 
         d_max = self.hyperparams['max_dimension']
@@ -213,7 +232,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         elbows = self._profile_likelihood_maximization(U=eigenvalues
                         , n_elbows=self.hyperparams['which_elbow']
                        )
-
         return(elbows[-1])
 
         
@@ -242,4 +260,29 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             j += 1
 
         return networkx.to_numpy_array(G)
+
+    def _ommni(self, list_of_sim_matrices):
+        """
+        Inputs
+            list_of_sim_matrices - The adjacencies to create the omni for
+
+        Returns
+            omni - The omni of the adjacency matrix and its attributes
+        """
+
+        adj = [G]
+
+
+        omni = zeros(shape = (300,300))
+
+        for i in range(len(adj)):
+            for j in range(i, len(adj)):
+                for k in range(A.shape[0]):
+                    for m in range(k + 1, A.shape[1]):
+                        if i == j:
+                            omni[i*100 + k, j*100 + m] = adj[i][k, m] 
+                            omni[j*100 + m, i*100 + k] = adj[i][k, m] # symmetric
+                        else:
+                            omni[i*100 + k, j*100 + m] = (adj[i][k,m] + adj[j][k,m])/2
+                            omni[j*100 + m, i*100 + k] = (adj[i][k,m] + adj[j][k,m])/2
 
