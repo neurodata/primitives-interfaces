@@ -123,6 +123,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         Returns
             labels - Class labels for each unlabeled vertex
         """
+        nodeID = inputs['1']
+        d3mIndex = inputs['2']
 
         if not self._fitted:
             raise ValueError("Not fitted")
@@ -240,6 +242,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
+
+    def get_predictions(self, *, inputs: Inputs) ->
         
     def get_params(self) -> None:
         return Params

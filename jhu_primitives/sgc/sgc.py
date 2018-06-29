@@ -120,13 +120,17 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         """
 
         if self._supervised:
-            predictions = self._CLASSIFICATION.produce(inputs = container.List([self._embedding])).value # dummy input
+            csv = inputs['0']
+            nodeID = csv['G1.nodeID']
+            d3mIndex = csv['d3mIndex']
+
+            predictions = self._CLASSIFICATION.produce(inputs = container.List([self._embedding, nodeID, d3mIndex])).value
         else:
             predictions = self._CLUSTERING.produce(inputs = container.List([self._embedding])).value
 
-        outputs = container.ndarray(predictions)
+        #outputs = container.ndarray(predictions)
 
-        return base.CallResult(outputs)
+        return base.CallResult(predictions)
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
         if self._fitted:
