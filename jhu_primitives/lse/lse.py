@@ -184,21 +184,44 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         else:
             return
 
-        if use_attributes:
+        n = g.shape[0]
+
+        if self.hyperparams['use_attributes']:
             adj = [g]
             MORE_ATTR = True
             attr_number = 1
             while MORE_ATTR:
-                temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + attr_number).values()))
+                attr = 'attr' 
+                temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + str(attr_number)).values()))
                 if len(temp_attr) == 0:
                     MORE_ATTR = False
                 else:
                     adj.append(temp_attr)
                     attr_number += 1
             for i in range(1, len(adj)):
-                adj[i] = self._pass_to_ranks(self, G, matrix = True)
+                adj[i] = self._pass_to_ranks(adj[i], nedges = E, matrix = True)
 
             g = self._omni(adj)
+            M = len(adj)
+
+            eig_vectors, eig_values, _ = np.linalg.svd(g)
+            d = self._get_elbows(eigenvalues=eig_values)
+
+            X_hat = eig_vectors[:, :d]
+
+            avg = np.zeros(shape = (n, d))
+
+            for i in range(M):
+                for j in range(n):
+                    avg[j] += X_hat[i*n + j]
+            for j in range(n):
+                avg[j, :] = avg[j,:]/M
+
+            embedding = avg.copy()
+
+            inputs[0] = embedding
+
+            return base.CallResult(inputs)
 
         A = robjects.Matrix(g)
         robjects.r.assign("A", A)
@@ -222,7 +245,9 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         d = self._get_elbows(eigenvalues=eig_values)
         vectors = container.ndarray(result[0])[:,0:d]
 
-        return base.CallResult(container.List([vectors]))
+        inputs[0] = vectors
+
+        return base.CallResult(inputs)
 
     def _get_elbows(self, eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
@@ -260,17 +285,53 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         else:
             n = len(G)
-            similarity_mat = numpy.zeros(shape = (n, n))
+            similarity_mat = np.zeros(shape = (n, n))
             for i in range(n):
                 for k in range(i + 1, n):
                     temp = -np.sqrt((G[i] - G[k])**2)
                     similarity_mat[i,k] = np.exp(temp)
                     similarity_mat[k,i] = similarity_mat[i,k]
-            unraveled_sim = similarity_sim.ravel()
-            sorted_indices = numpy.argsort(unraveled_sim)
-            E = int((n**2 - n)/2) # or E = int(len(single)/a1_sim.shape[0]) 
-            for i in range(E):
-                unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1)]] = i/E
-                unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1) + 1]] = i/E
+            unraveled_sim = similarity_mat.ravel()
+            sorted_indices = np.argsort(unraveled_sim)
+
+            if nedges == 0:
+                E = int((n**2 - n)/2) # or E = int(len(single)/a1_sim.shape[0])
+                for i in range(E):
+                    unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1)]] = i/E
+                    unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1) + 1]] = i/E
+
+            else:
+                for i in range(nedges):
+                    unraveled_sim[sorted_indices[-2*i - 1]] = (nedges - i)/nedges
+                    unraveled_sim[sorted_indices[-2*i - 2]] = (nedges - i)/nedges
+
+                for i in range(n**2 - int(2*nedges)):
+                    unraveled_sim[sorted_indices[i]] = 0
+
             ptred = unraveled_sim.reshape((n,n))
             return ptred
+
+    def _omni(self, list_of_sim_matrices):
+        """
+        Inputs
+            list_of_sim_matrices - The adjacencies to create the omni for
+
+        Returns
+            omni - The omni of the adjacency matrix and its attributes
+        """
+
+        M = len(list_of_sim_matrices)
+        n = len(list_of_sim_matrices[0])
+        omni = np.zeros(shape = (M*n, M*n))
+
+        for i in range(M):
+            for j in range(i, M):
+                for k in range(n):
+                    for m in range(k + 1, n):
+                        if i == j:
+                            omni[i*n + k, j*n + m] = list_of_sim_matrices[i][k, m] 
+                            omni[j*n + m, i*n + k] = list_of_sim_matrices[i][k, m] # symmetric
+                        else:
+                            omni[i*n + k, j*n + m] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
+                            omni[j*n + m, i*n + k] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
+        return omni

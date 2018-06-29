@@ -228,7 +228,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
             embedding = avg.copy()
 
-            return base.CallResult(container.List([container.ndarray(embedding)]))
+            inputs[0] = embedding
+
+            return base.CallResult(inputs)
 
         A = robjects.Matrix(g)
         robjects.r.assign("A", A)
@@ -248,9 +250,13 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         result = robjects.r(cmd)(A, d_max)
         eig_values = container.ndarray(result[1])
-        eig_vectors = container.ndarray(result[0])
 
-        return base.CallResult(container.List([container.ndarray(embedding)]))        
+        d = self._get_elbows(eigenvalues=eig_values)
+        vectors = container.ndarray(result[0])[:,0:d]
+
+        inputs[0] = vectors
+
+        return base.CallResult(inputs)        
 
     def _get_elbows(self,  eigenvalues):
         elbows = self._profile_likelihood_maximization(U=eigenvalues
@@ -293,19 +299,19 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             unraveled_sim = similarity_mat.ravel()
             sorted_indices = np.argsort(unraveled_sim)
 
-            #if nedges == 0:
-            E = int((n**2 - n)/2) # or E = int(len(single)/a1_sim.shape[0])
-            for i in range(E):
-                unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1)]] = i/E
-                unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1) + 1]] = i/E
+            if nedges == 0:
+                E = int((n**2 - n)/2) # or E = int(len(single)/a1_sim.shape[0])
+                for i in range(E):
+                    unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1)]] = i/E
+                    unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1) + 1]] = i/E
 
-            #else:
-            #    for i in range(nedges):
-            #        unraveled_sim[sorted_indices[-2*i - 1]] = (nedges - i)/nedges
-            #        unraveled_sim[sorted_indices[-2*i - 2]] = (nedges - i)/nedges
+            else:
+                for i in range(nedges):
+                    unraveled_sim[sorted_indices[-2*i - 1]] = (nedges - i)/nedges
+                    unraveled_sim[sorted_indices[-2*i - 2]] = (nedges - i)/nedges
 
-            #    for i in range(n**2 - nedges):
-            #        unraveled_sim[sorted_indices[i]] = 0
+                for i in range(n**2 - int(2*nedges)):
+                    unraveled_sim[sorted_indices[i]] = 0
 
             ptred = unraveled_sim.reshape((n,n))
             return ptred

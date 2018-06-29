@@ -87,6 +87,14 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         G = inputs['0']
 
+        csv = inputs['1']
+
+        if len(csv) != 0:
+            seeds = container.ndarray(csv['G1.nodeID'])
+            labels = container.ndarray(csv['classLabel'])
+
+            return base.CallResult(container.List([G, seeds, labels]))
+
         #if type(G) == igraph.Graph:
         #    raise TypeError("Networkx graphs or n x n numpy arrays only")
 
