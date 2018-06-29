@@ -26,8 +26,8 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-    seeds = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-    labels = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
+    #seeds = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
+    #labels = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
 class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
@@ -140,9 +140,19 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
         predictions = clf.predict(inputs)
 
-        outputs = container.ndarray(predictions)
+        testing = inputs[2]
+        testing_nodeIDs = np.asarray(testing['G1.nodeID'])
+        final_labels = np.zeros(len(testing))
 
+        for i in range(len(testing_nodeIDs)):
+            temp = np.where(self._nodeIDs == testing_nodeIDs[i])[0][0]
+            label = predictions[temp]
+            final_labels[i] = label
+
+        testing['classLabel'] = final_labels
+        outputs = container.DataFrame(testing[['d3mIndex', 'classLabel']])
         return base.CallResult(outputs)
+
 
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs

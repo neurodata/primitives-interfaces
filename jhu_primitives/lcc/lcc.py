@@ -84,16 +84,16 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             The largest connected component of g
 
         """
-
         G = inputs['0']
-
         csv = inputs['1']
 
-        if len(csv) != 0:
-            seeds = container.ndarray(csv['G1.nodeID'])
-            labels = container.ndarray(csv['classLabel'])
 
-            return base.CallResult(container.List([G, seeds, labels]))
+
+        if len(csv) != 0:
+            #seeds = container.ndarray(csv['G1.nodeID'])
+            #labels = container.ndarray(csv['classLabel'])
+            nodeIDs = list(networkx.get_node_attributes(G, 'nodeID').values())
+            return base.CallResult(container.List([G, nodeIDs,csv]))
 
         #if type(G) == igraph.Graph:
         #    raise TypeError("Networkx graphs or n x n numpy arrays only")
@@ -115,6 +115,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         largest_component = components[numpy.argmax(components_len)]
         
         G_connected = G.subgraph(largest_component).copy()
+        nodeIDs = list(networkx.get_node_attributes(G_connected, 'nodeID').values())
 
 
-        return base.CallResult(container.List([G_connected]))
+        return base.CallResult(container.List([G_connected,nodeIDs]))

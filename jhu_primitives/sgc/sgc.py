@@ -105,6 +105,7 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         self._CLASSIFICATION: GaussianClassification = None
         self._CLUSTERING: GaussianClustering = None
 
+        self._nodeIDs: np.ndarray = None
         self._embedding: container.ndarray = None
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
@@ -118,15 +119,13 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
             class predictions
 
         """
+        hp_lcc = jhu.lcc.lcc.Hyperparams.defaults()
+        new_lcc = LargestConnectedComponent(hyperparams=hp_lcc).produce(inputs=inputs).value
 
         if self._supervised:
-            csv = inputs['0']
-            nodeID = csv['G1.nodeID']
-            d3mIndex = csv['d3mIndex']
-
-            predictions = self._CLASSIFICATION.produce(inputs = container.List([self._embedding, nodeID, d3mIndex])).value
+            predictions = self._CLASSIFICATION.produce(inputs = new_lcc).value
         else:
-            predictions = self._CLUSTERING.produce(inputs = container.List([self._embedding])).value
+            predictions = self._CLUSTERING.produce(inputs = new_lcc).value
 
         #outputs = container.ndarray(predictions)
 
@@ -136,33 +135,35 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         if self._fitted:
             return base.CallResult(None)
 
-        hp_lcc = jhu.ase.ase.Hyperparams.defaults()
+        hp_lcc = jhu.lcc.lcc.Hyperparams.defaults()
         G_lcc = LargestConnectedComponent(hyperparams = hp_lcc).produce(inputs = self._training_inputs).value
-
+        self._nodeIDs = G_lcc[1]
         hp_ase = jhu.ase.ase.Hyperparams({'max_dimension': min(len(G_lcc[0]) - 1, 100), 'use_attributes': True, 'which_elbow': 2})
         G_ase = AdjacencySpectralEmbedding(hyperparams = hp_ase).produce(inputs = G_lcc).value
 
         self._embedding = G_ase[0]
 
-        csv = self._training_inputs['1']
+        csv = G_lcc[2]
 
         if len(csv) == 0: # if passed an empty training set, we will use EM (gclust)
             self._supervised = False
-            self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': int(np.floor(np.log(len(G_lcc[0])))),
-                                                                                                'seeds': np.array([]), 
-                                                                                                'labels': np.array([])}
-                                                                                                ))
+            self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': int( np.floor (np.log( len( G_lcc[0] ))))#,
+                                                                                                #'seeds': np.array([]),
+                                                                                                #'labels': np.array([])}
+                                                                                                }))
             self._fitted = True
             return base.CallResult(None)
 
         self._supervised = True
 
-        seeds = container.ndarray(csv['G1.nodeID'])
-        labels = container.ndarray(csv['classLabel'])
+        #seeds = container.ndarray(csv['G1.nodeID'])
+        #labels = container.ndarray(csv['classLabel'])
         
         self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
 
-        self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds, labels]))
+        #self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds, labels]))
+        self._CLASSIFICATION.set_training_data(inputs=G_ase)
+
         self._CLASSIFICATION.fit()
 
         self._fitted = True
