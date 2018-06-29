@@ -34,11 +34,11 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    max_dimension = hyperparams.Hyperparameter[int](default=100, semantic_types= [
+    max_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types= [
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
-    which_elbow = hyperparams.Hyperparameter[int](default = 2, semantic_types= [
+    which_elbow = hyperparams.Hyperparameter[int](default = 1, semantic_types= [
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
