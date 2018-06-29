@@ -10,6 +10,7 @@ from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 import igraph
 from networkx import Graph
+import networkx as nx
 
 Inputs = container.Dataset
 Outputs = container.List
@@ -92,7 +93,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         if len(csv) != 0:
             #seeds = container.ndarray(csv['G1.nodeID'])
             #labels = container.ndarray(csv['classLabel'])
-            nodeIDs = list(networkx.get_node_attributes(G, 'nodeID').values())
+            nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values())
             return base.CallResult(container.List([G, nodeIDs,csv]))
 
         #if type(G) == igraph.Graph:
@@ -115,7 +116,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         largest_component = components[numpy.argmax(components_len)]
         
         G_connected = G.subgraph(largest_component).copy()
-        nodeIDs = list(networkx.get_node_attributes(G_connected, 'nodeID').values())
+        nodeIDs = list(nx.get_node_attributes(G_connected, 'nodeID').values())
 
 
         return base.CallResult(container.List([G_connected,nodeIDs]))
