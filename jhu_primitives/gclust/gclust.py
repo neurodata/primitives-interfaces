@@ -145,7 +145,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         final_labels = np.zeros(len(testing))
 
         for i in range(len(testing_nodeIDs)):
-            temp = np.where(self._nodeIDs == testing_nodeIDs[i])[0][0]
+            temp = int(np.where(self._nodeIDs == testing_nodeIDs[i])[0][0])
             label = predictions[temp]
             final_labels[i] = label
 

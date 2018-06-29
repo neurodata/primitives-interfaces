@@ -116,7 +116,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         largest_component = components[numpy.argmax(components_len)]
         
         G_connected = G.subgraph(largest_component).copy()
-        nodeIDs = list(nx.get_node_attributes(G_connected, 'nodeID').values())
+        nodeIDs = container.ndarray(list(nx.get_node_attributes(G_connected, 'nodeID').values()))
 
 
         return base.CallResult(container.List([G_connected,nodeIDs]))

@@ -140,13 +140,13 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         if self._PD and self._ENOUGH_SEEDS:
             for i in range(len(testing_nodeIDs)):
-                temp = np.where(self._nodeIDs == testing_nodeIDs[i])[0][0]
+                temp = int(np.where(self._nodeIDs == testing_nodeIDs[i])[0][0])
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = label
         else:
             for i in range(len(testing_nodeIDs)):
-                temp = np.where(self._nodeIDs == testing_nodeIDs[i])[0][0]
+                temp = int(np.where(self._nodeIDs == testing_nodeIDs[i])[0][0])
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = label
@@ -163,7 +163,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         self._embedding = self._training_inputs[0]
 
-        self._nodeIDs = self._training_inputs[1]
+        self._nodeIDs = np.array(self._training_inputs[1])
 
         self._seeds = self._training_inputs[2]['G1.nodeID']
         self._seeds = np.array([int(i) for i in self._seeds])
