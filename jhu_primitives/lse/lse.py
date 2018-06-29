@@ -219,7 +219,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
             embedding = avg.copy()
 
-            inputs[0] = embedding
+            inputs[0] = container.ndarray(embedding)
 
             return base.CallResult(inputs)
 
@@ -245,7 +245,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         d = self._get_elbows(eigenvalues=eig_values)
         vectors = container.ndarray(result[0])[:,0:d]
 
-        inputs[0] = vectors
+        inputs[0] = container.ndarray(vectors)
 
         return base.CallResult(inputs)
 
