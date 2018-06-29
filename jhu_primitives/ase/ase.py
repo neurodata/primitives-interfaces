@@ -270,7 +270,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         #initialize edges
         if not matrix:
             edges = np.repeat(0, nedges)
-
             #loop over the edges and store in an array
             j = 0
             for u, v, d in G.edges(data=True):
