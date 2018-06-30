@@ -127,8 +127,6 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         else:
             predictions = self._CLUSTERING.produce(inputs = new_lcc).value
 
-        #outputs = container.ndarray(predictions)
-
         return base.CallResult(predictions)
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
@@ -147,21 +145,15 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
 
         if len(csv) == 0: # if passed an empty training set, we will use EM (gclust)
             self._supervised = False
-            self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': int( np.floor (np.log( len( G_lcc[0] ))))#,
-                                                                                                #'seeds': np.array([]),
-                                                                                                #'labels': np.array([])}
+            self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': int( np.floor (np.log( len( G_lcc[0] ))))
                                                                                                 }))
             self._fitted = True
             return base.CallResult(None)
 
         self._supervised = True
-
-        #seeds = container.ndarray(csv['G1.nodeID'])
-        #labels = container.ndarray(csv['classLabel'])
         
         self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
 
-        #self._CLASSIFICATION.set_training_data(inputs = container.List([self._embedding, seeds, labels]))
         self._CLASSIFICATION.set_training_data(inputs=G_ase)
 
         self._CLASSIFICATION.fit()

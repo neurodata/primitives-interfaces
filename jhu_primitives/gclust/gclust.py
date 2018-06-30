@@ -107,6 +107,10 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         """
 
         inputs = inputs[0]
+
+        nodeIDs = inputs[1]
+        nodeIDS = np.array([int(i) for i in nodeIDs])
+
         max_clusters = self.hyperparams['max_clusters']
 
         if max_clusters < inputs.shape[1]:
@@ -145,7 +149,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         final_labels = np.zeros(len(testing))
 
         for i in range(len(testing_nodeIDs)):
-            temp = int(np.where(self._nodeIDs == testing_nodeIDs[i])[0][0])
+            temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
             label = predictions[temp]
             final_labels[i] = label
 
@@ -162,62 +166,6 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
     def set_params(self, *, params: Params) -> None:
         pass
-
-        """
-        else:
-            clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
-            clf.fit(inputs[seeds, :])
-            BIC_max = -clf.bic(inputs[seeds, :])
-            cluster_likelihood_max = 1
-            cov_type_likelihood_max = "spherical"
-
-            for i in range(1, max_clusters + 1):
-                for k in cov_types:
-                    clf = GaussianMixture(n_components=i, 
-                                    covariance_type=k, n_init = 50)
-
-                    clf.fit(inputs)
-
-                    current_bic = -clf.bic(inputs[seeds, :])
-
-                    if current_bic > BIC_max:
-                        BIC_max = current_bic
-                        cluster_likelihood_max = i
-                        cov_type_likelihood_max = k
-
-            estimated_clf = GaussianMixture(n_components = cluster_likelihood_max, 
-                                                covariance_type = cov_type_likelihood_max, n_init = 50)
-
-            estimated_clf.fit(inputs[seeds, :])
-            estimated_labels = estimated_clf.predict(inputs[seeds, :])
-
-            unique_labels = np.unique(estimated_labels)
-            estimated_K = len(unique_labels)
-            votes = [[] for i in range(estimated_K)]
-
-            for i in range(len(estimated_labels)):
-                for k in range(estimated_K):
-                    if int(estimated_labels[i]) == k:
-                        votes[k].append(labels[i])
-
-            votes = [np.array(votes[i]) for i in range(estimated_K)]
-
-            label_mapping = -1*np.ones(estimated_K)
-
-            for i in range(estimated_K): # majority wins
-                temp_unique, temp_unique_counts = np.unique(votes[i], return_counts = True)
-                temp_counts_argmax = np.argmax(temp_unique_counts)
-                label_mapping[i] = temp_unique[temp_counts_argmax]
-
-            estimated_K_labels = estimated_clf.predict(inputs)
-            applied_label_mapping = -1*np.ones(inputs.shape[0])
-
-            for i in range(len(estimated_K_labels)):
-                temp_label = int(estimated_K_labels[i])
-                applied_label_mapping[i] = label_mapping[temp_label]
-
-            predictions = applied_label_mapping
-            """
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> None:
         pass

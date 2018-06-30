@@ -1,16 +1,17 @@
+import igraph
+from networkx import Graph
+import networkx as nx
+import numpy as np
 from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
+
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-import numpy
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
-import igraph
-from networkx import Graph
-import networkx as nx
 
 Inputs = container.Dataset
 Outputs = container.List
@@ -88,35 +89,32 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         G = inputs['0']
         csv = inputs['1']
 
-
+        if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
+            nx.set_node_attributes(G,'nodeID',-1)
+            for i in range(len(G)):
+                G.node[i]['nodeID'] = i
 
         if len(csv) != 0:
-            #seeds = container.ndarray(csv['G1.nodeID'])
-            #labels = container.ndarray(csv['classLabel'])
             nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values())
+            nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+
             return base.CallResult(container.List([G, nodeIDs,csv]))
 
-        #if type(G) == igraph.Graph:
-        #    raise TypeError("Networkx graphs or n x n numpy arrays only")
-
-        if type(G) == numpy.ndarray:
+        if type(G) == np.ndarray:
             if G.ndim == 2:
                 if G.shape[0] == G.shape[1]: # n x n matrix
                     G = Graph(G)
                 else:
                     raise TypeError("Networkx graphs or n x n numpy arrays only") 
 
-        if type(G) == Graph: # networkx graph
-            g = igraph.Graph(list(G.edges)) # convert to igraph graph, find the clusters
-        else:
-            raise TypeError("Networkx graphs only")# or n x n numpy arrays only")
-            
-        components = g.clusters()
-        components_len = [len(components[i]) for i in range(len(components))] # find lengths of components (faster way?)
-        largest_component = components[numpy.argmax(components_len)]
-        
-        G_connected = G.subgraph(largest_component).copy()
-        nodeIDs = container.ndarray(list(nx.get_node_attributes(G_connected, 'nodeID').values()))
+        subgraphs = nx.connected_component_subgraphs(G)
 
+        G_connected = []
+        for i in subgraphs:
+            if len(i) > len(G_connected):
+                G_connected = i
 
-        return base.CallResult(container.List([G_connected,nodeIDs]))
+        nodeIDs = list(nx.get_node_attributes(G_connected, 'nodeID').values())
+        nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+
+        return base.CallResult(container.List([G_connected, nodeIDs, csv]))

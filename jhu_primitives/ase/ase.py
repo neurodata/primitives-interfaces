@@ -181,14 +181,14 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         G = inputs[0]
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
-                E = int(network.get_number_of_edges(G))
+                E = int(networkx.number_of_edges(G))
                 g = self._pass_to_ranks(G, nedges = E)
             else:
+                E = int(networkx.number_of_edges(G))
                 g = networkx.to_numpy_array(G)
-                E = int(sum(g.ravel()))
         elif type(G) is np.ndarray:
             G = networkx.to_networkx_graph(G)
-            E = int(network.get_number_of_edges(G))
+            E = int(networkx.number_of_edges(G))
             g = self._pass_to_ranks(G, nedges = E)
         else:
             raise ValueError("networkx Graph and n x d numpy arrays only")
@@ -210,27 +210,28 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             for i in range(1, len(adj)):
                 adj[i] = self._pass_to_ranks(adj[i], nedges = E, matrix = True)
 
-            g = self._omni(adj)
-            M = len(adj)
+            if len(adj) > 1:
+                g = self._omni(adj)
+                M = len(adj)
 
-            eig_vectors, eig_values, _ = np.linalg.svd(g)
-            d = self._get_elbows(eigenvalues=eig_values)
+                eig_vectors, eig_values, _ = np.linalg.svd(g)
+                d = self._get_elbows(eigenvalues=eig_values)
 
-            X_hat = eig_vectors[:, :d]
+                X_hat = eig_vectors[:, :d]
 
-            avg = np.zeros(shape = (n, d))
+                avg = np.zeros(shape = (n, d))
 
-            for i in range(M):
+                for i in range(M):
+                    for j in range(n):
+                        avg[j] += X_hat[i*n + j]
                 for j in range(n):
-                    avg[j] += X_hat[i*n + j]
-            for j in range(n):
-                avg[j, :] = avg[j,:]/M
+                    avg[j, :] = avg[j,:]/M
 
-            embedding = avg.copy()
+                embedding = avg.copy()
 
-            inputs[0] = container.ndarray(embedding)
+                inputs[0] = container.ndarray(embedding)
 
-            return base.CallResult(inputs)
+                return base.CallResult(inputs)
 
         A = robjects.Matrix(g)
         robjects.r.assign("A", A)
@@ -276,8 +277,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 edges[j] = d['weight']
                 j += 1
 
-            #ranked_values = np.argsort(edges) #+ 1#get the index of the sorted elements
-            #ranked_values = np.argsort(ranked_values) + 1
             ranked_values = rankdata(edges)
             #loop through the edges and assign the new weight:
             j = 0

@@ -29,11 +29,11 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    d_max = hyperparams.Hyperparameter[int](default=100, semantic_types=[
+    max_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
-    which_elbow = hyperparams.Hyperparameter[int](default=2, semantic_types=[
+    which_elbow = hyperparams.Hyperparameter[int](default=1, semantic_types=[
         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
@@ -102,7 +102,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
-    def _profile_likelihood_maximization(self,U, n_elbows, threshold):
+    def _profile_likelihood_maximization(self,U, n_elbows):
         """
         Inputs
             U - An ordered or unordered list of eigenvalues
@@ -171,18 +171,22 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             return np.array(elbows)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-#    def embed(self, *, g : JHUGraph, dim: int):
 
         G = inputs[0]
 
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
-                g = self._pass_to_ranks(G)
+                E = int(networkx.number_of_edges(G))
+                g = self._pass_to_ranks(G, nedges = E)
+            else:
+                E = int(networkx.number_of_edges(G))
+                g = networkx.to_numpy_array(G)
         elif type(G) is np.ndarray:
             G = networkx.to_networkx_graph(G)
-            g = self._pass_to_ranks(G)
+            E = int(networkx.number_of_edges(G))
+            g = self._pass_to_ranks(G, nedges = E)
         else:
-            return
+            raise ValueError("networkx Graph and n x d numpy arrays only")
 
         n = g.shape[0]
 
@@ -201,27 +205,31 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             for i in range(1, len(adj)):
                 adj[i] = self._pass_to_ranks(adj[i], nedges = E, matrix = True)
 
-            g = self._omni(adj)
-            M = len(adj)
+            if len(adj) > 0:
+                g = self._omni(adj)
+                D = np.linalg.pinv(np.diag(g.sum(axis=1))**(1/2))
+                L = D @ g @ D
 
-            eig_vectors, eig_values, _ = np.linalg.svd(g)
-            d = self._get_elbows(eigenvalues=eig_values)
+                M = len(adj)
 
-            X_hat = eig_vectors[:, :d]
+                eig_vectors, eig_values, _ = np.linalg.svd(L)
+                d = self._get_elbows(eigenvalues=eig_values)
 
-            avg = np.zeros(shape = (n, d))
+                X_hat = eig_vectors[:, :d]
 
-            for i in range(M):
+                avg = np.zeros(shape = (n, d))
+
+                for i in range(M):
+                    for j in range(n):
+                        avg[j] += X_hat[i*n + j]
                 for j in range(n):
-                    avg[j] += X_hat[i*n + j]
-            for j in range(n):
-                avg[j, :] = avg[j,:]/M
+                    avg[j, :] = avg[j,:]/M
 
-            embedding = avg.copy()
+                embedding = avg.copy()
 
-            inputs[0] = container.ndarray(embedding)
+                inputs[0] = container.ndarray(embedding)
 
-            return base.CallResult(inputs)
+                return base.CallResult(inputs)
 
         A = robjects.Matrix(g)
         robjects.r.assign("A", A)
@@ -255,7 +263,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                                                    )
         return (elbows[- 1])
 
-    def _pass_to_ranks(self, G, matrix = False):
+    def _pass_to_ranks(self, G, nedges = 0, matrix = False):
         #iterates through edges twice
 
         #initialize edges

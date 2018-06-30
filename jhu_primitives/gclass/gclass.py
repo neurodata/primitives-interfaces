@@ -130,7 +130,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         n = self._embedding.shape[0]
 
-
         unique_labels = np.unique(self._labels)
         K = len(unique_labels)
 
@@ -140,26 +139,28 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         if self._PD and self._ENOUGH_SEEDS:
             for i in range(len(testing_nodeIDs)):
-                temp = int(np.where(self._nodeIDs == testing_nodeIDs[i])[0][0])
+            #for i in range(len(self._nodeIDs)):
+                temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
+                #temp = i
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = label
         else:
             for i in range(len(testing_nodeIDs)):
-                temp = int(np.where(self._nodeIDs == testing_nodeIDs[i])[0][0])
+            #for i in range(len(self._nodeIDs)):
+                temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
+                #temp = i
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = label
-        
 
         testing['classLabel'] = final_labels
-        outputs = container.DataFrame(testing['d3mIndex','classLabel'])
+        outputs = container.DataFrame(testing[['d3mIndex','classLabel']])
         return base.CallResult(outputs)
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
         if self._fitted:
             return base.CallResult(None)
-
 
         self._embedding = self._training_inputs[0]
 
@@ -202,7 +203,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         x_sums = np.zeros(shape = (K, d))
 
         for i in range(len(self._seeds)):
-            nodeID = np.where(self._seeds == self._seeds[i])[0][0]
+            nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
             temp_feature_vector = self._embedding[nodeID, :]
             temp_label = self._labels[i]
             x_sums[temp_label, :] += temp_feature_vector
@@ -212,7 +213,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         mean_centered_sums = np.zeros(shape = (K, d, d))
 
         for i in range(len(self._seeds)):
-            nodeID = np.where(self._seeds == self._seeds[i])[0][0]
+            nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
             temp_feature_vector = self._embedding[nodeID, :].copy()
             temp_label = self._labels[i]
             mean_centered_feature_vector = temp_feature_vector - estimated_means[self._labels[i]]
