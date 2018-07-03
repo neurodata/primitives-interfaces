@@ -185,7 +185,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
                 i += 1
 
         # store the vertex pairs as an m x 2 array and convert to a matrix
-        seeds_array = numpy.array(new_seeds[['g1_vertex', 'g2_vertex']])
+        seeds_array = np.array(new_seeds[['g1_vertex', 'g2_vertex']])
         seeds_array = seeds_array.astype(int)
 
         seeds = seeds_array

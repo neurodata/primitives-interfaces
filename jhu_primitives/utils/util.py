@@ -14,6 +14,7 @@ def file_path_conversion(abs_file_path, uri="file"):
     except IndexError:
         file_path = local_drive
         local_drive = None
+        return file_path
 
     path_sep = file_path[0]
     file_path = file_path[1:]  # Remove initial separator
