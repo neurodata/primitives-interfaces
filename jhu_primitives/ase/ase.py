@@ -12,8 +12,11 @@ import networkx
 import igraph
 import os
 import networkx
+
 from scipy.stats import norm
 from scipy.stats import rankdata
+from sklearn.decomposition import TruncatedSVD
+
 from rpy2 import robjects
 import rpy2.robjects.numpy2ri
 robjects.numpy2ri.activate()
@@ -177,6 +180,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
+        np.random.seed(1234)
 
         G = inputs[0].copy()
         if type(G) == networkx.classes.graph.Graph:
@@ -214,10 +218,15 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 g = self._omni(adj)
                 M = len(adj)
 
-                eig_vectors, eig_values, _ = np.linalg.svd(g)
+                tsvd = TruncatedSVD(n_components = self.hyperparams['max_dimension'])
+                tsvd.fit(g)
+
+                eig_vectors = tsvd.components_.T
+                eig_values = tsvd.singular_values_
+
                 d = self._get_elbows(eigenvalues=eig_values)
 
-                X_hat = eig_vectors[:, :d]
+                X_hat = eig_vectors[:, :d].copy()
 
                 avg = np.zeros(shape = (n, d))
 

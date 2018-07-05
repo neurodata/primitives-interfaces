@@ -10,8 +10,10 @@ import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 import numpy as np
 import networkx
+
 from scipy.stats import rankdata
 from scipy.stats import norm
+from sklearn.decomposition import TruncatedSVD
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from d3m import container
@@ -173,6 +175,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             return np.array(elbows)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
+        np.random.seed(1234)
 
         G = inputs[0].copy()
 
@@ -214,11 +217,15 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
                 M = len(adj)
 
-                eig_vectors, eig_values, _ = np.linalg.svd(L)
+                tsvd = TruncatedSVD(n_components = self.hyperparams['max_dimension'])
+                tsvd.fit(g)
+
+                eig_vectors = tsvd.components_.T
+                eig_values = tsvd.singular_values_
+
                 d = self._get_elbows(eigenvalues=eig_values)
 
                 X_hat = eig_vectors[:, :d].copy()
-
                 avg = np.zeros(shape = (n, d))
 
                 for i in range(M):
