@@ -91,6 +91,8 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
+        self._embedding: container.ndarray = None
+
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
         TODO: YP description
@@ -106,32 +108,33 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             - The number of clusters in which to assign the data
         """
 
-        inputs = inputs[0]
+        if self._embedding is None:
+            self._embedding = inputs[0]
 
         nodeIDs = inputs[1]
         nodeIDS = np.array([int(i) for i in nodeIDs])
 
         max_clusters = self.hyperparams['max_clusters']
 
-        if max_clusters < inputs.shape[1]:
-            inputs = inputs[:, :max_clusters].copy()
+        if max_clusters < self._embedding.shape[1]:
+            self._embedding = self._embedding[:, :max_clusters].copy()
 
         cov_types = ['full', 'tied', 'diag', 'spherical']
 
         clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
-        clf.fit(inputs)
-        BIC_max = -clf.bic(inputs)
+        clf.fit(self._embedding)
+        BIC_max = -clf.bic(self._embedding)
         cluster_likelihood_max = 1
         cov_type_likelihood_max = "spherical"
 
-        for i in range(1, max_clusters + 5):
+        for i in range(1, max_clusters):
             for k in cov_types:
                 clf = GaussianMixture(n_components=i, 
                                     covariance_type=k)
 
-                clf.fit(inputs)
+                clf.fit(self._embedding)
 
-                current_bic = -clf.bic(inputs)
+                current_bic = -clf.bic(self._embedding)
 
                 if current_bic > BIC_max:
                     BIC_max = current_bic
@@ -140,21 +143,25 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
         clf = GaussianMixture(n_components = cluster_likelihood_max,
                         covariance_type = cov_type_likelihood_max)
-        clf.fit(inputs)
+        clf.fit(self._embedding)
 
-        predictions = clf.predict(inputs)
+        predictions = clf.predict(self._embedding)
 
         testing = inputs[2]
+
         testing_nodeIDs = np.asarray(testing['G1.nodeID'])
+        testing_nodeIDs = np.array([int(i) for i in testing_nodeIDs])
         final_labels = np.zeros(len(testing))
 
         for i in range(len(testing_nodeIDs)):
-            temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
-            label = predictions[temp]
-            final_labels[i] = label
+            #temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
+            label = predictions[i]
+            #print(label)
+            final_labels[i] = int(label)
 
         testing['classLabel'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'classLabel']])
+        #outputs = container.DataFrame(testing['classLabel'])
         return base.CallResult(outputs)
 
 

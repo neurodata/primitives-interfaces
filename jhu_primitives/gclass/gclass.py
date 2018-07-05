@@ -144,7 +144,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 #temp = i
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
-                final_labels[i] = label
+                final_labels[i] = int(label)
         else:
             for i in range(len(testing_nodeIDs)):
             #for i in range(len(self._nodeIDs)):
@@ -152,7 +152,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 #temp = i
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
-                final_labels[i] = label
+                final_labels[i] = int(label)
 
         testing['classLabel'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex','classLabel']])

@@ -133,6 +133,8 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         U = U[::-1]  # reverse array so that it is sorted in descending order
         n = len(U)
 
+        U = U[:self.hyperparams['max_dimension']].copy()
+
         while len(elbows) < n_elbows and len(U) > 1:
             d = 1
             sample_var = np.var(U, ddof=1)
@@ -172,7 +174,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
 
-        G = inputs[0]
+        G = inputs[0].copy()
 
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
@@ -205,7 +207,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             for i in range(1, len(adj)):
                 adj[i] = self._pass_to_ranks(adj[i], nedges = E, matrix = True)
 
-            if len(adj) > 0:
+            if len(adj) > 1:
                 g = self._omni(adj)
                 D = np.linalg.pinv(np.diag(g.sum(axis=1))**(1/2))
                 L = D @ g @ D
@@ -215,7 +217,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 eig_vectors, eig_values, _ = np.linalg.svd(L)
                 d = self._get_elbows(eigenvalues=eig_values)
 
-                X_hat = eig_vectors[:, :d]
+                X_hat = eig_vectors[:, :d].copy()
 
                 avg = np.zeros(shape = (n, d))
 
@@ -234,7 +236,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         A = robjects.Matrix(g)
         robjects.r.assign("A", A)
 
-        d_max = self.hyperparams['d_max']
+        d_max = self.hyperparams['max_dimension']
 
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "lse.interface.R")
@@ -263,7 +265,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                                                    )
         return (elbows[- 1])
 
-    def _pass_to_ranks(self, G, nedges = 0, matrix = False):
+    def _pass_to_ranks(self, G, nedges = networkx.number_of_edges, matrix = False):
         #iterates through edges twice
 
         #initialize edges
@@ -278,15 +280,18 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
 
             #grab the number of edges
-            nedges = networkx.number_of_edges(G)
+            #nedges = networkx.number_of_edges(G)
+
             #ranked_values = np.argsort(edges) #+ 1#get the index of the sorted elements
             #ranked_values = np.argsort(ranked_values) + 1
+
             ranked_values = rankdata(edges)
             #loop through the edges and assign the new weight:
             j = 0
             for u, v, d in G.edges(data=True):
-                edges[j] = (ranked_values[j]*2)/(nedges + 1)
-                d['weight'] = edges[j]
+                #edges[j] = ranked_values[j]*2/(nedges + 1)
+                #d['weight'] = edges[j]
+                d['weight'] = ranked_values[j]*2/(nedges + 1)
                 j += 1
 
             return networkx.to_numpy_array(G)

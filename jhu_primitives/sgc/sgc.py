@@ -147,6 +147,7 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
             self._supervised = False
             self._CLUSTERING = GaussianClustering(hyperparams = jhu.gclust.gclust.Hyperparams({'max_clusters': int( np.floor (np.log( len( G_lcc[0] ))))
                                                                                                 }))
+            self._CLUSTERING._embedding = self._embedding
             self._fitted = True
             return base.CallResult(None)
 

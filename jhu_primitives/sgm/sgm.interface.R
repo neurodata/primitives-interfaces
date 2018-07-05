@@ -12,6 +12,11 @@ if(!require(igraph)) {
     suppressMessages(library(igraph))
 }
 
+if (!require(clue)) {
+    install.packages("clue")
+    suppressMessages(library(clue))
+}
+
 rsp<-function(n,g){
   s <- sample(n);s
   I <- diag(n);I

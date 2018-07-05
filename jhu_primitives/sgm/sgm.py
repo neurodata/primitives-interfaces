@@ -11,15 +11,17 @@ import pandas as pd
 import numpy as np
 import networkx
 
+from rpy2 import robjects as ro
+import rpy2.robjects.numpy2ri
+rpy2.robjects.numpy2ri.activate()
+
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m.primitive_interfaces.base import CallResult
-from rpy2 import robjects
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
+
 from ..utils.util import file_path_conversion
 
 Inputs = container.Dataset
@@ -32,7 +34,7 @@ class Hyperparams(hyperparams.Hyperparams):
     threshold = hyperparams.Hyperparameter[float](
             default = .1,
             semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter']
-    ),
+    )
     reps = hyperparams.Hyperparameter[int](
             default = 1,
             semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter']
@@ -88,12 +90,20 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
         self._training_dataset = None
+        self._g1 = None
+        self._g2 = None
+        self._g1_node_attributes = None
+        self._g2_node_attributes = None
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
         return CallResult[None]
 
     def set_training_data(self,*,inputs: Inputs) -> None:
         self._training_dataset = inputs
+        self._g1 = self._training_dataset['0']
+        self._g2 = self._training_dataset['1']
+        self._g1_node_attributes = list(networkx.get_node_attributes(self._g1, 'nodeID').values())
+        self._g2_node_attributes = list(networkx.get_node_attributes(self._g2, 'nodeID').values())
         #technically, this is unsupervised, as there is no fit function
         #instead, we just hang on to the training data and run produce with the two graphs and seeds
         #and use that to predict later on.
@@ -109,7 +119,8 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         #then predicts using the resulting permutation_matrix
 
         permutation_matrix = np.asmatrix(self._seeded_graph_match(training_data=self._training_dataset))
-        predictions = self._get_predictions(permutation_matrix=permutation_matrix,testing= inputs)
+
+        predictions = self._get_predictions(permutation_matrix=permutation_matrix, inputs = inputs)
 
         return base.CallResult(predictions)
 
@@ -117,6 +128,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         testing = inputs['2']
 
         threshold = self.hyperparams['threshold']
+
         for i in range(testing.shape[0]):
             testing['match'][i] = 0
             v1 = testing['G1.nodeID'][i]
@@ -124,7 +136,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             found = False
             j = 0
             while not found:
-                if g1_node_attributes[j] == int(v1):
+                if self._g1_node_attributes[j] == int(v1):
                     found = True
                     v1 = j
                 j += 1
@@ -133,7 +145,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             j = 0
 
             while not found:
-                if g2_node_attributes[j] == int(v2):
+                if self._g2_node_attributes[j] == int(v2):
                     found = True
                     v2 = j
                 j += 1
@@ -146,14 +158,10 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         df = container.DataFrame({"d3mIndex": testing['d3mIndex'], "match": testing['match']})
         return df
 
-    def _seeded_graph_match(self,*,training_data = None):
+    def _seeded_graph_match(self,*, training_data = None):
         if training_data is None:
             training_data = self._training_dataset
-        g1 = training_data['0']
-        g2 = training_data['1']
         seeds = training_data['2']
-        g1_node_attributes = list(networkx.get_node_attributes(g1, 'nodeID').values())
-        g2_node_attributes = list(networkx.get_node_attributes(g2, 'nodeID').values())
 
         new_seeds = pd.DataFrame(
             {'G1.nodeID': seeds['G1.nodeID'], 'G2.nodeID': seeds['G2.nodeID'], 'match': seeds['match']})
@@ -170,7 +178,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             found = False
             i = 0
             while not found:
-                if (int(new_seeds['G1.nodeID'][j]) == g1_node_attributes[i]):
+                if (int(new_seeds['G1.nodeID'][j]) == self._g1_node_attributes[i]):
                     new_seeds['g1_vertex'][j] = i
                     found = True
                 i += 1
@@ -179,7 +187,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             found = False
             i = 0
             while not found:
-                if (int(new_seeds['G2.nodeID'][j]) == g2_node_attributes[i]):
+                if (int(new_seeds['G2.nodeID'][j]) == self._g2_node_attributes[i]):
                     new_seeds['g2_vertex'][j] = i
                     found = True
                 i += 1
@@ -190,15 +198,15 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
 
         seeds = seeds_array
         nr, nc = seeds.shape
-        seeds = robjects.r.matrix(seeds, nrow=nr, ncol=nc)
-        robjects.r.assign("seeds", seeds)
+        seeds = ro.r.matrix(seeds, nrow=nr, ncol=nc)
+        ro.r.assign("seeds", seeds)
 
-        g1_matrix = networkx.to_numpy_array(g1)
+        g1_matrix = networkx.to_numpy_array(self._g1)
         nr, nc = g1_matrix.shape
         g1_matrix = ro.r.matrix(g1_matrix, nrow=nr, ncol=nc)
         ro.r.assign("g1_matrix", g1_matrix)
 
-        g2_matrix = networkx.to_numpy_array(g2)
+        g2_matrix = networkx.to_numpy_array(self._g2)
         nr, nc = g2_matrix.shape
         g2_matrix = ro.r.matrix(g2_matrix, nrow=nr, ncol=nc)
         ro.r.assign("g2_matrix", g2_matrix)
@@ -210,13 +218,14 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                             "sgm.interface.R")
         path = file_path_conversion(path, uri="")
+
         cmd = """
                 source("%s")
-                fn <- function(g1_matrix, g2_matrix, seeds) {
+                fn <- function(g1_matrix, g2_matrix, seeds,reps) {
                     sgm.interface(g1_matrix, g2_matrix, seeds,reps)
                 }
                 """ % path
-        # print(cmd)
-        result = np.array(robjects.r(cmd)(g1_matrix, g2_matrix, seeds,reps))
+        
+        result = np.array(ro.r(cmd)(g1_matrix, g2_matrix, seeds,reps))
 
         return container.ndarray(result)

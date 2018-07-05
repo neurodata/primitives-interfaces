@@ -178,7 +178,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
 
-        G = inputs[0]
+        G = inputs[0].copy()
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
                 E = int(networkx.number_of_edges(G))
@@ -253,7 +253,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         eig_values = container.ndarray(result[1])
 
         d = self._get_elbows(eigenvalues=eig_values)
-        vectors = container.ndarray(result[0])[:,0:d]
+        vectors = container.ndarray(result[0])[:,0:d].copy()
 
         inputs[0] = container.ndarray(vectors)
 
@@ -281,8 +281,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             #loop through the edges and assign the new weight:
             j = 0
             for u, v, d in G.edges(data=True):
-                edges[j] = (ranked_values[j]*2)/(nedges + 1)
-                d['weight'] = edges[j]
+                #edges[j] = (ranked_values[j]*2)/(nedges + 1)
+                d['weight'] = ranked_values[j]*2/(nedges + 1)
                 j += 1
 
             return networkx.to_numpy_array(G)
