@@ -6,7 +6,7 @@ from jhu_primitives.gclass import GaussianClassification
 from jhu_primitives.lcc import LargestConnectedComponent
 
 DATASETS = {
-    'DS18076'
+    'LL1_net_nomination_seed'
 }
 
 
