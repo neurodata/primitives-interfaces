@@ -8,6 +8,7 @@ import jhu_primitives
 #from sgc_pipeline import SGC_pipeline
 #from gmm_lse_pipeline import GMMoLSE_pipeline
 #from gclass_ase_pipeline import GCLASSoASE_pipeline
+from gclassolse_pipeline import GCLASSoLSE_pipeline
 
 def load_args():
     parser = argparse.ArgumentParser(description = "Output a pipeline's JSON")
