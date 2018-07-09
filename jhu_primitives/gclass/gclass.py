@@ -101,6 +101,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._fitted: bool = False 
         self._training_inputs: Inputs = None
         self._training_outputs: Outputs = None
+        self._problem: str = ""
 
         self._nodeIDs : np.ndarray = None
         self._embedding: container.ndarray = None
@@ -154,8 +155,13 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = int(label)
 
-        testing['classLabel'] = final_labels
-        outputs = container.DataFrame(testing[['d3mIndex','classLabel']])
+        if self._problem == "VN":
+            testing['classLabel'] = final_labels
+            outputs = container.DataFrame(testing[['d3mIndex','classLabel']])
+        else:
+            testing['community'] = final_labels
+            outputs = container.DataFrame(testing[['d3mIndex', 'community']])
+            
         return base.CallResult(outputs)
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
@@ -169,7 +175,14 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._seeds = self._training_inputs[2]['G1.nodeID']
         self._seeds = np.array([int(i) for i in self._seeds])
 
-        self._labels = self._training_inputs[2]['classLabel']
+        try:
+            self._labels = self._training_inputs[2]['classLabel']
+            self._problem = 'VN'
+            
+        except:
+            self._labels = self._training_inputs[2]['community']
+            self._problem = 'CD'
+
         self._labels = np.array([int(i) for i in self._labels])
 
         unique_labels, label_counts = np.unique(self._labels, return_counts = True)
