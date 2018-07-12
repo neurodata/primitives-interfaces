@@ -128,7 +128,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         if not self._fitted:
             raise ValueError("Not fitted")
 
-
         n = self._embedding.shape[0]
 
         unique_labels = np.unique(self._labels)
@@ -158,10 +157,12 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         if self._problem == "VN":
             testing['classLabel'] = final_labels
             outputs = container.DataFrame(testing[['d3mIndex','classLabel']])
+            outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'classLabel']].astype(int)
         else:
             testing['community'] = final_labels
             outputs = container.DataFrame(testing[['d3mIndex', 'community']])
-            
+            outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
+
         return base.CallResult(outputs)
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
