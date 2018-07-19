@@ -27,10 +27,11 @@ Inputs = container.Dataset
 Outputs = container.DataFrame
 
 class Params(params.Params):
-    supervised: bool
-    pis: container.ndarray
-    means: container.ndarray
-    covariances: container.ndarray
+    self._supervised: bool
+    self._CLASSIFICATION: GaussianClassification
+    self._CLUSTERING: GaussianClustering
+    self._nodeIDs: np.ndarray
+    self._embedding: container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
     dim = None
@@ -166,8 +167,21 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
 
-    def get_params(self) -> None:
-        return Params
+    def get_params(self) -> Params:
+        if not self._fitted:
+            raise ValueError("Fit not performed.")
+        return Params(
+            supervised=self._supervised,
+            CLASSIFICATION = self._CLASSIFICATION,
+            CLUSTERING = self._CLUSTERING,
+            nodeIDs = self._nodeIDs,
+            embedding= self._embedding
+        )
 
     def set_params(self, *, params: Params) -> None:
-        pass
+        self._fitted = True
+        self._supervised = params['supervised']
+        self._CLASSIFICATION = params['CLASSIFICATION']
+        self._CLUSTERING = params['CLUSTERING']
+        self._nodeIDs = params['nodeIDs']
+        self._embedding = params['embedding']

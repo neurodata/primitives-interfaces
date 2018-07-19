@@ -29,6 +29,16 @@ class Params(params.Params):
     pis: container.ndarray
     means: container.ndarray
     covariances: container.ndarray
+    problem: str = ""
+    nodeIDs: np.ndarray
+    embedding: container.ndarray
+    seeds: container.ndarray
+    labels: container.ndarray
+    ENOUGH_SEEDS: bool
+    PD: bool
+    pis: container.ndarray
+    means: container.ndarray
+    covariances: container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
     hp = None
@@ -97,20 +107,16 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
-
-        self._fitted: bool = False 
+        self._fitted: bool = False
         self._training_inputs: Inputs = None
         self._training_outputs: Outputs = None
         self._problem: str = ""
-
         self._nodeIDs : np.ndarray = None
         self._embedding: container.ndarray = None
         self._seeds: container.ndarray = None
         self._labels: container.ndarray = None
-
-        self._ENOUGH_SEEDS: bool = False 
+        self._ENOUGH_SEEDS: bool = False
         self._PD: bool = False 
-
         self._pis: container.ndarray = None
         self._means: container.ndarray = None
         self._covariances: container.ndarray = None
@@ -268,8 +274,33 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
 
-    def get_params(self) -> None:
-        return Params
+    def get_params(self) -> Params:
+        if not self._fitted:
+            raise ValueError("Fit not performed.")
+
+        return Params(
+            pis = self._pis,
+            means= self._means,
+            covariances = self._covariances,
+            problem = self._problem,
+            nodeIDs = self._nodeIDs,
+            embedding = self._embedding,
+            seeds = self._seeds,
+            labels= self._labels,
+            ENOUGH_SEEDS = self._ENOUGH_SEEDS,
+            PD = self._PD
+        )
+
 
     def set_params(self, *, params: Params) -> None:
-        pass
+        self._fitted = True
+        self._pis = params['pis']
+        self._means= params['means']
+        self._covariances = params['covariances']
+        self._problem = params['problem']
+        self._nodeIDs = params['nodeIDs']
+        self._embedding = params['embedding']
+        self._seeds = params['seeds']
+        self._labels = params['labels']
+        self._ENOUGH_SEEDS = params['ENOUGH_SEEDS']
+        self._PD = params['PD']

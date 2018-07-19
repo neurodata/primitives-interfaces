@@ -22,7 +22,7 @@ Inputs = container.List
 Outputs = container.DataFrame
 
 class Params(params.Params):
-    pass
+    embedding : container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
     max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
@@ -169,11 +169,11 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
         
-    def get_params(self) -> None:
-        return Params
+    def get_params(self) -> Params:
+        return Params(embedding = self._embedding)
 
     def set_params(self, *, params: Params) -> None:
-        pass
+        self._embedding = params['embedding']
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> None:
         pass
