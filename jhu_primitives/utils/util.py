@@ -46,13 +46,15 @@ def generate_json():
     version = "-1"
 
     while version == "-1":
-        version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n")
+        version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n")
         if version == "0":
             version = "v2018.1.26"
         elif version == "1":
             version = "v2018.4.18"
         elif version == "2":
             version = "v2018.6.5"
+        elif version == "3":
+            version = "v2018.7.10"
 
     path = os.path.abspath(os.getcwd()) + "\\primitives_repo\\" + version + "\\JHU\\"
 
