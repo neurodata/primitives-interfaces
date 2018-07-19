@@ -27,11 +27,11 @@ Inputs = container.Dataset
 Outputs = container.DataFrame
 
 class Params(params.Params):
-    self._supervised: bool
-    self._CLASSIFICATION: GaussianClassification
-    self._CLUSTERING: GaussianClustering
-    self._nodeIDs: np.ndarray
-    self._embedding: container.ndarray
+    supervised: bool
+    CLASSIFICATION: GaussianClassification
+    CLUSTERING: GaussianClustering
+    nodeIDs: np.ndarray
+    embedding: container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
     dim = None

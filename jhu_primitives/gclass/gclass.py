@@ -29,7 +29,7 @@ class Params(params.Params):
     pis: container.ndarray
     means: container.ndarray
     covariances: container.ndarray
-    problem: str = ""
+    problem: str
     nodeIDs: np.ndarray
     embedding: container.ndarray
     seeds: container.ndarray
