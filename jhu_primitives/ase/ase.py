@@ -9,7 +9,6 @@
 import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
 import networkx
-import igraph
 import os
 import networkx
 

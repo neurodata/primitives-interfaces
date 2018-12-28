@@ -26,18 +26,18 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
-        'id': '32fec24f-6861-4a4c-88f3-d4ec2bc1b486',
+        'id': '79e0e1bc-87fc-4bdb-bb59-ebe60ca298bb',
         'version': "0.1.0",
-        'name': "jhu.lcc",
+        'name': "jhu.adj_concat",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.LargestConnectedComponent',
+        'python_path': 'd3m.primitives.jhu_primitives.AdjacencyMatrixConcatenator',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graphs', 'connected', 'largest connected component', 'graph','graph transformation','transformation'],
+        'keywords': ['graphs', 'adjacency matrix', 'adjacency', 'graph','graph transformation','transformation'],
         'source': {
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/lcc/lcc.py',
+                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/adj_concat/adj_concat.py',
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
