@@ -7,7 +7,7 @@ from sys import platform
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
-VERSION = '2018.6.5'
+VERSION = '2018.7.10'
 
 
 def check_python_version():
