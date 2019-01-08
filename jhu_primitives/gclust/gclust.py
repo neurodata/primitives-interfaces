@@ -25,7 +25,14 @@ class Params(params.Params):
     embedding : container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
-    max_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
+    max_clusters = hyperparams.Bounded[int](
+        default = 2,
+        semantic_types= [
+            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+        ],
+        lower = 2,
+        upper = None
+    )
     #seeds = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
     #labels = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
@@ -39,7 +46,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.jhu_primitives.GaussianClustering',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['gaussian clustering'],
+        'keywords': ['graph', 'gaussian clustering'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -48,6 +55,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
+            'contact': 'mailto:hhelm2@jhu.edu',
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
@@ -85,7 +93,8 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         'algorithm_types': [
             "EXPECTATION_MAXIMIZATION_ALGORITHM"
         ],
-        'primitive_family': "CLUSTERING"
+        'primitive_family': "GRAPH_CLUSTERING",
+        'preconditions': ['NO_MISSING_VALUES']
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:

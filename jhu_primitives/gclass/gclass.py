@@ -65,6 +65,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
+            'contact': 'mailto:hhelm2@jhu.edu',
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
@@ -100,9 +101,10 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "MULTICLASS_CLASSIFICATION"
+            "QUADRATIC_DISCRIMINANT_ANALYSIS"
         ],
-        'primitive_family': "CLASSIFICATION"
+        'primitive_family': "CLASSIFICATION",
+        'preconditions': ['NO_MISSING_VALUES']
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:

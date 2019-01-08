@@ -27,17 +27,27 @@ from ..utils.util import file_path_conversion
 Inputs = container.Dataset
 Outputs = container.DataFrame
 
+PRIMITIVE_FAMILY = "GRAPH_MATCHING"
+
 class Params(params.Params):
     None
 
 class Hyperparams(hyperparams.Hyperparams):
-    threshold = hyperparams.Hyperparameter[float](
+    threshold = hyperparams.Bounded[float](
             default = .1,
-            semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter']
+            semantic_types = [
+            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+            ],
+            lower = 0.01,
+            upper = 1
     )
-    reps = hyperparams.Hyperparameter[int](
+    reps = hyperparams.Bounded[int](
             default = 1,
-            semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter']
+            semantic_types = [
+                'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+            ],
+            lower = 1,
+            upper = None
     )
 
 
@@ -60,6 +70,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
+            'contact': 'mailto:jagterb1@jhu.edu',
         },
         'installation': [{
                 'type': 'UBUNTU',
@@ -82,9 +93,15 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
                 ),
         }],
         'algorithm_types': [
-            metadata_module.PrimitiveAlgorithmType.FRANK_WOLFE_ALGORITHM
+            "FRANK_WOLFE_ALGORITHM"
+            #metadata_module.PrimitiveAlgorithmType.FRANK_WOLFE_ALGORITHM
         ],
-        'primitive_family': metadata_module.PrimitiveFamily.GRAPH_MATCHING
+        'primitive_family': 
+        #metadata_module.PrimitiveFamily.GRAPH_MATCHING,
+            PRIMITIVE_FAMILY,
+        'preconditions': [
+            'NO_MISSING_VALUES'
+        ]
        })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:

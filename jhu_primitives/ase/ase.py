@@ -36,16 +36,27 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    max_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types= [
-        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ])
+    max_dimension = hyperparams.Bounded[int](
+        default=2, 
+        semantic_types= [
+            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    ],
+        lower = 1,
+        upper = None
+    )
 
-    which_elbow = hyperparams.Hyperparameter[int](default = 1, semantic_types= [
-        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ])
-
-    use_attributes = hyperparams.Hyperparameter[bool](default = False, semantic_types = [
-        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    which_elbow = hyperparams.Bounded[int](
+        default = 1, 
+        semantic_types= [
+            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    ],
+        lower = 1,
+        upper = 2
+    )
+    use_attributes = hyperparams.Hyperparameter[bool](
+        default = False, 
+        semantic_types = [
+            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
 class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
@@ -64,6 +75,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 'https://github.com/neurodata/primitives-interfaces/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
+            'contact': 'mailto:hhelm2@jhu.edu'
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
@@ -102,9 +114,10 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "HIGHER_ORDER_SINGULAR_VALUE_DECOMPOSITION"
+            "SINGULAR_VALUE_DECOMPOSITION"
         ],
-        'primitive_family': "DATA_TRANSFORMATION"
+        'primitive_family': "DATA_TRANSFORMATION",
+        'preconditions': ['NO_MISSING_VALUES']
     })
 
     def _profile_likelihood_maximization(self,U, n_elbows):
@@ -197,6 +210,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             raise ValueError("networkx Graph and n x d numpy arrays only")
 
         n = g.shape[0]
+
+        if self.hyperparams['max_dimension'] >= n:
+            self.hyperparams['max_dimension'] = n - 1
 
         if self.hyperparams['use_attributes']:
             adj = [g]
