@@ -26,22 +26,21 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
-        'id': '32fec24f-6861-4a4c-88f3-d4ec2bc1b486',
+        'id': '79e0e1bc-87fc-4bdb-bb59-ebe60ca298bb',
         'version': "0.1.0",
-        'name': "jhu.lcc",
+        'name': "jhu.adj_concat",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.LargestConnectedComponent',
+        'python_path': 'd3m.primitives.jhu_primitives.AdjacencyMatrixConcatenator',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graph', 'connected', 'largest connected component', 'graph','graph transformation','transformation'],
+        'keywords': ['graphs', 'adjacency matrix', 'adjacency', 'graph','graph transformation','transformation'],
         'source': {
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/lcc/lcc.py',
+                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/adj_concat/adj_concat.py',
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
-            'contact': 'mailto:hhelm2@jhu.edu',
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
@@ -70,11 +69,9 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             },
             ],
         'algorithm_types': [
-            #"BREADTH_FIRST_SEARCH"
             "NONOVERLAPPING_COMMUNITY_DETECTION"
         ],
-        'primitive_family': "DATA_PREPROCESSING",
-        'preconditions': ['NO_MISSING_VALUES']
+        'primitive_family': "GRAPH_CLUSTERING"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:

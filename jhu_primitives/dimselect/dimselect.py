@@ -18,7 +18,6 @@ from d3m.primitive_interfaces.base import CallResult
 from jhu_primitives.utils.util import file_path_conversion
 from .. import AdjacencySpectralEmbedding
 import networkx
-import igraph
 from scipy.stats import norm
 
 Inputs = container.ndarray

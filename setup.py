@@ -68,6 +68,7 @@ setup(
               'jhu_primitives.oocase',
               'jhu_primitives.sgc',
               'jhu_primitives.sgm',
+              'jhu_primitives.utils',
               'jhu_primitives.vnsgm'
     ],
     entry_points = {
