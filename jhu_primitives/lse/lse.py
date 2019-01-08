@@ -62,6 +62,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
+            'contact': 'mailto:hhelm2@jhu.edu'
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
