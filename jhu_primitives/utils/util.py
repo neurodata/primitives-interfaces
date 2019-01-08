@@ -4,7 +4,7 @@
 # Created on 2017-09-14.
 
 import os
-import d3m.index
+#import d3m.index
 
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive= abs_file_path.split(':')[0]
