@@ -10,7 +10,6 @@ import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
 import networkx
 import os
-import networkx
 
 from scipy.stats import norm
 from scipy.stats import rankdata
@@ -163,9 +162,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 sig_likelihood = 0
                 noise_likelihood = 0
                 for i in range(d):
-                    sig_likelihood += norm.pdf(U[i], mean_sig, sample_scale)
+                    sig_likelihood += np.log(norm.pdf(U[i], mean_sig, sample_scale))
                 for i in range(d, len(U)):
-                    noise_likelihood += norm.pdf(U[i], mean_noise, sample_scale)
+                    noise_likelihood += np.log(norm.pdf(U[i], mean_noise, sample_scale))
 
                 likelihood = noise_likelihood + sig_likelihood
 
@@ -241,7 +240,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
                 d = self._get_elbows(eigenvalues=eig_values)
 
-                X_hat = eig_vectors[:, :d].copy()
+                X_hat = eig_vectors[:, :d].copy() @ np.diag(eig_values[:d])**0.5
 
                 avg = np.zeros(shape = (n, d))
 
@@ -279,14 +278,16 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         d = self._get_elbows(eigenvalues=eig_values)
         vectors = container.ndarray(result[0])[:,0:d].copy()
 
-        inputs[0] = container.ndarray(vectors)
+        inputs[0] = container.ndarray(vectors @ np.diag(eig_values)**0.5)
 
         return base.CallResult(inputs)        
 
     def _get_elbows(self,  eigenvalues):
-        elbows = self._profile_likelihood_maximization(U=eigenvalues
-                        , n_elbows=self.hyperparams['which_elbow']
-                       )
+        elbows = self._profile_likelihood_maximization(
+                    U=eigenvalues,
+                    n_elbows=self.hyperparams['which_elbow'
+                    ]
+                    )
         return(elbows[-1])
         
     def _pass_to_ranks(self, G, nedges = 0, matrix = False):
