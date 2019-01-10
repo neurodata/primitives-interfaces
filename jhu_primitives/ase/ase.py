@@ -201,7 +201,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             else:
                 E = int(networkx.number_of_edges(G))
                 g = networkx.to_numpy_array(G)
-        elif type(G) is np.ndarray:
+        elif type(G) is np.ndarray or type(G) is container.numpy.ndarray:
             G = networkx.to_networkx_graph(G)
             E = int(networkx.number_of_edges(G))
             g = self._pass_to_ranks(G, nedges = E)
@@ -256,20 +256,33 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
                 return base.CallResult(inputs)
 
-        A = robjects.Matrix(g)
-        robjects.r.assign("A", A)
+        #A = robjects.Matrix(g)
+        #robjects.r.assign("A", A)
+
+        print("we made it")
 
         d_max = self.hyperparams['max_dimension']
 
+        tsvd = tSVD(n_components = d_max)
+        tsvd.fit(g)
+
+        eig_vectors = tsvd.components_.T
+        eig_values = tsvd.singular_values_
+
+        eig_vectors_copy = eig_vectors[:,:].copy()
+
+        X_hat = eig_vectors_copy.dot(np.diag(eig_values**0.5))
+
+        """
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "ase.interface.R")
         path = file_path_conversion(path, uri = "")
         
         cmd = """
-        source("%s")
-        fn <- function(inputs, d_max) {
-            ase.interface(inputs, d_max)
-        }
+        #source("%s")
+        #fn <- function(inputs, d_max) {
+        #    ase.interface(inputs, d_max)
+        #}
         """ % path
 
         result = robjects.r(cmd)(A, d_max)
@@ -278,7 +291,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         d = self._get_elbows(eigenvalues=eig_values)
         vectors = container.ndarray(result[0])[:,0:d].copy()
 
-        inputs[0] = container.ndarray(vectors @ np.diag(eig_values)**0.5)
+        """
+
+        inputs[0] = container.ndarray(X_hat)
 
         return base.CallResult(inputs)        
 

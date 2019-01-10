@@ -117,6 +117,5 @@ class AdjacencyMatrixConcatenator(TransformerPrimitiveBase[Inputs, Outputs, Hype
             for j in range(i + 1, n_linktypes):
                 big_graph[i*n_nodes: (i + 1)*n_nodes, j*n_nodes: (j + 1)*n_nodes] = (graphs[i] + graphs[j])/2
                 big_graph[j*n_nodes: (j + 1)*n_nodes, i*n_nodes: (i + 1)*n_nodes] = (graphs[i] + graphs[j])/2
-                nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
-        return base.CallResult(container.ndarry(big_graph))
+        return base.CallResult(container.List([container.ndarray(big_graph)]))
