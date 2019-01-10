@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 
-__all__ = ["AdjacencySpectralEmbedding",
+__all__ = ["AdjacencySpectralEmbedding", "AdjacencyMatrixConcatenator",
            "LaplacianSpectralEmbedding", "DimensionSelection", "GaussianClassification",
            "GaussianClustering", "LargestConnectedComponent","NonParametricClustering",
            "NumberOfClusters", "OutOfCoreAdjacencySpectralEmbedding", "PassToRanks",
@@ -10,6 +10,7 @@ __all__ = ["AdjacencySpectralEmbedding",
            ,"SeededGraphMatchingPipeline"]
 
 from .ase import AdjacencySpectralEmbedding
+from .adj_concat import AdjacencyMatrixConcatenator
 from .lse import LaplacianSpectralEmbedding
 from .dimselect import DimensionSelection
 from .gclass import GaussianClassification
