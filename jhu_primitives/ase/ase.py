@@ -194,6 +194,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         np.random.seed(1234)
 
         G = inputs[0].copy()
+        
+        # PTR is very very slow
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
                 E = int(networkx.number_of_edges(G))
@@ -259,11 +261,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         #A = robjects.Matrix(g)
         #robjects.r.assign("A", A)
 
-        print("we made it")
-
         d_max = self.hyperparams['max_dimension']
 
-        tsvd = tSVD(n_components = d_max)
+        tsvd = TruncatedSVD(n_components = d_max)
         tsvd.fit(g)
 
         eig_vectors = tsvd.components_.T
