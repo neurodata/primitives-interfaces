@@ -13,7 +13,7 @@ from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 
 Inputs = container.Dataset
-Outputs = container.List
+Outputs = container.ndarray
 
 class Params(params.Params):
     pass
@@ -22,11 +22,11 @@ class Hyperparams(hyperparams.Hyperparams):
     #dim = hyperparams.Hyperparameter[None](default=None)
     dim = None
 
-class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class AdjacencyMatrixConcatenator(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
-        'id': '79e0e1bc-87fc-4bdb-bb59-ebe60ca298bb',
+        'id': '85bbe5b4-3c36-4fe5-a7de-32fa42d550eb',
         'version': "0.1.0",
         'name': "jhu.adj_concat",
         # The same path the primitive is registered with entry points in setup.py.
@@ -41,6 +41,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
+            'contact': 'mailto:hhelm2@jhu.edu'
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
@@ -71,54 +72,51 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         'algorithm_types': [
             "NONOVERLAPPING_COMMUNITY_DETECTION"
         ],
-        'primitive_family': "GRAPH_CLUSTERING"
+        'primitive_family': "DATA_TRANSFORMATION"
     })
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        """
-        Input
-            G: an n x n matrix or a networkx Graph 
-        Return
-            The largest connected component of g
+        graph = data['0']
+        csv = data['1']
 
-        """
-        G = inputs['0']
-        csv = inputs['1']
+        linktypes = np.array(csv['linkType'], dtype = 'int32')
+        uniq_linktypes, n_i = np.unique(linktypes, return_counts = True)
+        n_linktypes = len(uniq_linktypes)
 
-        #if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-        #    nx.set_node_attributes(G,'nodeID',-1)
-        #    for i in range(len(G)):
-        #        G.node[i]['nodeID'] = i
+        sources = np.array(csv['source_nodeID'], dtype = 'int32')
+        targets = np.array(csv['target_nodeID'], dtype = 'int32')
+        nodes = set(np.concatenate((sources, targets)))
+        n_nodes = len(nodes)
 
-        if len(csv) != 0:
-            if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-                nx.set_node_attributes(G,'nodeID',-1)
-                for i in range(len(G)):
-                    G.node[i]['nodeID'] = i
+        info = np.array(csv['linkExists'], dtype = 'int32')
+        n_info = len(info)
 
-            nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values())
-            nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+        edge_counts = np.zeros(n_linktypes)
+        for i in range(n_info):
+            temp_link_type = linktypes[i]
+            edge_counts[temp_link_type] += info[i]
+            
+        p_hats = edge_counts / n_i
 
-            return base.CallResult(container.List([G.copy(), nodeIDs,csv]))
+        graphs = [p_hats[i] * np.ones(shape = (n_nodes, n_nodes)) for i in range(n_linktypes)] # set up a bunch of empty graphs
 
-        if type(G) == np.ndarray:
-            if G.ndim == 2:
-                if G.shape[0] == G.shape[1]: # n x n matrix
-                    G = Graph(G)
-                else:
-                    raise TypeError("Networkx graphs or n x n numpy arrays only") 
+        for i in range(n_info):
+            temp_link_type = int(linktypes[i])
+            graphs[temp_link_type][sources[i], targets[i]] = info[i]
+            graphs[temp_link_type][targets[i], sources[i]] = info[i]
+            
+        big_graph = np.zeros(shape = (n_nodes*int(n_linktypes), n_nodes*int(n_linktypes)))
 
-        subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
+        for i in range(n_linktypes):
+            big_graph[i*n_nodes:(i + 1)*n_nodes, i*n_nodes:(i + 1)*n_nodes] = graphs[i]
+            
+        for i in range(n_linktypes):
+            for j in range(i + 1, n_linktypes):
+                big_graph[i*n_nodes: (i + 1)*n_nodes, j*n_nodes: (j + 1)*n_nodes] = (graphs[i] + graphs[j])/2
+                big_graph[j*n_nodes: (j + 1)*n_nodes, i*n_nodes: (i + 1)*n_nodes] = (graphs[i] + graphs[j])/2
+                nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
-        G_connected = [[0]]
-        for i in subgraphs:
-            if len(i) > len(G_connected[0]):
-                G_connected = [i]
-
-        nodeIDs = list(nx.get_node_attributes(G_connected[0], 'nodeID').values())
-        nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
-
-        return base.CallResult(container.List([G_connected[0].copy(), nodeIDs, csv]))
+        return base.CallResult(container.ndarry(big_graph))
