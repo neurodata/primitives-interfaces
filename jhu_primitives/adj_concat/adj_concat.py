@@ -79,8 +79,8 @@ class AdjacencyMatrixConcatenator(TransformerPrimitiveBase[Inputs, Outputs, Hype
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        graph = data['0']
-        csv = data['1']
+        graph = inputs['0']
+        csv = inputs['1']
 
         linktypes = np.array(csv['linkType'], dtype = 'int32')
         uniq_linktypes, n_i = np.unique(linktypes, return_counts = True)
