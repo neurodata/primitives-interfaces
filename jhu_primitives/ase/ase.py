@@ -15,9 +15,9 @@ from scipy.stats import norm
 from scipy.stats import rankdata
 from sklearn.decomposition import TruncatedSVD
 
-from rpy2 import robjects
-import rpy2.robjects.numpy2ri
-robjects.numpy2ri.activate()
+#from rpy2 import robjects
+#import rpy2.robjects.numpy2ri
+#robjects.numpy2ri.activate()
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from d3m import utils, container
@@ -26,7 +26,6 @@ from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 
 from ..utils.util import file_path_conversion
-
 
 Inputs = container.List
 Outputs = container.List
