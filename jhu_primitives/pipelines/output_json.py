@@ -34,7 +34,7 @@ def main():
 
     pipeline = pipeline_class()
 
-    print(dir())
+    #print(dir())
 
     if (pipeline is None):
         raise ValueError("Could not find pipeline with name: %s." % (pipeline_name))

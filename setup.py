@@ -75,7 +75,7 @@ setup(
     entry_points = {
         'd3m.primitives': [
             'jhu_primitives.AdjacencySpectralEmbedding=jhu_primitives.ase:AdjacencySpectralEmbedding',
-            #'jhu_primitives.AdjacencyMatrixConcatenator=jhu_primitives.ase:AdjacencyMatrixConcatenator',
+            'jhu_primitives.AdjacencyMatrixConcatenator=jhu_primitives.adj_concat:AdjacencyMatrixConcatenator',
             'jhu_primitives.LargestConnectedComponent=jhu_primitives.lcc:LargestConnectedComponent',
             'jhu_primitives.LaplacianSpectralEmbedding=jhu_primitives.lse:LaplacianSpectralEmbedding',
             'jhu_primitives.DimensionSelection=jhu_primitives.dimselect:DimensionSelection',
