@@ -75,6 +75,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             ],
             'contact': 'mailto:hhelm2@jhu.edu'
         },
+        'description': 'Spectral-based trasformation of weighted or unweighted adjacency matrix',
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have

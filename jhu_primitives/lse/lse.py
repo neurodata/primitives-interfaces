@@ -64,6 +64,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             ],
             'contact': 'mailto:hhelm2@jhu.edu'
         },
+        'description': 'Spectral-based trasformation of the Laplacian',
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
@@ -219,7 +220,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 M = len(adj)
 
                 tsvd = TruncatedSVD(n_components = self.hyperparams['max_dimension'])
-                tsvd.fit(g)
+                tsvd.fit(L)
 
                 eig_vectors = tsvd.components_.T
                 eig_values = tsvd.singular_values_
@@ -241,6 +242,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
                 return base.CallResult(inputs)
 
+        """
         A = robjects.Matrix(g)
         robjects.r.assign("A", A)
 
@@ -251,10 +253,10 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         path = file_path_conversion(path, uri = "")
 
         cmd = """
-        source("%s")
-        fn <- function(inputs, embedding_dimension) {
-            lse.interface(inputs, embedding_dimension)
-        }
+        #source("%s")
+        #fn <- function(inputs, embedding_dimension) {
+        #    lse.interface(inputs, embedding_dimension)
+        #}
         """ % path
 
         result = robjects.r(cmd)(A, d_max)
@@ -262,6 +264,23 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         d = self._get_elbows(eigenvalues=eig_values)
         vectors = container.ndarray(result[0])[:,0:d]
+        """
+
+        D = np.linalg.pinv(np.diag(g.sum(axis=1))**(1/2))
+
+        L = D @ g @ D
+
+        d_max = self.hyperparams['max_dimension']
+
+        tsvd = TruncatedSVD(n_components = d_max)
+        tsvd.fit(L)
+
+        eig_vectors = tsvd.components_.T
+        eig_values = tsvd.singular_values_
+
+        eig_vectors_copy = eig_vectors[:,:].copy()
+
+        X_hat = eig_vectors_copy.dot(np.diag(eig_values**0.5))
 
         inputs[0] = container.ndarray(vectors)
 

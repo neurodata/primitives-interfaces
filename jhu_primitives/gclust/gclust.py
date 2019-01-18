@@ -82,8 +82,9 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
                 ),
         }],
+        'description': 'Expecation-Maxmization algorithm for clustering',
         # URIs at which one can obtain code for the primitive, if available.
-        # 'location_uris': [
+        # 'location_uris': 
         #     'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
         #         git_commit=utils.current_git_commit(os.path.dirname(__file__)),
         #     ),

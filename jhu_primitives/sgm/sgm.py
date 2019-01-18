@@ -92,6 +92,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
                 ),
         }],
+        'description': 'Finds the vertex alignment between two graphs that minimizes a relaxation of the Frobenious norm of the difference of the adjacency matrices of two graphs',
         'algorithm_types': [
             "FRANK_WOLFE_ALGORITHM"
             #metadata_module.PrimitiveAlgorithmType.FRANK_WOLFE_ALGORITHM
