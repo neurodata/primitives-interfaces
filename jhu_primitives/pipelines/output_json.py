@@ -9,27 +9,32 @@ import jhu_primitives
 #from gmm_lse_pipeline import GMMoLSE_pipeline
 #from gclass_ase_pipeline import GCLASSoASE_pipeline
 #from gclassolse_pipeline import GCLASSoLSE_pipeline
+import importlib
 
 def load_args():
     parser = argparse.ArgumentParser(description = "Output a pipeline's JSON")
 
     parser.add_argument(
-        'pipeline', action = 'store', metavar = 'PIPELINE',
+        'pipeline', 
+        action = 'store', 
+        metavar = 'PIPELINE',
         help = "the name of the pipeline to generate",
     )
 
     arguments = parser.parse_args()
 
+
     return arguments.pipeline
 
 def main():
     pipeline_name = load_args()
+    module = importlib.import_module(pipeline_name)
 
-    #pipeline = GCLASSoLSE_pipeline()
-    #for pipeline_class in sri.pipelines.all.get_pipelines():
-    #    if (pipeline_class.__name__ == pipeline_name):
-    #        pipeline = pipeline_class()
-    #        break
+    pipeline_class = getattr(module, pipeline_name)
+
+    pipeline = pipeline_class()
+
+    print(dir())
 
     if (pipeline is None):
         raise ValueError("Could not find pipeline with name: %s." % (pipeline_name))

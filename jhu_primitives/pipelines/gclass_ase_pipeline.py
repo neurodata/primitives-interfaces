@@ -9,8 +9,7 @@ DATASETS = {
     'LL1_net_nomination_seed'
 }
 
-
-class GCLASSoASE_pipeline(BasePipeline):
+class gclass_ase_pipeline(BasePipeline):
     def __init__(self):
         super().__init__(DATASETS)
 
