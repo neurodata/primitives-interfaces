@@ -60,34 +60,34 @@ setup(
               #'jhu_primitives.adj_concat',
               'jhu_primitives.lcc',
               'jhu_primitives.lse',
-              'jhu_primitives.dimselect',
+              #'jhu_primitives.dimselect',
               'jhu_primitives.gclass',
               'jhu_primitives.gclust',
-              'jhu_primitives.nonpar',
-              'jhu_primitives.numclust',
-              'jhu_primitives.ptr',
-              'jhu_primitives.oocase',
+              #'jhu_primitives.nonpar',
+              #'jhu_primitives.numclust',
+              #'jhu_primitives.ptr',
+              #'jhu_primitives.oocase',
               'jhu_primitives.sgc',
               'jhu_primitives.sgm',
               'jhu_primitives.utils',
-              'jhu_primitives.vnsgm'
+              #'jhu_primitives.vnsgm'
     ],
     entry_points = {
         'd3m.primitives': [
             'jhu_primitives.AdjacencySpectralEmbedding=jhu_primitives.ase:AdjacencySpectralEmbedding',
-            'jhu_primitives.AdjacencyMatrixConcatenator=jhu_primitives.adj_concat:AdjacencyMatrixConcatenator',
+            #'jhu_primitives.AdjacencyMatrixConcatenator=jhu_primitives.adj_concat:AdjacencyMatrixConcatenator',
             'jhu_primitives.LargestConnectedComponent=jhu_primitives.lcc:LargestConnectedComponent',
             'jhu_primitives.LaplacianSpectralEmbedding=jhu_primitives.lse:LaplacianSpectralEmbedding',
-            'jhu_primitives.DimensionSelection=jhu_primitives.dimselect:DimensionSelection',
+            #'jhu_primitives.DimensionSelection=jhu_primitives.dimselect:DimensionSelection',
             'jhu_primitives.GaussianClassification=jhu_primitives.gclass:GaussianClassification',
             'jhu_primitives.GaussianClustering=jhu_primitives.gclust:GaussianClustering',
-            'jhu_primitives.NonParametricClustering=jhu_primitives.nonpar:NonParametricClustering',
-            'jhu_primitives.NumberOfClusters=jhu_primitives.numclust:NumberOfClusters',
-            'jhu_primitives.OutOfCoreAdjacencySpectralEmbedding=jhu_primitives.oocase:OutOfCoreAdjacencySpectralEmbedding',
-            'jhu_primitives.PassToRanks=jhu_primitives.ptr:PassToRanks',
+            #'jhu_primitives.NonParametricClustering=jhu_primitives.nonpar:NonParametricClustering',
+            #'jhu_primitives.NumberOfClusters=jhu_primitives.numclust:NumberOfClusters',
+            #'jhu_primitives.OutOfCoreAdjacencySpectralEmbedding=jhu_primitives.oocase:OutOfCoreAdjacencySpectralEmbedding',
+            #'jhu_primitives.PassToRanks=jhu_primitives.ptr:PassToRanks',
             'jhu_primitives.SpectralGraphClustering=jhu_primitives.sgc:SpectralGraphClustering',
             'jhu_primitives.SeededGraphMatching=jhu_primitives.sgm:SeededGraphMatching',
-            'jhu_primitives.VertexNominationSeededGraphMatching=jhu_primitives.vnsgm:VertexNominationSeededGraphMatching'
+            #'jhu_primitives.VertexNominationSeededGraphMatching=jhu_primitives.vnsgm:VertexNominationSeededGraphMatching'
             ]
     },
     package_data = {'': ['*.r', '*.R']},
@@ -95,6 +95,7 @@ setup(
     install_requires=['typing', 'numpy', 'scipy','networkx',
                       'rpy2', 'sklearn', 'jinja2', 'd3m', 'scipy'],
     url='https://github.com/neurodata/primitives-interfaces',
+    keywords = 'd3m_primitive'
 )
 
 """
