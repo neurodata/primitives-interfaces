@@ -50,9 +50,9 @@ setup(
  #   cmdclass={'install': CustomInstallCommand},
     name=PACKAGE_NAME,
     version=VERSION,
-    description='Python interfaces for TA1 primitives',
+    description='JHU Python interfaces for TA1 primitives for d3m',
     long_description='A library wrapping JHU\'s Python interfaces for the D3M program\'s TA1 primitives.',
-    author='Disa Mhembere, Eric Bridgeford, Youngser Park, Heather G. Patsolic, Tyler M. Tomita, Jesse L. Patsolic',
+    author='Disa Mhembere, Eric Bridgeford, Youngser Park, Heather G. Patsolic, Tyler M. Tomita, Jesse L. Patsolic, Hayden S. Helm, Joshua Agterberg',
     author_email="disa@jhu.edu",
     packages=[
               PACKAGE_NAME,

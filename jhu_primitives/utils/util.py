@@ -4,10 +4,148 @@
 # Created on 2017-09-14.
 
 import os
+import argparse
+import importlib
+import importlib.util
+import sys
+import json
+import shutil
 #import d3m.index
 
+PROBLEM_TYPES = ['problem_type1', 'problem_type2']
+
+DATASETS = {'problem_type1': ['name_of_dataset1',
+                                'name_of_dataset2'],
+            'problem_type2': ['name_of_dataset1',
+                                'name_of_dataset2']
+            }
+
+PIPELINES = {'problem_type1': ['gclass_ase_pipeline',
+                                'name_of_pipeline2'],
+             'problem_type2': ['name_of_pipeline1',
+                                'name_of_pipeline2']
+             }
+
+def load_args():
+    parser = argparse.ArgumentParser(description = "Output a pipeline's JSON")
+
+    parser.add_argument(
+        'primitives_or_pipelines', 
+        action = 'store', 
+        help = "the type of object to generate jsons for",
+    )
+
+    arguments = parser.parse_args()
+
+    return arguments.primitives_or_pipelines
+
+def generate_json(type_):
+    if type_ not in ['pipelines', 'primitives']:
+        raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
+    
+    version = "-1"
+
+    while version == "-1":
+        version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n")
+        if version == "0":
+            version = "v2018.1.26"
+        elif version == "1":
+            version = "v2018.4.18"
+        elif version == "2":
+            version = "v2018.6.5"
+        elif version == "3":
+            version = "v2018.7.10"
+
+    path = os.path.abspath(os.getcwd()) + "\\"
+    jhu_path = path + "primitives_repo\\" + version + "\\JHU\\"
+
+    all_primitives = os.listdir(jhu_path)
+    d3m_string = ""
+
+    for i in all_primitives[0].split('.')[:-1]:
+        d3m_string = d3m_string + i + "."
+
+    primitive_names = [primitive.split('.')[-1] for primitive in all_primitives]
+
+    versions = {}
+
+    for i in range(len(all_primitives)):
+        versions[primitive_names[i]] = os.listdir(jhu_path + all_primitives[i])[0]
+
+    if type_ == 'primitives':
+        for i in range(len(all_primitives)): 
+            temp = jhu_path + all_primitives[i]
+            os.system('python -m d3m.index describe -i 4 ' + all_primitives[i] + ' > ' + temp + '\\' + versions[primitive_names[i]] + '\\primitive.json')
+            #json_path = jhu_path + all_primitives[i]+ '\\' + versions[primitive_names[i]] + '\\primitive.json'
+            #print(json_path)
+            #os.system('python -m d3m.index describe -i 4 ' + all_primitives[i] + ' > ' json_path)
+    else:
+        for problem_type in PROBLEM_TYPES:
+            datasets = DATASETS[problem_type]
+            pipelines = PIPELINES[problem_type]
+            for pipeline in pipelines:
+                path_to_pipeline = path + 'primitives-interfaces\\jhu_primitives\\pipelines\\' + pipeline
+
+                spec = importlib.util.spec_from_file_location(pipeline, path_to_pipeline + '.py')
+
+                module = importlib.util.module_from_spec(spec)
+
+                spec.loader.exec_module(module)
+
+                pipeline_class = getattr(module, pipeline)
+
+                pipeline_object = pipeline_class()
+
+                pipeline_dir = dir(module)
+
+                primitives = [prim for prim in primitive_names if prim in pipeline_dir]
+
+                for dataset in datasets:
+
+                    with open('temp.json', 'w') as file:
+                        text = pipeline_object.get_json()
+                        file.write(str(text))
+
+                    json_object = json.load(open('temp.json', 'r'))
+                    pipeline_id = json_object['id']
+
+                    for primitive in primitives:
+                        temp_path = jhu_path + d3m_string + primitive + '\\' + versions[primitive] + '\\pipelines\\'
+                        temp_dir = os.listdir(temp_path)
+
+                        for file in temp_dir:
+                            temp_pipeline_id, file_type = file.split('.')
+                            if file_type == 'meta':
+                                temp_json = json.load(open(temp_path + temp_pipeline_id + '.meta', 'r'))
+                                temp_dataset = temp_json['problem'].split('_problem')[0]
+                                if temp_dataset == dataset:
+                                    os.remove(temp_path + temp_pipeline_id + '.meta')
+                                    os.remove(temp_path + temp_pipeline_id + '.json')
+
+                        shutil.copy(path + 'temp.json', jhu_path + d3m_string 
+                                        + primitive + "\\" + versions[primitive] + '\\pipelines\\'
+                                        + pipeline_id + '.json')       # creates the pipeline json 
+                        
+                        write_meta(pipeline_id, dataset, temp_path + pipeline_id)          
+                    break
+                break
+            break
+
+def write_meta(pipeline_id, dataset, path, TRAIN_or_TEST = 'TRAIN'):
+    meta = {}
+    meta['problem'] = dataset + '_problem_' + TRAIN_or_TEST
+    meta['train_inputs'] = [dataset + '_problem_' + 'TRAIN']
+    meta['test_inputs'] = [dataset + '_problem_' + 'TEST']
+
+    with open(path + '.meta', 'w') as file:
+        json.dump(meta, file)
+
+if __name__ == '__main__':
+    type_ = load_args()
+    generate_json(type_)
+
 def file_path_conversion(abs_file_path, uri="file"):
-    local_drive= abs_file_path.split(':')[0]
+    local_drive = abs_file_path.split(':')[0]
 
     try:
         file_path = abs_file_path.split(':')[1]
@@ -41,27 +179,6 @@ def file_path_conversion(abs_file_path, uri="file"):
         return s
     else:
         return local_drive + ":" + s
-
-def generate_json():
-    version = "-1"
-
-    while version == "-1":
-        version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n")
-        if version == "0":
-            version = "v2018.1.26"
-        elif version == "1":
-            version = "v2018.4.18"
-        elif version == "2":
-            version = "v2018.6.5"
-        elif version == "3":
-            version = "v2018.7.10"
-
-    path = os.path.abspath(os.getcwd()) + "\\primitives_repo\\" + version + "\\JHU\\"
-
-    for i in os.listdir(path):
-        temp = path + i
-        for j in os.listdir(temp): 
-            os.system('python -m d3m.index describe -i 4 ' + i + ' > ' + temp + '\\' + j + '\\primitive.json')
 
 def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False):
     if abs_file_path == "":
@@ -128,6 +245,5 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False):
     else:
         return local_drive + ":" + s
 
-if __name__ == '__main__':
-    generate_json()
+
 

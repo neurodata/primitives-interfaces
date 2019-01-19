@@ -23,7 +23,6 @@ def load_args():
 
     arguments = parser.parse_args()
 
-
     return arguments.pipeline
 
 def main():
@@ -31,6 +30,7 @@ def main():
     module = importlib.import_module(pipeline_name)
 
     pipeline_class = getattr(module, pipeline_name)
+    print(dir(module))
 
     pipeline = pipeline_class()
 
