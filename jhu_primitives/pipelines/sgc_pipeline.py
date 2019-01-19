@@ -8,7 +8,7 @@ DATASETS = {
 }
 
 
-class SGC_pipeline(BasePipeline):
+class sgc_pipeline(BasePipeline):
     def __init__(self):
         super().__init__(DATASETS)
 

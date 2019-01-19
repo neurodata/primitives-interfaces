@@ -10,8 +10,16 @@ import importlib.util
 import sys
 import json
 import shutil
-#import d3m.index
 
+"""
+For reference, the pipelines that are functional are the following:
+    gclass_ase_pipeline
+    gclass_lse_pipeline
+    gmm_ase_pipeline
+    gmm_lse_pipeline
+    sgc_pipeline
+    sgm_pipeline
+"""
 PROBLEM_TYPES = ['problem_type1', 'problem_type2']
 
 DATASETS = {'problem_type1': ['name_of_dataset1',
@@ -76,9 +84,6 @@ def generate_json(type_):
         for i in range(len(all_primitives)): 
             temp = jhu_path + all_primitives[i]
             os.system('python -m d3m.index describe -i 4 ' + all_primitives[i] + ' > ' + temp + '\\' + versions[primitive_names[i]] + '\\primitive.json')
-            #json_path = jhu_path + all_primitives[i]+ '\\' + versions[primitive_names[i]] + '\\primitive.json'
-            #print(json_path)
-            #os.system('python -m d3m.index describe -i 4 ' + all_primitives[i] + ' > ' json_path)
     else:
         for problem_type in PROBLEM_TYPES:
             datasets = DATASETS[problem_type]
@@ -244,6 +249,3 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False):
         return "file://localhost" + s
     else:
         return local_drive + ":" + s
-
-
-

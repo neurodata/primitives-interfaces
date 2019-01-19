@@ -10,7 +10,7 @@ DATASETS = {
 }
 
 
-class GCLASSoLSE_pipeline(BasePipeline):
+class gclass_lse_pipeline(BasePipeline):
     def __init__(self):
         super().__init__(DATASETS)
 
