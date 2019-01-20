@@ -11,7 +11,7 @@ DATASETS = {
 }
 
 
-class GMMoASE_pipeline(BasePipeline):
+class gmm_ase_pipeline(BasePipeline):
     def __init__(self):
         super().__init__(DATASETS)
 

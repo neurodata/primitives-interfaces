@@ -22,18 +22,17 @@ For reference, the pipelines that are functional are the following:
 """
 PROBLEM_TYPES = ['graphMatching', 'vertexNomination_class', 'vertexNomination_clust']
 
-DATASETS = {'graphMatching': ['49_facebook_problem_TRAIN',
-                              'LL1_Blogosphere_net_problem',
-                              'LL1_DIC28_net_problem',
-                              'LL1_ERDOS972_net_problem',
-                              'LL1_IzmenjavaBratSestra_net_problem',
-                              'LL1_REVIJE_net_problem',
-                              'LL1_SAMPSON_net_problem',
-                              'LL1_USAIR97_net_problem',
-                              'LL1_imports_net_problem'],
-            'vertexNomination_class': ['LL1_EDGELIST_net_nomination_seed_problem_TRAIN',
-                                       'LL1_net_nomination_seed_problem_TRAIN'],
-            'vertexNomination_clust': ['DS01876_problem_TRAIN'],
+DATASETS = {'graphMatching': ['49_facebook',
+                              'LL1_Blogosphere_net',
+                              'LL1_DIC28_net',
+                              'LL1_ERDOS972_net',
+                              'LL1_IzmenjavaBratSestra_net',
+                              'LL1_REVIJE_net',
+                              'LL1_SAMPSON_net',
+                              'LL1_USAIR97_net',
+                              'LL1_imports_net'],
+            'vertexNomination_class': ['LL1_net_nomination_seed'],
+            'vertexNomination_clust': ['DS01876'],
             }
 #'communityDetection': ['6_70_com_amazon_problem_TRAIN',
 #                       '6_86_com_DBLP_problem_TRAIN',
@@ -41,6 +40,8 @@ DATASETS = {'graphMatching': ['49_facebook_problem_TRAIN',
 #                       'LL1_bn_fly_drosophila_medulla_net_problem',
 #                       'LL1_eco_florida_net_problem],
 #'linkPrediction': ['59_umls_problem_TRAIN']
+
+# vertexNomination_class = 'LL1_EDGELIST_net_nomination_seed_problem_TRAIN'
 
 
 PIPELINES = {'graphMatching': ['sgm_pipeline'],
@@ -52,6 +53,24 @@ PIPELINES = {'graphMatching': ['sgm_pipeline'],
                                         'sgc_pipeline'],
              }
 
+DATASETS_THAT_MATCH_PROBLEM = ['LL1_net_nomination_seed',
+                                'DS01876',
+                                'LL1_Blogosphere_net',
+                                'LL1_DIC28_net',
+                                "LL1_ERDOS972_net",
+                                "LL1_IzmenjavaBratSestra_net",
+                                "LL1_REVIJE_net",
+                                "LL1_SAMPSON_net",
+                                "LL1_USAIR97_net",
+                                "LL1_imports_net"
+                                ]
+
+
+TRAIN_AND_TEST_SCHEMA_DATASETS = ['49_facebook', 
+                                '59_umls', 
+                                'DS01876',
+                                'LL1_net_nomination_seed'
+                                ]
 def load_args():
     parser = argparse.ArgumentParser(description = "Output a pipeline's JSON")
 
@@ -117,13 +136,19 @@ def generate_json(type_):
 
                 pipeline_class = getattr(module, pipeline)
 
-                pipeline_object = pipeline_class()
-
                 pipeline_dir = dir(module)
 
                 primitives = [prim for prim in primitive_names if prim in pipeline_dir]
 
                 for dataset in datasets:
+
+                    pipeline_object = pipeline_class()
+
+                    if dataset in DATASETS_THAT_MATCH_PROBLEM:
+                        dataset_new = dataset + '_dataset'
+                    elif dataset == '49_facebook':
+                        dataset_new = '49_fk_dataset'
+
 
                     with open('temp.json', 'w') as file:
                         text = pipeline_object.get_json()
@@ -140,25 +165,31 @@ def generate_json(type_):
                             temp_pipeline_id, file_type = file.split('.')
                             if file_type == 'meta':
                                 temp_json = json.load(open(temp_path + temp_pipeline_id + '.meta', 'r'))
-                                temp_dataset = temp_json['problem'].split('_problem')[0]
-                                if temp_dataset == dataset:
+                                temp_problem = temp_json['problem']
+                                if temp_problem == dataset + '_problem' and temp_pipeline_id is not pipeline_id:
                                     os.remove(temp_path + temp_pipeline_id + '.meta')
                                     os.remove(temp_path + temp_pipeline_id + '.json')
-
+                        
                         shutil.copy(path + 'temp.json', jhu_path + d3m_string 
                                         + primitive + "\\" + versions[primitive] + '\\pipelines\\'
                                         + pipeline_id + '.json')       # creates the pipeline json 
                         
-                        write_meta(pipeline_id, dataset, temp_path + pipeline_id)          
-                    break
-                break
-            break
+                        write_meta(pipeline_id, dataset, dataset_new, temp_path + pipeline_id)
+        os.remove('temp.json')
 
-def write_meta(pipeline_id, dataset, path, TRAIN_or_TEST = 'TRAIN'):
+def write_meta(pipeline_id, dataset, dataset_new, path, TRAIN_or_TEST = 'TRAIN', skeleton = True):
+    
     meta = {}
-    meta['problem'] = dataset + '_problem_' + TRAIN_or_TEST
-    meta['train_inputs'] = [dataset + '_problem_' + 'TRAIN']
-    meta['test_inputs'] = [dataset + '_problem_' + 'TEST']
+
+    meta['problem'] = dataset + '_problem'
+
+
+    if dataset in TRAIN_AND_TEST_SCHEMA_DATASETS:
+        meta['train_inputs'] = dataset_new + "_TRAIN"
+        meta['test_inputs'] = dataset_new + "_TEST"
+    else:
+        meta['train_inputs'] = dataset_new
+        meta['test_inputs'] = dataset_new
 
     with open(path + '.meta', 'w') as file:
         json.dump(meta, file)

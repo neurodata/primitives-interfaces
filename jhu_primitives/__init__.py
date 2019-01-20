@@ -32,7 +32,7 @@ from .sgc import SpectralGraphClustering
 from .sgm import SeededGraphMatching
 from .vnsgm import VertexNominationSeededGraphMatching
 from .utils import file_path_conversion
-from .pipelines import seeded_graph_matching_pipeline
+from .pipelines import sgm_pipeline
 from .pipelines import output_json
 
 """

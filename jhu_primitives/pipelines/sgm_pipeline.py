@@ -11,7 +11,7 @@ DATASETS = {
     '49_facebook'
 }
 
-class seeded_graph_matching_pipeline(BasePipeline):
+class sgm_pipeline(BasePipeline):
     def __init__(self):
         super().__init__(DATASETS)
 
