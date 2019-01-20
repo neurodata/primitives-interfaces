@@ -20,18 +20,36 @@ For reference, the pipelines that are functional are the following:
     sgc_pipeline
     sgm_pipeline
 """
-PROBLEM_TYPES = ['problem_type1', 'problem_type2']
+PROBLEM_TYPES = ['graphMatching', 'vertexNomination_class', 'vertexNomination_clust']
 
-DATASETS = {'problem_type1': ['name_of_dataset1',
-                                'name_of_dataset2'],
-            'problem_type2': ['name_of_dataset1',
-                                'name_of_dataset2']
+DATASETS = {'graphMatching': ['49_facebook_problem_TRAIN',
+                              'LL1_Blogosphere_net_problem',
+                              'LL1_DIC28_net_problem',
+                              'LL1_ERDOS972_net_problem',
+                              'LL1_IzmenjavaBratSestra_net_problem',
+                              'LL1_REVIJE_net_problem',
+                              'LL1_SAMPSON_net_problem',
+                              'LL1_USAIR97_net_problem',
+                              'LL1_imports_net_problem'],
+            'vertexNomination_class': ['LL1_EDGELIST_net_nomination_seed_problem_TRAIN',
+                                       'LL1_net_nomination_seed_problem_TRAIN'],
+            'vertexNomination_clust': ['DS01876_problem_TRAIN'],
             }
+#'communityDetection': ['6_70_com_amazon_problem_TRAIN',
+#                       '6_86_com_DBLP_problem_TRAIN',
+#                       'LL1_Bio_dmela_net_problem',
+#                       'LL1_bn_fly_drosophila_medulla_net_problem',
+#                       'LL1_eco_florida_net_problem],
+#'linkPrediction': ['59_umls_problem_TRAIN']
 
-PIPELINES = {'problem_type1': ['gclass_ase_pipeline',
-                                'name_of_pipeline2'],
-             'problem_type2': ['name_of_pipeline1',
-                                'name_of_pipeline2']
+
+PIPELINES = {'graphMatching': ['sgm_pipeline'],
+             'vertexNomination_class': ['gclass_ase_pipeline',
+                                        'gclass_lse_pipeline',
+                                        'sgc_pipeline'],
+             'vertexNomination_clust': ['gmm_ase_pipeline',
+                                        'gmm_lse_pipeline',
+                                        'sgc_pipeline'],
              }
 
 def load_args():
