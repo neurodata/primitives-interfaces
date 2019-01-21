@@ -148,6 +148,8 @@ def generate_json(type_):
                         dataset_new = dataset + '_dataset'
                     elif dataset == '49_facebook':
                         dataset_new = '49_fk_dataset'
+                    elif dataset == 'LL1_net_nomination_seed':
+                        dataset_new = 'LL1_net_nomination'
 
 
                     with open('temp.json', 'w') as file:
