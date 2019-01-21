@@ -185,11 +185,11 @@ def write_meta(pipeline_id, dataset, dataset_new, path, TRAIN_or_TEST = 'TRAIN',
 
 
     if dataset in TRAIN_AND_TEST_SCHEMA_DATASETS:
-        meta['train_inputs'] = dataset_new + "_TRAIN"
-        meta['test_inputs'] = dataset_new + "_TEST"
+        meta['train_inputs'] = [dataset_new + "_TRAIN"]
+        meta['test_inputs'] = [dataset_new + "_TEST"]
     else:
-        meta['train_inputs'] = dataset_new
-        meta['test_inputs'] = dataset_new
+        meta['train_inputs'] = [dataset_new]
+        meta['test_inputs'] = [dataset_new]
 
     with open(path + '.meta', 'w') as file:
         json.dump(meta, file)
