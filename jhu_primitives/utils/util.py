@@ -53,7 +53,7 @@ PIPELINES = {'graphMatching': ['sgm_pipeline'],
                                         'sgc_pipeline'],
              }
 
-DATASETS_THAT_MATCH_PROBLEM = ['LL1_net_nomination_seed',
+DATASETS_THAT_MATCH_PROBLEM = [#'LL1_net_nomination_seed',
                                 'DS01876',
                                 'LL1_Blogosphere_net',
                                 'LL1_DIC28_net',
@@ -122,6 +122,14 @@ def generate_json(type_):
             temp = jhu_path + all_primitives[i]
             os.system('python -m d3m.index describe -i 4 ' + all_primitives[i] + ' > ' + temp + '\\' + versions[primitive_names[i]] + '\\primitive.json')
     else:
+        for primitive in primitive_names:
+            
+            temp_path = jhu_path + d3m_string + primitive + '\\' + versions[primitive] + '\\pipelines\\'
+            temp_dir = os.listdir(temp_path)
+
+            for file in temp_dir:
+                os.remove(temp_path + file)
+
         for problem_type in PROBLEM_TYPES:
             datasets = DATASETS[problem_type]
             pipelines = PIPELINES[problem_type]
@@ -149,7 +157,7 @@ def generate_json(type_):
                     elif dataset == '49_facebook':
                         dataset_new = '49_fk_dataset'
                     elif dataset == 'LL1_net_nomination_seed':
-                        dataset_new = 'LL1_net_nomination'
+                        dataset_new = 'LL1_net_nomination_dataset'
 
 
                     with open('temp.json', 'w') as file:
@@ -159,27 +167,23 @@ def generate_json(type_):
                     json_object = json.load(open('temp.json', 'r'))
                     pipeline_id = json_object['id']
 
+
+                            #temp_pipeline_id, file_type = file.split('.')
+                            #if file_type == 'meta':
+                            #    temp_json = json.load(open(temp_path + temp_pipeline_id + '.meta', 'r'))
+                            #    temp_problem = temp_json['problem']
+                            #    if temp_problem == dataset + '_problem' and temp_pipeline_id is not pipeline_id:
+                            #        os.remove(temp_path + temp_pipeline_id + '.meta')
+                            #        os.remove(temp_path + temp_pipeline_id + '.json')
                     for primitive in primitives:
                         temp_path = jhu_path + d3m_string + primitive + '\\' + versions[primitive] + '\\pipelines\\'
-                        temp_dir = os.listdir(temp_path)
-
-                        for file in temp_dir:
-                            temp_pipeline_id, file_type = file.split('.')
-                            if file_type == 'meta':
-                                temp_json = json.load(open(temp_path + temp_pipeline_id + '.meta', 'r'))
-                                temp_problem = temp_json['problem']
-                                if temp_problem == dataset + '_problem' and temp_pipeline_id is not pipeline_id:
-                                    os.remove(temp_path + temp_pipeline_id + '.meta')
-                                    os.remove(temp_path + temp_pipeline_id + '.json')
-                        
                         shutil.copy(path + 'temp.json', jhu_path + d3m_string 
                                         + primitive + "\\" + versions[primitive] + '\\pipelines\\'
                                         + pipeline_id + '.json')       # creates the pipeline json 
-                        
                         write_meta(pipeline_id, dataset, dataset_new, temp_path + pipeline_id)
         os.remove('temp.json')
 
-def write_meta(pipeline_id, dataset, dataset_new, path, TRAIN_or_TEST = 'TRAIN', skeleton = True):
+def write_meta(pipeline_id, dataset, dataset_new, path):
     
     meta = {}
 
