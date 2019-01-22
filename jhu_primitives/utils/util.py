@@ -44,7 +44,8 @@ DATASETS = {'graphMatching': ['49_facebook',
 # vertexNomination_class = 'LL1_EDGELIST_net_nomination_seed_problem_TRAIN'
 
 
-PIPELINES = {'graphMatching': ['sgm_pipeline'],
+PIPELINES = {'graphMatching': ['sgm_pipeline',
+                               'sgm_pipeline_10'],
              'vertexNomination_class': ['gclass_ase_pipeline',
                                         'gclass_lse_pipeline',
                                         'sgc_pipeline'],
@@ -66,8 +67,8 @@ DATASETS_THAT_MATCH_PROBLEM = [#'LL1_net_nomination_seed',
                                 ]
 
 
-TRAIN_AND_TEST_SCHEMA_DATASETS = ['49_facebook', 
-                                '59_umls', 
+TRAIN_AND_TEST_SCHEMA_DATASETS = ['49_facebook',
+                                '59_umls',
                                 'DS01876',
                                 'LL1_net_nomination_seed'
                                 ]
@@ -75,8 +76,8 @@ def load_args():
     parser = argparse.ArgumentParser(description = "Output a pipeline's JSON")
 
     parser.add_argument(
-        'primitives_or_pipelines', 
-        action = 'store', 
+        'primitives_or_pipelines',
+        action = 'store',
         help = "the type of object to generate jsons for",
     )
 
@@ -87,7 +88,7 @@ def load_args():
 def generate_json(type_):
     if type_ not in ['pipelines', 'primitives']:
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
-    
+
     version = "-1"
 
     while version == "-1":
@@ -101,10 +102,11 @@ def generate_json(type_):
         elif version == "3":
             version = "v2018.7.10"
 
-    path = os.path.abspath(os.getcwd()) + "\\"
-    jhu_path = path + "primitives_repo\\" + version + "\\JHU\\"
+    path = os.path.join(os.path.abspath(os.getcwd()),"")
+    jhu_path = os.path.join(path, "primitives_repo", "archive", version, "JHU", "")
 
     all_primitives = os.listdir(jhu_path)
+    print(all_primitives)
     d3m_string = ""
 
     for i in all_primitives[0].split('.')[:-1]:
@@ -115,16 +117,18 @@ def generate_json(type_):
     versions = {}
 
     for i in range(len(all_primitives)):
-        versions[primitive_names[i]] = os.listdir(jhu_path + all_primitives[i])[0]
+        print(jhu_path)
+        print(all_primitives[i])
+        versions[primitive_names[i]] = os.listdir(os.path.join(jhu_path, all_primitives[i]))[0]
 
     if type_ == 'primitives':
-        for i in range(len(all_primitives)): 
+        for i in range(len(all_primitives)):
             temp = jhu_path + all_primitives[i]
-            os.system('python -m d3m.index describe -i 4 ' + all_primitives[i] + ' > ' + temp + '\\' + versions[primitive_names[i]] + '\\primitive.json')
+            os.system('python -m d3m.index describe -i 4 ' + all_primitives[i] + ' > ' + os.path.join(temp, versions[primitive_names[i]], 'primitive.json'))
     else:
         for primitive in primitive_names:
-            
-            temp_path = jhu_path + d3m_string + primitive + '\\' + versions[primitive] + '\\pipelines\\'
+
+            temp_path = os.path.join(jhu_path + d3m_string + primitive, versions[primitive], 'pipelines', "")
             temp_dir = os.listdir(temp_path)
 
             for file in temp_dir:
@@ -134,7 +138,7 @@ def generate_json(type_):
             datasets = DATASETS[problem_type]
             pipelines = PIPELINES[problem_type]
             for pipeline in pipelines:
-                path_to_pipeline = path + 'primitives-interfaces\\jhu_primitives\\pipelines\\' + pipeline
+                path_to_pipeline = os.path.join(path, 'primitives-interfaces', 'jhu_primitives', 'pipelines', pipeline)
 
                 spec = importlib.util.spec_from_file_location(pipeline, path_to_pipeline + '.py')
 
@@ -176,15 +180,15 @@ def generate_json(type_):
                             #        os.remove(temp_path + temp_pipeline_id + '.meta')
                             #        os.remove(temp_path + temp_pipeline_id + '.json')
                     for primitive in primitives:
-                        temp_path = jhu_path + d3m_string + primitive + '\\' + versions[primitive] + '\\pipelines\\'
-                        shutil.copy(path + 'temp.json', jhu_path + d3m_string 
-                                        + primitive + "\\" + versions[primitive] + '\\pipelines\\'
-                                        + pipeline_id + '.json')       # creates the pipeline json 
+                        temp_path = os.path.join(jhu_path + d3m_string + primitive, versions[primitive], 'pipelines', "")
+                        shutil.copy(os.path.join(path + 'temp.json', jhu_path + d3m_string
+                                        + primitive, versions[primitive], 'pipelines',
+                                        + pipeline_id + '.json'))       # creates the pipeline json
                         write_meta(pipeline_id, dataset, dataset_new, temp_path + pipeline_id)
         os.remove('temp.json')
 
 def write_meta(pipeline_id, dataset, dataset_new, path):
-    
+
     meta = {}
 
     meta['problem'] = dataset + '_problem'
@@ -249,7 +253,7 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False):
     if len(file_path) == 0:
         print("Invalid file path: len(file_path) == 0")
         return
-    
+
     valid_type = False
     while not valid_type:
         type_ = input("Enter \n 0: exit \n 1: seed_datasets_current \n 2: training_datasets \n"
@@ -267,7 +271,7 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False):
             valid_type = True
         else:
             print("Please enter 0, 1 or 2")
-            
+
     valid_folder = False
     while not valid_folder:
         folder = input("Enter \n 0: exit \n Name of the data folder (case sensitive; must be in " + data_dir + ") \n")
@@ -281,12 +285,12 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False):
             if os.path.isdir(data_dir  + "/" + folder):
                 data_dir += "/" + folder
                 valid_folder = True
-        
+
     s = ""
     if path_sep == "/":
         splits = file_path.split("/")
         #data_folder = splits[-1]
-        
+
     elif path_sep == "\\":
         splits = file_path.split("\\")
         #data_folder = splits[-1]
