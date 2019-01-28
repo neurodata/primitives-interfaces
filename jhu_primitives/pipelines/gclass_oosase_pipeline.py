@@ -2,7 +2,7 @@ from d3m.metadata import pipeline as meta_pipeline
 from d3m.metadata.base import Context, ArgumentType
 
 from jhu_primitives.pipelines.base import BasePipeline
-from jhu_primitives.ase import AdjacencySpectralEmbedding
+from jhu_primitives.oosase import OutOfSampleAdjacencySpectralEmbedding
 from jhu_primitives.gclass import GaussianClassification
 from jhu_primitives.lcc import LargestConnectedComponent
 
@@ -11,7 +11,7 @@ DATASETS = {
 
 }
 
-class gclass_ase_pipeline(BasePipeline):
+class gclass_oosase_pipeline(BasePipeline):
     def __init__(self):
         super().__init__(DATASETS)
 
@@ -29,7 +29,7 @@ class gclass_ase_pipeline(BasePipeline):
         step_0.add_output('produce')
         pipeline.add_step(step_0)
 
-        step_1 = meta_pipeline.PrimitiveStep(primitive_description=AdjacencySpectralEmbedding.metadata.query())
+        step_1 = meta_pipeline.PrimitiveStep(primitive_description=OutOfSampleAdjacencySpectralEmbedding.metadata.query())
         step_1.add_argument(
             name='inputs',
             argument_type=ArgumentType.CONTAINER,

@@ -47,6 +47,9 @@ class Hyperparams(hyperparams.Hyperparams):
     #labels = hyperparams.Hyperparameter[np.ndarray](default=np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
 class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
+    """
+    Quadratic discriminant analysis classification procedure.
+    """
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -54,7 +57,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         'version': "0.1.0",
         'name': "jhu.gclass",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.GaussianClassification',
+        'python_path': 'd3m.primitives.classification.gaussian_classification.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['gaussian classification', 'graph', 'graphs', 'classification', 'supervised', 'supervised learning'],
         'source': {
@@ -119,7 +122,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._seeds: container.ndarray = None
         self._labels: container.ndarray = None
         self._ENOUGH_SEEDS: bool = False
-        self._PD: bool = False 
+        self._PD: bool = False
         self._pis: container.ndarray = None
         self._means: container.ndarray = None
         self._covariances: container.ndarray = None
@@ -188,7 +191,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         try:
             self._labels = self._training_inputs[2]['classLabel']
             self._problem = 'VN'
-            
+
         except:
             self._labels = self._training_inputs[2]['community']
             self._problem = 'CD'
@@ -243,7 +246,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             temp_feature_vector = np.reshape(temp_feature_vector, (len(temp_feature_vector), 1))
             mcfv_squared = temp_feature_vector.dot(temp_feature_vector.T)
             mean_centered_sums[temp_label, :, :] += mcfv_squared
-        
+
         if self._ENOUGH_SEEDS:
             estimated_cov = np.zeros(shape = (K, d, d))
             for i in range(K):

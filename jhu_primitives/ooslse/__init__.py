@@ -1,0 +1,1 @@
+from .ooslse import OutOfSampleLaplacianSpectralEmbedding

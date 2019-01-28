@@ -52,6 +52,9 @@ class Hyperparams(hyperparams.Hyperparams):
 
 
 class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Params, Hyperparams]):
+    """
+    Finds the vertex alignment between two graphs that minimizes a relaxation of the Frobenious norm of the difference of the adjacency matrices of two graphs.
+    """
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -59,7 +62,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         'version': "0.1.0",
         'name': "jhu.sgm",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.SeededGraphMatching',
+        'python_path': 'd3m.primitives.graph_matching.seeded_graph_matching.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['graph matching'],
         'source': {
@@ -97,9 +100,9 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             "FRANK_WOLFE_ALGORITHM"
             #metadata_module.PrimitiveAlgorithmType.FRANK_WOLFE_ALGORITHM
         ],
-        'primitive_family': 
+        'primitive_family':
         #metadata_module.PrimitiveFamily.GRAPH_MATCHING,
-            PRIMITIVE_FAMILY,
+            'GRAPH_MATCHING',
         'preconditions': [
             'NO_MISSING_VALUES'
         ]
@@ -120,8 +123,8 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         self._training_dataset = inputs
         self._g1 = self._training_dataset['0']
         self._g2 = self._training_dataset['1']
-        self._g1_node_attributes = list(networkx.get_node_attributes(self._g1, 'nodeID').values())
-        self._g2_node_attributes = list(networkx.get_node_attributes(self._g2, 'nodeID').values())
+        self._g1_node_attributes = list(networkx.get_node_attributes(self._g1, 'label').values())
+        self._g2_node_attributes = list(networkx.get_node_attributes(self._g2, 'label').values())
         #technically, this is unsupervised, as there is no fit function
         #instead, we just hang on to the training data and run produce with the two graphs and seeds
         #and use that to predict later on.
@@ -143,7 +146,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         return base.CallResult(predictions)
 
     def _get_predictions(self,*, permutation_matrix: np.matrix, inputs: Inputs):
-        testing = inputs['2']
+        testing = inputs['learningData']
 
         threshold = self.hyperparams['threshold']
 
@@ -179,7 +182,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
     def _seeded_graph_match(self,*, training_data = None):
         if training_data is None:
             training_data = self._training_dataset
-        seeds = training_data['2']
+        seeds = training_data['learningData']
 
         new_seeds = pd.DataFrame(
             {'G1.nodeID': seeds['G1.nodeID'], 'G2.nodeID': seeds['G2.nodeID'], 'match': seeds['match']})
@@ -196,7 +199,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             found = False
             i = 0
             while not found:
-                if (int(new_seeds['G1.nodeID'][j]) == self._g1_node_attributes[i]):
+                if (new_seeds['G1.nodeID'][j] == self._g1_node_attributes[i]):
                     new_seeds['g1_vertex'][j] = i
                     found = True
                 i += 1
@@ -205,7 +208,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             found = False
             i = 0
             while not found:
-                if (int(new_seeds['G2.nodeID'][j]) == self._g2_node_attributes[i]):
+                if (new_seeds['G2.nodeID'][j] == self._g2_node_attributes[i]):
                     new_seeds['g2_vertex'][j] = i
                     found = True
                 i += 1
@@ -243,7 +246,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
                     sgm.interface(g1_matrix, g2_matrix, seeds,reps)
                 }
                 """ % path
-        
+
         result = np.array(ro.r(cmd)(g1_matrix, g2_matrix, seeds,reps))
 
         return container.ndarray(result)
