@@ -10,79 +10,100 @@ import importlib.util
 import sys
 import json
 import shutil
+import re
 
 """
 For reference, the pipelines that are functional are the following:
     gclass_ase_pipeline
+    gclass_oosase_pipeline
     gclass_lse_pipeline
+    gclass_ooslse_pipeline
     gmm_ase_pipeline
+    gmm_oosase_pipeline
     gmm_lse_pipeline
+    gmm_ooslse_pipeline
     sgc_pipeline
     sgm_pipeline
 """
-PROBLEM_TYPES = ['graphMatching', 'vertexNomination_class', 'vertexNomination_clust']
+PROBLEM_TYPES = ["graphMatching", "vertexNomination_class", "vertexNomination_clust", "communityDetection"]
 
-DATASETS = {'graphMatching': ['49_facebook',
-                              'LL1_Blogosphere_net',
-                              'LL1_DIC28_net',
-                              'LL1_ERDOS972_net',
-                              'LL1_IzmenjavaBratSestra_net',
-                              'LL1_REVIJE_net',
-                              'LL1_SAMPSON_net',
-                              'LL1_USAIR97_net',
-                              'LL1_imports_net'],
-            'vertexNomination_class': ['LL1_net_nomination_seed'],
-            'vertexNomination_clust': ['DS01876'],
+DATASETS = {"graphMatching": ["49_facebook",
+                              "LL1_Blogosphere_net",
+                              "LL1_DIC28_net",
+                              "LL1_ERDOS972_net",
+                              "LL1_IzmenjavaBratSestra_net",
+                              "LL1_REVIJE_net",
+                              "LL1_SAMPSON_net",
+                              "LL1_USAIR97_net",
+                              "LL1_imports_net"],
+            "vertexNomination_class": ["LL1_net_nomination_seed"],
+            "vertexNomination_clust": ["DS01876"],
+            "communityDetection": ["6_70_com_amazon",
+                                  "6_86_com_DBLP",
+                                  "LL1_Bio_dmela_net",
+                                  "LL1_bn_fly_drosophila_medulla_net",
+                                  "LL1_eco_florida_net"]
             }
-#'communityDetection': ['6_70_com_amazon_problem_TRAIN',
-#                       '6_86_com_DBLP_problem_TRAIN',
-#                       'LL1_Bio_dmela_net_problem',
-#                       'LL1_bn_fly_drosophila_medulla_net_problem',
-#                       'LL1_eco_florida_net_problem],
-#'linkPrediction': ['59_umls_problem_TRAIN']
-
-# vertexNomination_class = 'LL1_EDGELIST_net_nomination_seed_problem_TRAIN'
+# "linkPrediction": ["59_umls_problem_TRAIN"]
+# vertexNomination_class = "LL1_EDGELIST_net_nomination_seed_problem_TRAIN"
 
 
-PIPELINES = {'graphMatching': ['sgm_pipeline',
-                               'sgm_pipeline_10'],
-             'vertexNomination_class': ['gclass_ase_pipeline',
-                                        'gclass_lse_pipeline',
-                                        'sgc_pipeline'],
-             'vertexNomination_clust': ['gmm_ase_pipeline',
-                                        'gmm_lse_pipeline',
-                                        'sgc_pipeline'],
+PIPELINES = {"graphMatching": ["sgm_pipeline",
+                               "sgm_pipeline_10"],
+             "vertexNomination_class": ["gclass_ase_pipeline",
+                                        "gclass_oosase_pipeline",
+                                        "gclass_lse_pipeline",
+                                        "gclass_ooslse_pipeline",
+                                        "sgc_pipeline"],
+             "vertexNomination_clust": ["gmm_ase_pipeline",
+                                        "gmm_oosase_pipeline",
+                                        "gmm_lse_pipeline",
+                                        "gmm_ooslse_pipeline",
+                                        "sgc_pipeline"],
+            "communityDetection": ["gmm_oosase_pipeline",
+                                   "gmm_ooslse_pipeline"]
              }
 
-DATASETS_THAT_MATCH_PROBLEM = [#'LL1_net_nomination_seed',
-                                'DS01876',
-                                'LL1_Blogosphere_net',
-                                'LL1_DIC28_net',
+DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
+                                "49_facebook",
+                                "DS01876",
+                                "LL1_Blogosphere_net",
+                                "LL1_DIC28_net",
                                 "LL1_ERDOS972_net",
                                 "LL1_IzmenjavaBratSestra_net",
                                 "LL1_REVIJE_net",
                                 "LL1_SAMPSON_net",
                                 "LL1_USAIR97_net",
-                                "LL1_imports_net"
+                                "LL1_imports_net",
+                                "6_70_com_amazon",
+                                "6_86_com_DBLP",
+                                "LL1_Bio_dmela_net",
+                                "LL1_bn_fly_drosophila_medulla_net",
+                                "LL1_eco_florida_net"
                                 ]
 
 
-TRAIN_AND_TEST_SCHEMA_DATASETS = ['49_facebook',
-                                '59_umls',
-                                'DS01876',
-                                'LL1_net_nomination_seed'
+TRAIN_AND_TEST_SCHEMA_DATASETS = ["49_facebook",
+                                "59_umls",
+                                "DS01876",
+                                "LL1_net_nomination_seed",
+                                "6_70_com_amazon",
+                                "6_86_com_DBLP"
                                 ]
+
+
+def convert(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
 def load_args():
     parser = argparse.ArgumentParser(description = "Output a pipeline's JSON")
-
     parser.add_argument(
         'primitives_or_pipelines',
         action = 'store',
         help = "the type of object to generate jsons for",
     )
-
     arguments = parser.parse_args()
-
     return arguments.primitives_or_pipelines
 
 def generate_json(type_):
@@ -90,9 +111,8 @@ def generate_json(type_):
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
 
     version = "-1"
-
     while version == "-1":
-        version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n")
+        version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n4 for v2019.1.21 \n")
         if version == "0":
             version = "v2018.1.26"
         elif version == "1":
@@ -101,24 +121,22 @@ def generate_json(type_):
             version = "v2018.6.5"
         elif version == "3":
             version = "v2018.7.10"
+        elif version == "4":
+            version = "v2019.1.21"
 
     path = os.path.join(os.path.abspath(os.getcwd()),"")
-    jhu_path = os.path.join(path, "primitives_repo", "archive", version, "JHU", "")
+             
+    if version == "v2019.1.21":
+        jhu_path = os.path.join(path, "primitives_repo", version, "JHU", "")
+    else:
+        jhu_path = os.path.join(path, "primitives_repo", "archive", version, "JHU", "")
 
     all_primitives = os.listdir(jhu_path)
-    print(all_primitives)
-    d3m_string = ""
+    primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
 
-    for i in all_primitives[0].split('.')[:-1]:
-        d3m_string = d3m_string + i + "."
-
-    primitive_names = [primitive.split('.')[-1] for primitive in all_primitives]
 
     versions = {}
-
     for i in range(len(all_primitives)):
-        print(jhu_path)
-        print(all_primitives[i])
         versions[primitive_names[i]] = os.listdir(os.path.join(jhu_path, all_primitives[i]))[0]
 
     if type_ == 'primitives':
@@ -126,10 +144,11 @@ def generate_json(type_):
             temp = jhu_path + all_primitives[i]
             os.system('python -m d3m.index describe -i 4 ' + all_primitives[i] + ' > ' + os.path.join(temp, versions[primitive_names[i]], 'primitive.json'))
     else:
-        for primitive in primitive_names:
-
-            temp_path = os.path.join(jhu_path + d3m_string + primitive, versions[primitive], 'pipelines', "")
+        python_paths = {}
+        for python_path in all_primitives:
+            temp_path = os.path.join(jhu_path, python_path, versions[python_path.split('.')[-2]], 'pipelines', "")
             temp_dir = os.listdir(temp_path)
+            python_paths[python_path.split('.')[-2]] = python_path
 
             for file in temp_dir:
                 os.remove(temp_path + file)
@@ -149,8 +168,10 @@ def generate_json(type_):
                 pipeline_class = getattr(module, pipeline)
 
                 pipeline_dir = dir(module)
-
-                primitives = [prim for prim in primitive_names if prim in pipeline_dir]
+                p_dir = [convert(p) for p in pipeline_dir]
+                primitives = [prim for prim in primitive_names if prim in p_dir]
+                print(primitives)
+                #print(primitive_names)
 
                 for dataset in datasets:
 
@@ -159,9 +180,9 @@ def generate_json(type_):
                     if dataset in DATASETS_THAT_MATCH_PROBLEM:
                         dataset_new = dataset + '_dataset'
                     elif dataset == '49_facebook':
-                        dataset_new = '49_fk_dataset'
+                        dataset_new = '49_facebook_dataset'
                     elif dataset == 'LL1_net_nomination_seed':
-                        dataset_new = 'LL1_net_nomination_dataset'
+                        dataset_new = 'LL1_net_nomination_seed_dataset'
 
 
                     with open('temp.json', 'w') as file:
@@ -170,37 +191,27 @@ def generate_json(type_):
 
                     json_object = json.load(open('temp.json', 'r'))
                     pipeline_id = json_object['id']
+                    primitive_id = json_object['steps'][-1]['primitive']['id']
 
-
-                            #temp_pipeline_id, file_type = file.split('.')
-                            #if file_type == 'meta':
-                            #    temp_json = json.load(open(temp_path + temp_pipeline_id + '.meta', 'r'))
-                            #    temp_problem = temp_json['problem']
-                            #    if temp_problem == dataset + '_problem' and temp_pipeline_id is not pipeline_id:
-                            #        os.remove(temp_path + temp_pipeline_id + '.meta')
-                            #        os.remove(temp_path + temp_pipeline_id + '.json')
                     for primitive in primitives:
-                        temp_path = os.path.join(jhu_path + d3m_string + primitive, versions[primitive], 'pipelines', "")
-                        shutil.copy(os.path.join(path + 'temp.json', jhu_path + d3m_string
-                                        + primitive, versions[primitive], 'pipelines',
-                                        + pipeline_id + '.json'))       # creates the pipeline json
+                        temp_path = os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', "")
+                        shutil.copy(os.path.join(path, 'temp.json'),
+                                    os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', pipeline_id + '.json'))       # creates the pipeline json
                         write_meta(pipeline_id, dataset, dataset_new, temp_path + pipeline_id)
         os.remove('temp.json')
 
 def write_meta(pipeline_id, dataset, dataset_new, path):
-
     meta = {}
-
     meta['problem'] = dataset + '_problem'
-
-
+    meta['full_inputs'] = [dataset_new]
     if dataset in TRAIN_AND_TEST_SCHEMA_DATASETS:
         meta['train_inputs'] = [dataset_new + "_TRAIN"]
         meta['test_inputs'] = [dataset_new + "_TEST"]
+        meta['score_inputs'] = [dataset_new + "_SCORE"]
     else:
         meta['train_inputs'] = [dataset_new]
         meta['test_inputs'] = [dataset_new]
-
+        meta['score_inputs'] = [dataset_new]
     with open(path + '.meta', 'w') as file:
         json.dump(meta, file)
 
@@ -208,9 +219,9 @@ if __name__ == '__main__':
     type_ = load_args()
     generate_json(type_)
 
+
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive = abs_file_path.split(':')[0]
-
     try:
         file_path = abs_file_path.split(':')[1]
     except IndexError:

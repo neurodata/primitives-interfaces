@@ -44,6 +44,9 @@ class Hyperparams(hyperparams.Hyperparams):
     ])
 
 class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+    """
+    Spectral-based trasformation of the Laplacian.
+    """
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -51,7 +54,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         'version': "0.3.0",
         'name': "jhu.lse",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.LaplacianSpectralEmbedding',
+        'python_path': 'd3m.primitives.data_transformation.laplacian_spectral_embedding.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['laplacian embedding'],
         'source': {
@@ -202,7 +205,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             MORE_ATTR = True
             attr_number = 1
             while MORE_ATTR:
-                attr = 'attr' 
+                attr = 'attr'
                 temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + str(attr_number)).values()))
                 if len(temp_attr) == 0:
                     MORE_ATTR = False
@@ -215,7 +218,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             if len(adj) > 1:
                 g = self._omni(adj)
                 D = np.linalg.pinv(np.diag(g.sum(axis=1))**(1/2))
-                L = D @ g @ D
+                L = 1/np.sqrt(D) @ G @ 1/np.sqrt(D)
 
                 M = len(adj)
 
@@ -369,7 +372,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 for k in range(n):
                     for m in range(k + 1, n):
                         if i == j:
-                            omni[i*n + k, j*n + m] = list_of_sim_matrices[i][k, m] 
+                            omni[i*n + k, j*n + m] = list_of_sim_matrices[i][k, m]
                             omni[j*n + m, i*n + k] = list_of_sim_matrices[i][k, m] # symmetric
                         else:
                             omni[i*n + k, j*n + m] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2

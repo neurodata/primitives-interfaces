@@ -23,6 +23,9 @@ class Hyperparams(hyperparams.Hyperparams):
     dim = None
 
 class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+    """
+    Finds the largest connected component of a graph.
+    """
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -30,7 +33,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         'version': "0.1.0",
         'name': "jhu.lcc",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.LargestConnectedComponent',
+        'python_path': 'd3m.primitives.data_preprocessing.largest_connected_component.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['graph', 'connected', 'largest connected component', 'graph','graph transformation','transformation'],
         'source': {
@@ -84,13 +87,13 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
         Input
-            G: an n x n matrix or a networkx Graph 
+            G: an n x n matrix or a networkx Graph
         Return
             The largest connected component of g
 
         """
         G = inputs['0']
-        csv = inputs['1']
+        csv = inputs['learningData']
 
         #if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
         #    nx.set_node_attributes(G,'nodeID',-1)
@@ -113,7 +116,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 if G.shape[0] == G.shape[1]: # n x n matrix
                     G = Graph(G)
                 else:
-                    raise TypeError("Networkx graphs or n x n numpy arrays only") 
+                    raise TypeError("Networkx graphs or n x n numpy arrays only")
 
         subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
 

@@ -35,7 +35,7 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     max_dimension = hyperparams.Bounded[int](
-        default=2, 
+        default=2,
         semantic_types= [
             'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ],
@@ -44,7 +44,7 @@ class Hyperparams(hyperparams.Hyperparams):
     )
 
     which_elbow = hyperparams.Bounded[int](
-        default = 1, 
+        default = 1,
         semantic_types= [
             'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ],
@@ -52,12 +52,15 @@ class Hyperparams(hyperparams.Hyperparams):
         upper = 2
     )
     use_attributes = hyperparams.Hyperparameter[bool](
-        default = False, 
+        default = False,
         semantic_types = [
             'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ])
 
 class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+    """
+    Spectral-based trasformation of weighted or unweighted adjacency matrix.
+    """
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -109,7 +112,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         #     ),
         # ],
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.AdjacencySpectralEmbedding',
+        'python_path': 'd3m.primitives.data_transformation.adjacency_spectral_embedding.JHU',
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
@@ -194,7 +197,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         np.random.seed(1234)
 
         G = inputs[0].copy()
-        
+
         # PTR is very very slow
         if type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
@@ -220,7 +223,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             MORE_ATTR = True
             attr_number = 1
             while MORE_ATTR:
-                attr = 'attr' 
+                attr = 'attr'
                 temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + str(attr_number)).values()))
                 if len(temp_attr) == 0:
                     MORE_ATTR = False
@@ -277,7 +280,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                 "ase.interface.R")
         path = file_path_conversion(path, uri = "")
-        
+
         cmd = """
         #source("%s")
         #fn <- function(inputs, d_max) {
@@ -295,7 +298,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         inputs[0] = container.ndarray(X_hat)
 
-        return base.CallResult(inputs)        
+        return base.CallResult(inputs)
 
     def _get_elbows(self,  eigenvalues):
         elbows = self._profile_likelihood_maximization(
@@ -304,7 +307,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                     ]
                     )
         return(elbows[-1])
-        
+
     def _pass_to_ranks(self, G, nedges = 0, matrix = False):
         #iterates through edges twice
 
@@ -372,7 +375,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 for k in range(n):
                     for m in range(k + 1, n):
                         if i == j:
-                            omni[i*n + k, j*n + m] = list_of_sim_matrices[i][k, m] 
+                            omni[i*n + k, j*n + m] = list_of_sim_matrices[i][k, m]
                             omni[j*n + m, i*n + k] = list_of_sim_matrices[i][k, m] # symmetric
                         else:
                             omni[i*n + k, j*n + m] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2

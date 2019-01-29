@@ -1,4 +1,5 @@
 from d3m.metadata import pipeline as meta_pipeline
+from d3m.metadata.base import Context, ArgumentType
 
 from jhu_primitives.pipelines.base import BasePipeline
 from jhu_primitives.sgc  import SpectralGraphClustering
@@ -13,14 +14,14 @@ class sgc_pipeline(BasePipeline):
         super().__init__(DATASETS)
 
     def _gen_pipeline(self):
-        pipeline = meta_pipeline.Pipeline(context=meta_pipeline.PipelineContext.TESTING)
+        pipeline = meta_pipeline.Pipeline(context=Context.TESTING)
         pipeline.add_input(name='inputs')
 
         step_0 = meta_pipeline.PrimitiveStep(primitive_description=SpectralGraphClustering.metadata.query())
 
         step_0.add_argument(
             name='inputs',
-            argument_type=meta_pipeline.ArgumentType.CONTAINER,
+            argument_type=ArgumentType.CONTAINER,
             data_reference='inputs.0'
         )
         step_0.add_output('produce')
