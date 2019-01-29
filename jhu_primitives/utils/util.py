@@ -44,8 +44,6 @@ DATASETS = {"graphMatching": ["49_facebook",
                                   "LL1_bn_fly_drosophila_medulla_net",
                                   "LL1_eco_florida_net"]
             }
-
-
 # "linkPrediction": ["59_umls_problem_TRAIN"]
 # vertexNomination_class = "LL1_EDGELIST_net_nomination_seed_problem_TRAIN"
 
@@ -111,6 +109,7 @@ def load_args():
 def generate_json(type_):
     if type_ not in ['pipelines', 'primitives']:
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
+
     version = "-1"
     while version == "-1":
         version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n4 for v2019.1.21 \n")
@@ -126,6 +125,7 @@ def generate_json(type_):
             version = "v2019.1.21"
 
     path = os.path.join(os.path.abspath(os.getcwd()),"")
+             
     if version == "v2019.1.21":
         jhu_path = os.path.join(path, "primitives_repo", version, "JHU", "")
     else:
@@ -133,6 +133,7 @@ def generate_json(type_):
 
     all_primitives = os.listdir(jhu_path)
     primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
+
 
     versions = {}
     for i in range(len(all_primitives)):
@@ -196,7 +197,6 @@ def generate_json(type_):
                         temp_path = os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', "")
                         shutil.copy(os.path.join(path, 'temp.json'),
                                     os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', pipeline_id + '.json'))       # creates the pipeline json
-                        #print(temp_path)
                         write_meta(pipeline_id, dataset, dataset_new, temp_path + pipeline_id)
         os.remove('temp.json')
 
