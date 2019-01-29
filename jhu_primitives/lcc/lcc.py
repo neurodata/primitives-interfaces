@@ -87,7 +87,11 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         """
         G = inputs['0']
-        csv = inputs['learningData']
+
+        try:
+            csv = inputs['learningData']
+        except:
+            csv = inputs['1']
 
         #if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
         #    nx.set_node_attributes(G,'nodeID',-1)

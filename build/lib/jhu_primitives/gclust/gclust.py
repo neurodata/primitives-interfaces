@@ -3,11 +3,8 @@
 # gclust.py
 # Copyright (c) 2017. All rights reserved.
 
-from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 import numpy as np
 
@@ -33,10 +30,11 @@ class Hyperparams(hyperparams.Hyperparams):
         lower = 2,
         upper = None
     )
-    #seeds = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-    #labels = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
 class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
+    """
+    Expecation-Maxmization algorithm for clustering
+    """
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -44,7 +42,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         'version': "0.1.0",
         'name': "jhu.gclust",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.GaussianClustering',
+        'python_path': 'd3m.primitives.graph_clustering.gaussian_clustering.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['graph', 'gaussian clustering'],
         'source': {
@@ -61,11 +59,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [{
-                'type': 'UBUNTU',
-                'package': 'r-base',
-                'version': '3.4.2'
-            },
+        'installation': [
             {
                 'type': 'UBUNTU',
                 'package': 'libxml2-dev',
@@ -84,7 +78,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         }],
         'description': 'Expecation-Maxmization algorithm for clustering',
         # URIs at which one can obtain code for the primitive, if available.
-        # 'location_uris': 
+        # 'location_uris':
         #     'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
         #         git_commit=utils.current_git_commit(os.path.dirname(__file__)),
         #     ),
@@ -139,7 +133,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
         for i in range(1, max_clusters):
             for k in cov_types:
-                clf = GaussianMixture(n_components=i, 
+                clf = GaussianMixture(n_components=i,
                                     covariance_type=k)
 
                 clf.fit(self._embedding)
@@ -178,7 +172,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
-        
+
     def get_params(self) -> Params:
         return Params(embedding = self._embedding)
 
@@ -186,4 +180,4 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         self._embedding = params['embedding']
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> None:
-        pass
+        return base.CallResult(None)

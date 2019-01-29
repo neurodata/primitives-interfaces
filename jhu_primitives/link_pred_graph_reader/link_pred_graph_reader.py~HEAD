@@ -21,10 +21,7 @@ class Hyperparams(hyperparams.Hyperparams):
     #dim = hyperparams.Hyperparameter[None](default=None)
     dim = None
 
-class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
-    """
-    Finds the largest connected component of a graph.
-    """
+class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -32,14 +29,14 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         'version': "0.1.0",
         'name': "jhu.lcc",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.data_preprocessing.largest_connected_component.JHU',
+        'python_path': 'd3m.primitives.data_transformation.graph_transformer.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graph', 'connected', 'largest connected component', 'graph','graph transformation','transformation'],
+        'keywords': ['graph', 'link prediction'],
         'source': {
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/lcc/lcc.py',
+                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/link_pred_graph_reader/link_pred_graph_reader.py',
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
@@ -51,6 +48,11 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
         'installation': [
+            {
+            'type': 'UBUNTU',
+            'package': 'r-base',
+            'version': '3.4.2'
+            },
             {
             'type': 'UBUNTU',
             'package': 'libxml2-dev',
@@ -81,45 +83,49 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
         Input
-            G: an n x n matrix or a networkx Graph
+            G: an n x n matrix or a networkx Graph 
         Return
             The largest connected component of g
 
         """
         G = inputs['0']
         csv = inputs['learningData']
+        n = len(G)
 
         #if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
         #    nx.set_node_attributes(G,'nodeID',-1)
         #    for i in range(len(G)):
         #        G.node[i]['nodeID'] = i
 
-        if len(csv) != 0:
-            if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-                nx.set_node_attributes(G,'nodeID',-1)
-                for i in range(len(G)):
-                    G.node[i]['nodeID'] = i
+        values = np.array(list(nx.get_edge_attributes(G, 'linkType').values()))
+        keys = np.array(list(nx.get_edge_attributes(G, 'linkType').keys()))
 
-            nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values())
-            nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+        linktypes = np.array(csv['linkType'], dtype = 'int32')
 
-            return base.CallResult(container.List([G.copy(), nodeIDs,csv]))
+        uniq_linktypes, n_i = np.unique(linktypes, return_counts = True)
+        n_linktypes = len(uniq_linktypes)
 
-        if type(G) == np.ndarray:
-            if G.ndim == 2:
-                if G.shape[0] == G.shape[1]: # n x n matrix
-                    G = Graph(G)
-                else:
-                    raise TypeError("Networkx graphs or n x n numpy arrays only")
+        link_type_edges = [value == uniq_linktypes[i] for i in range(len(uniq_linktypes))]
+        for i in range(n_linktypes):
+            link_type_edges.append(values == uniq_linktypes[i])
 
-        subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
+        link_type_keys = [[] for i in range(n_linktypes)]
+        for i in range(n_linktypes):
+            for j in range(len(n)):
+                if link_type_edges[i][j]:
+                    link_
 
-        G_connected = [[0]]
-        for i in subgraphs:
-            if len(i) > len(G_connected[0]):
-                G_connected = [i]
 
-        nodeIDs = list(nx.get_node_attributes(G_connected[0], 'nodeID').values())
-        nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+        ones = values == 1
+        one_edges = []
+        for i in range(len(values)):
+            if ones[i]:
+                one_edges.append(keys[i])
+
+        G = nx.Graph()
+        G.add_nodes_from(data['0'])
+        for i in range(len(one_edges)):
+            G.add_edge(one_edges[i][0], one_edges[i][1])
+            G.add_edge(one_edges[i][1], one_edges[i][0])
 
         return base.CallResult(container.List([G_connected[0].copy(), nodeIDs, csv]))
