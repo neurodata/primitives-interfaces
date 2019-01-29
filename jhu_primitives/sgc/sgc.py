@@ -3,7 +3,6 @@
 # sgc.py
 # Copyright (c) 2017. All rights reserved.
 
-from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
 import networkx
@@ -37,6 +36,9 @@ class Hyperparams(hyperparams.Hyperparams):
     dim = None
 
 class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
+    """
+    Classification (QDA) and clustering (EM) super primitive.
+    """
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -44,7 +46,7 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         'version': "0.1.0",
         'name': "jhu.sgc",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.SpectralGraphClustering',
+        'python_path': 'd3m.primitives.vertex_nomination.spectral_graph_clustering.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['graph', 'spectral clustering', 'clustering', 'classification'],
         'source': {
@@ -63,11 +65,7 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [{
-                'type': 'UBUNTU',
-                'package': 'r-base',
-                'version': '3.4.2'
-            },
+        'installation': [
             {
                 'type': 'UBUNTU',
                 'package': 'libxml2-dev',
@@ -92,7 +90,7 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            "EXPECTATION_MAXIMIZATION_ALGORITHM", 
+            "EXPECTATION_MAXIMIZATION_ALGORITHM",
             "QUADRATIC_DISCRIMINANT_ANALYSIS"
         ],
         'primitive_family':
@@ -109,7 +107,7 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         self._training_outputs: Outputs = None
 
         self._supervised: bool = None
-        self._fitted: bool = False 
+        self._fitted: bool = False
 
         self._CLASSIFICATION: GaussianClassification = None
         self._CLUSTERING: GaussianClustering = None
@@ -161,7 +159,7 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
             return base.CallResult(None)
 
         self._supervised = True
-        
+
         self._CLASSIFICATION = GaussianClassification(hyperparams = jhu.gclass.gclass.Hyperparams.defaults())
 
         self._CLASSIFICATION.set_training_data(inputs=G_ase)

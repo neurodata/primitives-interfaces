@@ -10,8 +10,10 @@ from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
+from ..ase import AdjacencySpectralEmbedding
+from ..ase.ase import Hyperparams as ASE_Hyperparams
 
-Inputs = container.Dataset
+Inputs = container.List
 Outputs = container.List
 
 class Params(params.Params):
@@ -20,32 +22,30 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     #dim = hyperparams.Hyperparameter[None](default=None)
     dim = None
+    # ASE Hyperparams
+    # List of [adjacency, laplacian]
 
-class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
-    """
-    Finds the largest connected component of a graph.
-    """
+class LinkPredictionSpectralEmbedder(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
-        'id': '32fec24f-6861-4a4c-88f3-d4ec2bc1b486',
+        'id': '09f2eea8-667c-44b8-a955-6a153ba9ccc3',
         'version': "0.1.0",
-        'name': "jhu.lcc",
+        'name': "jhu.link_pred_se",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.data_preprocessing.largest_connected_component.JHU',
+        'python_path': 'd3m.primitives.jhu_primitives.LinkPredictionSpectralEmbedder',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graph', 'connected', 'largest connected component', 'graph','graph transformation','transformation'],
+        'keywords': ['graph', 'spectral embedding'],
         'source': {
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/lcc/lcc.py',
+                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/link_se/link_se.py',
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
-            'contact': 'mailto:hhelm2@jhu.edu',
+            'contact': 'mailto:hhelm2@jhu.edu'
         },
-        'description': 'Finds the largest connected component of a graph',
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
@@ -68,10 +68,9 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             },
             ],
         'algorithm_types': [
-            #"BREADTH_FIRST_SEARCH"
-            "NONOVERLAPPING_COMMUNITY_DETECTION"
+            "SINGULAR_VALUE_DECOMPOSITION"
         ],
-        'primitive_family': "DATA_PREPROCESSING",
+        'primitive_family': "DATA_TRANSFORMATION",
         'preconditions': ['NO_MISSING_VALUES']
     })
 
@@ -79,47 +78,10 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        """
-        Input
-            G: an n x n matrix or a networkx Graph
-        Return
-            The largest connected component of g
+        
+        ase_hp = ASE_Hyperparams.defaults()
 
-        """
-        G = inputs['0']
-        csv = inputs['learningData']
+        for i in range(len(inputs)):
+            inputs[i] = AdjacencySpectralEmbedding(hyperparams=ase_hp).produce(inputs = inputs[i]).value
 
-        #if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-        #    nx.set_node_attributes(G,'nodeID',-1)
-        #    for i in range(len(G)):
-        #        G.node[i]['nodeID'] = i
-
-        if len(csv) != 0:
-            if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-                nx.set_node_attributes(G,'nodeID',-1)
-                for i in range(len(G)):
-                    G.node[i]['nodeID'] = i
-
-            nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values())
-            nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
-
-            return base.CallResult(container.List([G.copy(), nodeIDs,csv]))
-
-        if type(G) == np.ndarray:
-            if G.ndim == 2:
-                if G.shape[0] == G.shape[1]: # n x n matrix
-                    G = Graph(G)
-                else:
-                    raise TypeError("Networkx graphs or n x n numpy arrays only")
-
-        subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
-
-        G_connected = [[0]]
-        for i in subgraphs:
-            if len(i) > len(G_connected[0]):
-                G_connected = [i]
-
-        nodeIDs = list(nx.get_node_attributes(G_connected[0], 'nodeID').values())
-        nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
-
-        return base.CallResult(container.List([G_connected[0].copy(), nodeIDs, csv]))
+        return base.CallResult(inputs)

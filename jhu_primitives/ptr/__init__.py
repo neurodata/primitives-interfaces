@@ -1,1 +1,0 @@
-from .ptr import PassToRanks
