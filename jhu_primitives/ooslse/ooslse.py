@@ -62,7 +62,7 @@ class OutOfSampleLaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Out
         'version': "0.1.0",
         'name': "jhu.ooslse",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.data_transformation.laplacian_spectral_embedding.JHU_out_of_sample',
+        'python_path': 'd3m.primitives.data_transformation.out_of_sample_laplacian_spectral_embedding.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['graph', 'embedding'],
         'source': {
