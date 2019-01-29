@@ -17,8 +17,8 @@ from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 
 
-Inputs = container.ndarray
-Outputs = container.ndarray
+Inputs = container.List
+Outputs = container.List
 
 class Params(params.Params):
     pass
