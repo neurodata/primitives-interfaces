@@ -1,7 +1,6 @@
 numpy
-
+typing
+networkx
 scipy
-python-igraph
+d3m
 sklearn
-jinja2
-primitive_interfaces
