@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
-
-__all__ = ["AdjacencySpectralEmbedding",
+__all__ = [
+           "AdjacencySpectralEmbedding",
            "LaplacianSpectralEmbedding",
            "GaussianClassification",
            "GaussianClustering",

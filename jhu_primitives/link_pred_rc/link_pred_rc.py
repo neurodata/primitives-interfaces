@@ -145,4 +145,5 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
     def set_params(self, *, params: Params) -> None:
         self._fitted = True
         self._inner_products = params['inner_products']
+
         self._embeddings = params['embeddings']

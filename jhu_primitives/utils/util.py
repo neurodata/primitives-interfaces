@@ -25,6 +25,7 @@ For reference, the pipelines that are functional are the following:
     sgc_pipeline
     sgm_pipeline
 """
+
 PROBLEM_TYPES = [
     # "graphMatching",
     "vertexNomination_class",
@@ -62,7 +63,6 @@ DATASETS = {
             #     "59_umls"
             #     ]
             }
-
 
 PIPELINES = {
             # "graphMatching": [
@@ -150,7 +150,7 @@ def generate_json(type_):
             version = "v2019.1.21"
 
     path = os.path.join(os.path.abspath(os.getcwd()),"")
-
+             
     if version == "v2019.1.21":
         jhu_path = os.path.join(path, "primitives_repo", version, "JHU", "")
     else:
@@ -158,7 +158,6 @@ def generate_json(type_):
 
     all_primitives = os.listdir(jhu_path)
     primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
-
 
     versions = {}
     for i in range(len(all_primitives)):
