@@ -64,7 +64,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.graph_matching.seeded_graph_matching.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graph matching'],
+        'keywords': ['graph', 'graph matching'],
         'source': {
             'name': "JHU",
             'uris': [

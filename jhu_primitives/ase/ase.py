@@ -65,7 +65,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
         'id': 'b940ccbd-9e9b-3166-af50-210bfd79251b',
-        'version': "0.3.0",
+        'version': "0.1.0",
         'name': "jhu.ase",
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['ase primitive', 'graph', 'spectral', 'embedding', 'spectral method', 'adjacency', 'matrix'],

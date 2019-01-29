@@ -51,7 +51,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
         'id': '8fa6178b-84f7-37d8-87e8-4d3a44c86569',
-        'version': "0.3.0",
+        'version': "0.1.0",
         'name': "jhu.lse",
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.data_transformation.laplacian_spectral_embedding.JHU',
