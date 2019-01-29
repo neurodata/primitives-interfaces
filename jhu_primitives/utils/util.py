@@ -25,43 +25,68 @@ For reference, the pipelines that are functional are the following:
     sgc_pipeline
     sgm_pipeline
 """
-PROBLEM_TYPES = ["graphMatching", "vertexNomination_class", "vertexNomination_clust", "communityDetection"]
 
-DATASETS = {"graphMatching": ["49_facebook",
-                              "LL1_Blogosphere_net",
-                              "LL1_DIC28_net",
-                              "LL1_ERDOS972_net",
-                              "LL1_IzmenjavaBratSestra_net",
-                              "LL1_REVIJE_net",
-                              "LL1_SAMPSON_net",
-                              "LL1_USAIR97_net",
-                              "LL1_imports_net"],
-            "vertexNomination_class": ["LL1_net_nomination_seed"],
-            "vertexNomination_clust": ["DS01876"],
-            "communityDetection": ["6_70_com_amazon",
-                                  "6_86_com_DBLP",
-                                  "LL1_Bio_dmela_net",
-                                  "LL1_bn_fly_drosophila_medulla_net",
-                                  "LL1_eco_florida_net"]
+PROBLEM_TYPES = [
+    # "graphMatching",
+    "vertexNomination_class",
+    "vertexNomination_clust",
+    # "communityDetection"
+    ]
+
+DATASETS = {
+            # "graphMatching": [
+            #     "49_facebook",
+            #     "LL1_Blogosphere_net",
+            #     "LL1_DIC28_net",
+            #     "LL1_ERDOS972_net",
+            #     "LL1_IzmenjavaBratSestra_net",
+            #     "LL1_REVIJE_net",
+            #     "LL1_SAMPSON_net",
+            #     "LL1_USAIR97_net",
+            #     "LL1_imports_net"
+            #     ],
+            "vertexNomination_class": [
+                "LL1_net_nomination_seed",
+                # "LL1_EDGELIST_net_nomination_seed"
+                ],
+            "vertexNomination_clust": [
+                "DS01876"
+                ]# ,
+            # "communityDetection": [
+            #     "6_70_com_amazon",
+            #     "6_86_com_DBLP",
+            #     "LL1_Bio_dmela_net",
+            #     "LL1_bn_fly_drosophila_medulla_net",
+            #     "LL1_eco_florida_net"
+            #     ]
+            # "linkPrediction": [
+            #     "59_umls"
+            #     ]
             }
-# "linkPrediction": ["59_umls_problem_TRAIN"]
-# vertexNomination_class = "LL1_EDGELIST_net_nomination_seed_problem_TRAIN"
 
-
-PIPELINES = {"graphMatching": ["sgm_pipeline",
-                               "sgm_pipeline_10"],
-             "vertexNomination_class": ["gclass_ase_pipeline",
-                                        "gclass_oosase_pipeline",
-                                        "gclass_lse_pipeline",
-                                        "gclass_ooslse_pipeline",
-                                        "sgc_pipeline"],
-             "vertexNomination_clust": ["gmm_ase_pipeline",
-                                        "gmm_oosase_pipeline",
-                                        "gmm_lse_pipeline",
-                                        "gmm_ooslse_pipeline",
-                                        "sgc_pipeline"],
-            "communityDetection": ["gmm_oosase_pipeline",
-                                   "gmm_ooslse_pipeline"]
+PIPELINES = {
+            # "graphMatching": [
+            #     "sgm_pipeline",
+            #     "sgm_pipeline_10"
+            #     ],
+             "vertexNomination_class": [
+                "gclass_ase_pipeline",
+                "gclass_lse_pipeline",
+                # "gclass_oosase_pipeline",
+                # "gclass_ooslse_pipeline",
+                "sgc_pipeline"
+                ],
+             "vertexNomination_clust": [
+                "gmm_ase_pipeline",
+                "gmm_lse_pipeline",
+                # "gmm_oosase_pipeline",
+                # "gmm_ooslse_pipeline",
+                "sgc_pipeline"
+                ]# ,
+            # "communityDetection": [
+            #     "gmm_oosase_pipeline",
+            #     "gmm_ooslse_pipeline"
+            #     ]
              }
 
 DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
@@ -133,7 +158,6 @@ def generate_json(type_):
 
     all_primitives = os.listdir(jhu_path)
     primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
-
 
     versions = {}
     for i in range(len(all_primitives)):

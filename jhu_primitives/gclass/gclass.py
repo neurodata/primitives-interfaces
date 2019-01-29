@@ -6,10 +6,6 @@
 from typing import Sequence, TypeVar, Union, Dict
 import os
 
-from rpy2 import robjects
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
-
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m import container
 from d3m import utils
@@ -42,9 +38,6 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     hp = None
-    #number_of_clusters = hyperparams.Hyperparameter[int](default = 2,semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-    #seeds = hyperparams.Hyperparameter[np.ndarray](default=np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-    #labels = hyperparams.Hyperparameter[np.ndarray](default=np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
 class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     """
@@ -75,11 +68,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [{
-                'type': 'UBUNTU',
-                'package': 'r-base',
-                'version': '3.4.2'
-            },
+        'installation': [
             {
                 'type': 'UBUNTU',
                 'package': 'libxml2-dev',

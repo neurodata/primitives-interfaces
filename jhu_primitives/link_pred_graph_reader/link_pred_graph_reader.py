@@ -47,12 +47,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [
-            {
-            'type': 'UBUNTU',
-            'package': 'r-base',
-            'version': '3.4.2'
-            },
+        'installation': [ 
             {
             'type': 'UBUNTU',
             'package': 'libxml2-dev',

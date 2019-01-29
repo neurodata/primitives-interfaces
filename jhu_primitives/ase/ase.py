@@ -15,10 +15,6 @@ from scipy.stats import norm
 from scipy.stats import rankdata
 from sklearn.decomposition import TruncatedSVD
 
-#from rpy2 import robjects
-#import rpy2.robjects.numpy2ri
-#robjects.numpy2ri.activate()
-
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from d3m import utils, container
 from d3m.metadata import hyperparams, base as metadata_module, params
@@ -84,11 +80,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
         'installation': [
-            {
-            'type': 'UBUNTU',
-            'package': 'r-base',
-            'version': '3.4.2'
-            },
             {
             'type': 'UBUNTU',
             'package': 'libxml2-dev',

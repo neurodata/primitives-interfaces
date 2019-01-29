@@ -5,9 +5,6 @@
 
 from typing import Sequence, TypeVar, Union, Dict
 import os
-from rpy2 import robjects
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
 import numpy as np
 import networkx
 
@@ -72,11 +69,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [{
-                'type': 'UBUNTU',
-                'package': 'r-base',
-                'version': '3.4.2'
-            },
+        'installation': [
             {
                 'type': 'UBUNTU',
                 'package': 'libxml2-dev',
@@ -244,30 +237,6 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 inputs[0] = container.ndarray(embedding)
 
                 return base.CallResult(inputs)
-
-        """
-        A = robjects.Matrix(g)
-        robjects.r.assign("A", A)
-
-        d_max = self.hyperparams['max_dimension']
-
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "lse.interface.R")
-        path = file_path_conversion(path, uri = "")
-
-        cmd = """
-        #source("%s")
-        #fn <- function(inputs, embedding_dimension) {
-        #    lse.interface(inputs, embedding_dimension)
-        #}
-        """ % path
-
-        result = robjects.r(cmd)(A, d_max)
-        eig_values = container.ndarray(result[1])
-
-        d = self._get_elbows(eigenvalues=eig_values)
-        vectors = container.ndarray(result[0])[:,0:d]
-        """
 
         D = np.linalg.pinv(np.diag(g.sum(axis=1))**(1/2))
 

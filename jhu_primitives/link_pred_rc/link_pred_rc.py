@@ -50,11 +50,6 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         'installation': [
             {
             'type': 'UBUNTU',
-            'package': 'r-base',
-            'version': '3.4.2'
-            },
-            {
-            'type': 'UBUNTU',
             'package': 'libxml2-dev',
             'version': '2.9.4'
             },
@@ -150,4 +145,5 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
     def set_params(self, *, params: Params) -> None:
         self._fitted = True
         self._inner_products = params['inner_products']
+
         self._embeddings = params['embeddings']

@@ -3,7 +3,6 @@
 # sgc.py
 # Copyright (c) 2017. All rights reserved.
 
-from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
 import networkx
@@ -66,11 +65,7 @@ class SpectralGraphClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, 
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [{
-                'type': 'UBUNTU',
-                'package': 'r-base',
-                'version': '3.4.2'
-            },
+        'installation': [
             {
                 'type': 'UBUNTU',
                 'package': 'libxml2-dev',

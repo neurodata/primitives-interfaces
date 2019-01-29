@@ -1,7 +1,6 @@
 from networkx import Graph
 import networkx as nx
 import numpy as np
-from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
 
@@ -52,11 +51,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
         'installation': [
-            {
-            'type': 'UBUNTU',
-            'package': 'r-base',
-            'version': '3.4.2'
-            },
             {
             'type': 'UBUNTU',
             'package': 'libxml2-dev',

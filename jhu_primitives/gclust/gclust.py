@@ -3,11 +3,8 @@
 # gclust.py
 # Copyright (c) 2017. All rights reserved.
 
-from rpy2 import robjects
 from typing import Sequence, TypeVar, Union, Dict
 import os
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 import numpy as np
 
@@ -33,8 +30,6 @@ class Hyperparams(hyperparams.Hyperparams):
         lower = 2,
         upper = None
     )
-    #seeds = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
-    #labels = hyperparams.Hyperparameter[np.ndarray](default = np.array([]), semantic_types=['https://metadata.datadrivendiscovery.org/types/TuningParameter'])
 
 class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     """
@@ -64,11 +59,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
-        'installation': [{
-                'type': 'UBUNTU',
-                'package': 'r-base',
-                'version': '3.4.2'
-            },
+        'installation': [
             {
                 'type': 'UBUNTU',
                 'package': 'libxml2-dev',
