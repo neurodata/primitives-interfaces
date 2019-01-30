@@ -135,7 +135,11 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         K = len(unique_labels)
 
         testing = inputs[2]
-        testing_nodeIDs = np.asarray(testing['G1.nodeID'])
+
+        try:
+            testing_nodeIDs = np.asarray(testing['G1.nodeID'])
+        except:
+            testing_nodeIDs = np.asarray(testing['nodeID'])
         final_labels = np.zeros(len(testing))
 
         if self._PD and self._ENOUGH_SEEDS:
@@ -174,7 +178,11 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         self._nodeIDs = np.array(self._training_inputs[1])
 
-        self._seeds = self._training_inputs[2]['G1.nodeID']
+        try:
+            self._seeds = self._training_inputs[2]['G1.nodeID']
+        except:
+            self._seeds = self._training_inputs[2]['nodeID'].astype(float).astype(int)
+
         self._seeds = np.array([int(i) for i in self._seeds])
 
         try:

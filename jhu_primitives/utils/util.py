@@ -279,7 +279,7 @@ def file_path_conversion(abs_file_path, uri="file"):
     else:
         return local_drive + ":" + s
 
-def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False):
+def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_type = ""):
     if abs_file_path == "":
         raise ValueError("Need absolute file path ( os.path.abspath(os.getcwd()) )")
     local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
@@ -337,7 +337,15 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False):
         return
 
     if datasetDoc:
-        s = s + "/" + data_dir + "/" + folder + "_dataset/datasetDoc.json"
+        s = s + "/" + data_dir + "/" 
+        if dataset_type == "":
+            s = s + "_dataset/datasetDoc.json"
+        elif dataset_type == "TRAIN":
+            s = s + "/" + "TRAIN/dataset_TRAIN/datasetDoc.json"
+        elif dataset_type == "TEST":
+            s = s + "/" + "TEST/dataset_TEST/datasetDoc.json"
+        else:
+            raise ValueError('invalid dataset_type, use "" for the top level, "TRAIN" for the training dataset and "TEST" for thee test dataset')
 
     if uri == "file":
         return "file://localhost" + s
