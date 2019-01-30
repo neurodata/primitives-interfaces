@@ -6,6 +6,7 @@
 
 from typing import Sequence, TypeVar, Union, Dict
 import os
+import sys
 import pandas as pd
 import numpy as np
 import networkx as nx
@@ -27,24 +28,28 @@ class Params(params.Params):
     None
 
 class Hyperparams(hyperparams.Hyperparams):
-    threshold = hyperparams.Bounded[float](
-            default = 0, #.1
-            semantic_types = [
-            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-            ],
-            lower = 0.01,
-            upper = 1
-    )
-    reps = hyperparams.Bounded[int](
-            default = 1,
-            semantic_types = [
-                'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-            ],
-            lower = 1,
-            upper = None
-    )
+    None
+    # threshold = hyperparams.Bounded[float](
+    #         default = 0, #0.1
+    #         semantic_types = [
+    #         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    #         ],
+    #         lower = 0, #0.01
+    #         upper = 1
+    # )
+    # reps = hyperparams.Bounded[int](
+    #         default = 1,
+    #         semantic_types = [
+    #             'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    #         ],
+    #         lower = 1,
+    #         upper = None
+    # )
 
 class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Params, Hyperparams]):
+    """
+    Finds the vertex alignment between two graphs that minimizes a relaxation of the Frobenious norm of the difference of the adjacency matrices of two graphs.
+    """
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -110,7 +115,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         self._g2_adjmat = None
         self._P = None
 
-    def _pad_graph(G1, G2):
+    def _pad_graph(self, G1, G2):
         n_nodes = max(G1.order(), G2.order())
         for i in range(G1.order(), n_nodes):
             G1.add_node('__pad_g1_%d' % i, attr_dict = {'nodeID': i})
@@ -140,15 +145,15 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         self._g2_nodeIDs = list(nx.get_node_attributes(self._g2, 'nodeID').values())
 
         # replace G1.nodeID with matching G1.id (same for G2) to index vertices from nodeID
-        self._g1_idmap = np.zeros(SGM.n_nodes)
+        self._g1_idmap = np.zeros(self._n_nodes)
         for i in self._g1_nodeIDs:
-            self._g1_idmap[i] = np.where(np.array(self._g1_nodeIDs) == i)
-        self._g2_idmap = np.zeros(SGM.n_nodes)
+            self._g1_idmap[i] = np.where(np.array(self._g1_nodeIDs) == i)[0][0]
+        self._g2_idmap = np.zeros(self._n_nodes)
         for i in self._g2_nodeIDs:
-            self._g2_idmap[i] = np.where(np.array(self._g2_nodeIDs) == i)
+            self._g2_idmap[i] = np.where(np.array(self._g2_nodeIDs) == i)[0][0]
 
-        self._g1_adjmat = nx.adjacency_matrix(self._g1, nodelist = self._g1_nodeIDs)
-        self._g2_adjmat = nx.adjacency_matrix(self._g2, nodelist = self._g2_nodeIDs)
+        self._g1_adjmat = nx.adjacency_matrix(self._g1)
+        self._g2_adjmat = nx.adjacency_matrix(self._g2)
 
         # symmetrize
         self._g1_adjmat = ((self._g1_adjmat + self._g1_adjmat.T) > 0).astype(np.float32)
@@ -157,16 +162,17 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
     def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
         # reps = self.hyperparams['reps']
         csv_array = np.array(self._csv)
-        P = csv_array[:, 1:3][csv_array[:, -1] == '1']
-        P = sparse.csr_matrix((np.ones(P.shape[0]), (P[:,0], P[:,1])), shape=(self._n_nodes, self._n_nodes))
+        P = csv_array[:, 1:3][csv_array[:, -1] == '1'].astype(int)
+        P = sparse.csr_matrix((np.ones(P.shape[0]), (self._g1_idmap[P[:,0]].astype(int), self._g2_idmap[P[:,1]].astype(int))), shape=(self._n_nodes, self._n_nodes))
 
         sgm = JVSparseSGM(A = self._g1_adjmat, B = self._g2_adjmat, P = P)
         P_out = sgm.run(
             num_iters = 20,
             tolerance = 1)
-        # P_out = sparse.csr_matrix((np.ones(self._n_nodes), (np.arange(self._n_nodes), P_out)))
+        print(P_out, file=sys.stderr)
+        P_out = sparse.csr_matrix((np.ones(self._n_nodes), (np.arange(self._n_nodes), P_out)))
         self._P = P_out
-        return CallResult[None]
+        return CallResult(None)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         permutation_matrix = self._P
@@ -178,13 +184,13 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         #threshold = self.hyperparams['threshold']
         threshold = 0
 
-        for i in range(self._n_nodes):
-            g1_ind = self._g1_idmap[testing['G1.nodeID'][i]]
-            g2_ind = self._g2_idmap[testing['G2.nodeID'][i]]
-            if permutation_matrix[g1_ind, g2_ind] > threshold: #this is the thing we need
+        for i in range(testing.shape[0]):
+            g1_ind = self._g1_idmap[int(testing['G1.nodeID'].iloc[i])]
+            g2_ind = self._g2_idmap[int(testing['G2.nodeID'].iloc[i])]
+            if permutation_matrix[int(g1_ind), int(g2_ind)] > threshold: #this is the thing we need
                 testing['match'][i] = 1
             else:
                 testing['match'][i] = 0
 
         predictions = {"d3mIndex": testing['d3mIndex'], "match": testing['match']}
-        return base.CallResult(container.DataFrame(predictions))
+        return base.CallResult(container.DataFrame(predictions), has_finished = True, iterations_done = 1)

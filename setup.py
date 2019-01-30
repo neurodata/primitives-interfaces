@@ -45,7 +45,7 @@ setup(
               # 'jhu_primitives.oosase',
               # 'jhu_primitives.ooslse',
               'jhu_primitives.sgc',
-              # 'jhu_primitives.sgm',
+              'jhu_primitives.sgm',
               'jhu_primitives.utils',
     ],
     entry_points = {
@@ -58,7 +58,7 @@ setup(
             # 'data_transformation.out_of_sample_adjacency_spectral_embedding.JHU=jhu_primitives.oosase:OutOfSampleAdjacencySpectralEmbedding',
             # 'data_transformation.out_of_sample_laplacian_spectral_embedding.JHU=jhu_primitives.ooslse:OutOfSampleLaplacianSpectralEmbedding',
             'vertex_nomination.spectral_graph_clustering.JHU=jhu_primitives.sgc:SpectralGraphClustering',
-            # 'graph_matching.seeded_graph_matching.JHU=jhu_primitives.sgm:SeededGraphMatching'
+            'graph_matching.seeded_graph_matching.JHU=jhu_primitives.sgm:SeededGraphMatching'
             ]
     },
     # package_data = {'': ['*.r', '*.R']},

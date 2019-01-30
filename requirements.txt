@@ -4,3 +4,11 @@ networkx
 scipy
 d3m
 sklearn
+
+cython
+tqdm
+pandas
+matplotlib
+seaborn
+git+git://github.com/gatagat/lap.git
+git+git://github.com/src-d/lapjv

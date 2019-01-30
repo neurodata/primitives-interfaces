@@ -9,7 +9,7 @@ __all__ = [
            #  "OutOfSampleAdjacencySpectralEmbedding",
            # "OutOfSampleLaplacianSpectralEmbedding",
            "SpectralGraphClustering",
-           # "SeededGraphMatching",
+           "SeededGraphMatching",
            ]
 
 from .ase import AdjacencySpectralEmbedding
@@ -20,5 +20,5 @@ from .lcc import LargestConnectedComponent
 # from .oosase import OutOfSampleAdjacencySpectralEmbedding
 # from .ooslse import OutOfSampleLaplacianSpectralEmbedding
 from .sgc import SpectralGraphClustering
-# from .sgm import SeededGraphMatching
+from .sgm import SeededGraphMatching
 from .utils import file_path_conversion
