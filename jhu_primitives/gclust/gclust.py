@@ -158,15 +158,13 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         final_labels = np.zeros(len(testing))
 
         for i in range(len(testing_nodeIDs)):
-            #temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
             label = predictions[i]
-            #print(label)
             final_labels[i] = int(label) + 1
 
         testing['classLabel'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'classLabel']])
         outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'classLabel']].astype(int)
-        #outputs = container.DataFrame(testing['classLabel'])
+        
         return base.CallResult(outputs)
 
 

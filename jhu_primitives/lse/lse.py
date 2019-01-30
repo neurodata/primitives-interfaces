@@ -140,7 +140,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             sample_var = np.var(U, ddof=1)
             sample_scale = sample_var ** (1 / 2)
             elbow = 0
-            likelihood_elbow = 0
+            likelihood_elbow = -1000000
             while d < len(U):
                 mean_sig = np.mean(U[:d])
                 mean_noise = np.mean(U[d:])

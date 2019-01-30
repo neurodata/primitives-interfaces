@@ -149,7 +149,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             sample_var = np.var(U, ddof=1)
             sample_scale = sample_var ** (1 / 2)
             elbow = 0
-            likelihood_elbow = 0
+            likelihood_elbow = -1000000
             while d < len(U):
                 mean_sig = np.mean(U[:d])
                 mean_noise = np.mean(U[d:])
@@ -161,7 +161,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                     noise_likelihood += np.log(norm.pdf(U[i], mean_noise, sample_scale))
 
                 likelihood = noise_likelihood + sig_likelihood
-
                 if likelihood > likelihood_elbow:
                     likelihood_elbow = likelihood
                     elbow = d
@@ -252,9 +251,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
                 return base.CallResult(inputs)
 
-        #A = robjects.Matrix(g)
-        #robjects.r.assign("A", A)
-
         d_max = self.hyperparams['max_dimension']
 
         tsvd = TruncatedSVD(n_components = d_max)
@@ -263,29 +259,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         eig_vectors = tsvd.components_.T
         eig_values = tsvd.singular_values_
 
-        eig_vectors_copy = eig_vectors[:,:].copy()
-
-        X_hat = eig_vectors_copy.dot(np.diag(eig_values**0.5))
-
-        """
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                "ase.interface.R")
-        path = file_path_conversion(path, uri = "")
-
-        cmd = """
-        #source("%s")
-        #fn <- function(inputs, d_max) {
-        #    ase.interface(inputs, d_max)
-        #}
-        """ % path
-
-        result = robjects.r(cmd)(A, d_max)
-        eig_values = container.ndarray(result[1])
-
         d = self._get_elbows(eigenvalues=eig_values)
-        vectors = container.ndarray(result[0])[:,0:d].copy()
-
-        """
+        X_hat = eig_vectors[:, :d].copy() @ np.diag(eig_values[:d])**0.5
 
         inputs[0] = container.ndarray(X_hat)
 

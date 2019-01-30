@@ -340,7 +340,7 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_
     if datasetDoc:
         s = s + "/" + data_dir + "/" 
         if dataset_type == "":
-            s = s + "_dataset/datasetDoc.json"
+            s = s + folder + "_dataset/datasetDoc.json"
         elif dataset_type == "TRAIN":
             s = s + "/" + "TRAIN/dataset_TRAIN/datasetDoc.json"
         elif dataset_type == "TEST":

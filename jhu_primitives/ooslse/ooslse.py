@@ -4,18 +4,22 @@
 # Copyright (c) 2019. All rights reserved.
 
 from typing import Sequence, TypeVar, Union, Dict
+
 import os
+
+import numpy as np
 from sklearn.decomposition import TruncatedSVD
+import networkx
+
+from scipy.stats import norm
+from scipy.stats import rankdata
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-#from jhu_primitives.core.JHUGraph import JHUGraph
-import numpy as np
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
-
 
 Inputs = container.List
 Outputs = container.List
@@ -140,7 +144,7 @@ class OutOfSampleLaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Out
             sample_var = np.var(U, ddof=1)
             sample_scale = sample_var ** (1 / 2)
             elbow = 0
-            likelihood_elbow = 0
+            likelihood_elbow = -1000000
             while d < len(U):
                 mean_sig = np.mean(U[:d])
                 mean_noise = np.mean(U[d:])
@@ -185,16 +189,18 @@ class OutOfSampleLaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Out
 
         n = g.shape[0]
         D = np.linalg.pinv(np.diag(g.sum(axis=1))**(1/2))
-        L = 1/np.sqrt(D) @ G @ 1/np.sqrt(D)
+        L = D @ g @ D
 
         if self.hyperparams['max_dimension'] >= n:
             self.hyperparams['max_dimension'] = n - 1
         d_max = self.hyperparams['max_dimension']
 
+        in_sample_n = self.hyperparams['n_in_sample']
+
         if in_sample_n > n:
             in_sample_n = n
             # TODO ASE HERE
-        in_sample_idx = np.random.choice(n, n_in_sample)
+        in_sample_idx = np.random.choice(n, in_sample_n)
         out_sample_idx = np.setdiff1d(list(range(n)),in_sample_idx)
 
         in_sample_A = L[np.ix_(in_sample_idx, in_sample_idx)]
@@ -205,17 +211,18 @@ class OutOfSampleLaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Out
         # embedding = ASE.produce(inputs = [g]).value[0]
 
         tsvd = TruncatedSVD(n_components = d_max)
-        tsvd.fit(L)
+        tsvd.fit(in_sample_A)
 
         eig_vectors = tsvd.components_.T
         eig_values = tsvd.singular_values_
-        elbow = _profile_likelihood_maximization(eig_values, self.hyperparams['which_elbow'])[-1]
-        eig_vectors = eig_vectors[:elbow]
-        eig_values = eig_values[:elbow]
+        elbow = self._profile_likelihood_maximization(eig_values, self.hyperparams['which_elbow'])[-1]
+        
+        eig_vectors = eig_vectors[:, :elbow + 1].copy()
+        eig_values = eig_values[:elbow + 1].copy()
+        d = len(eig_values)
 
         in_sample_embedding = eig_vectors.dot(np.diag(eig_values**0.5))
 
-        # if d_max==1 {RHS2 <- matrix(1/sqrt(A11.svd$d),d,d)} ??? TODO
         out_sample_embedding = out_sample_A @ eig_vectors @ np.diag(1/np.sqrt(eig_values))
         embedding = np.zeros((n,d))
         embedding[in_sample_idx] = in_sample_embedding
