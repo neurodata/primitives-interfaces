@@ -86,12 +86,31 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             The largest connected component of g
 
         """
-        G = inputs['0']
-
         try:
-            csv = inputs['learningData']
+            G = inputs['0']
         except:
-            csv = inputs['1']
+            edge_list = inputs['1'] # for edge lists
+            V1_nodeIDs = np.array(edge_list.V1_nodeID.values).astype(int)
+            V2_nodeIDs = np.array(edge_list.V2_nodeID.values).astype(int)
+            edge_weights = np.array(edge_list.edge_weight.values).astype(float).astype(int)
+            n_edges = len(V1_nodeIDs)
+
+            unique_V1_nodeIDs = np.unique(V1_nodeIDs)
+            unique_V2_nodeIDs = np.unique(V2_nodeIDs)
+
+            concatenated_unique_IDs = np.concatenate((unique_V1_nodeIDs, unique_V2_nodeIDs))
+
+            unique_all = np.unique(concatenated_unique_IDs)
+
+            n_nodes = len(unique_all)
+
+            G = nx.Graph()
+            G.add_nodes_from(unique_all)
+
+            for i in range(n_edges):
+                G.add_edge(V1_nodeIDs[i], V2_nodeIDs[i], weight = edge_weights[i])
+
+        csv = inputs['learningData']
 
         #if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
         #    nx.set_node_attributes(G,'nodeID',-1)
