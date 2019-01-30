@@ -148,7 +148,6 @@ def generate_json(type_):
     #         version = "v2018.7.10"
     #     elif version == "4":
     #         version = "v2019.1.21"
-
     path = os.path.join(os.path.abspath(os.getcwd()),"")
 
     if version == "v2019.1.21":

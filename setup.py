@@ -42,8 +42,8 @@ setup(
               'jhu_primitives.lse',
               'jhu_primitives.gclass',
               'jhu_primitives.gclust',
-              # 'jhu_primitives.oosase',
-              # 'jhu_primitives.ooslse',
+              'jhu_primitives.oosase',
+              'jhu_primitives.ooslse',
               'jhu_primitives.sgc',
               'jhu_primitives.sgm',
               'jhu_primitives.utils',
@@ -55,8 +55,8 @@ setup(
             'data_transformation.laplacian_spectral_embedding.JHU=jhu_primitives.lse:LaplacianSpectralEmbedding',
             'classification.gaussian_classification.JHU=jhu_primitives.gclass:GaussianClassification',
             'graph_clustering.gaussian_clustering.JHU=jhu_primitives.gclust:GaussianClustering',
-            # 'data_transformation.out_of_sample_adjacency_spectral_embedding.JHU=jhu_primitives.oosase:OutOfSampleAdjacencySpectralEmbedding',
-            # 'data_transformation.out_of_sample_laplacian_spectral_embedding.JHU=jhu_primitives.ooslse:OutOfSampleLaplacianSpectralEmbedding',
+            'data_transformation.out_of_sample_adjacency_spectral_embedding.JHU=jhu_primitives.oosase:OutOfSampleAdjacencySpectralEmbedding',
+            'data_transformation.out_of_sample_laplacian_spectral_embedding.JHU=jhu_primitives.ooslse:OutOfSampleLaplacianSpectralEmbedding',
             'vertex_nomination.spectral_graph_clustering.JHU=jhu_primitives.sgc:SpectralGraphClustering',
             'graph_matching.seeded_graph_matching.JHU=jhu_primitives.sgm:SeededGraphMatching'
             ]
