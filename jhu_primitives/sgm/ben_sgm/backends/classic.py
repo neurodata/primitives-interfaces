@@ -15,7 +15,7 @@ from scipy import sparse
 try:
     import torch
 except:
-    print('!! Could not import torch', file=sys.stderr)
+    #print('!! Could not import torch', file=sys.stderr)
 
 
 # --

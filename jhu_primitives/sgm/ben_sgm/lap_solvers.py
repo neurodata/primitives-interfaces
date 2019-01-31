@@ -12,7 +12,7 @@ try:
     import torch
     have_torch = True
 except:
-    print('!! Could not import torch', file=sys.stderr)
+    #print('!! Could not import torch', file=sys.stderr)
     have_torch = False
 
 
@@ -23,7 +23,7 @@ try:
     sys.path.append('/home/bjohnson/projects/cuda_auction/python')
     from lap_auction import dense_lap_auction, csr_lap_auction, dot_auction
 except:
-    print('WARNING: sgm.lap_solvers cannot load `lap_auction`', file=sys.stderr)
+    #print('WARNING: sgm.lap_solvers cannot load `lap_auction`', file=sys.stderr)
 
 def jv(cost, jv_backend):
     if have_torch and (isinstance(cost, torch.Tensor) or isinstance(cost, torch.cuda.FloatTensor)):

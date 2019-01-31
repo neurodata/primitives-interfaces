@@ -11,7 +11,7 @@ from time import time
 try:
     import torch
 except:
-    print('!! Could not import torch', file=sys.stderr)
+    #print('!! Could not import torch', file=sys.stderr)
 
 from .utils import sparse2torch
 

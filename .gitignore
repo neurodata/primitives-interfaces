@@ -7,5 +7,4 @@ __pycache__
 .*
 dist/*
 jhu_primitives.egg-info/*
-primitives_repo/v2019.1.21/JHU/*
 *~
