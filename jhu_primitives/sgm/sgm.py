@@ -12,7 +12,7 @@ import numpy as np
 import networkx as nx
 from scipy import sparse
 
-from .sgm_ben.sgm.backends.sparse import JVSparseSGM
+from .ben_sgm.sgm.backends.sparse import JVSparseSGM
 
 from d3m import container
 from d3m import utils
