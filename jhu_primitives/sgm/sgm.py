@@ -169,7 +169,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         P_out = sgm.run(
             num_iters = 20,
             tolerance = 1)
-        print(P_out, file=sys.stderr)
+        # print(P_out, file=sys.stderr)
         P_out = sparse.csr_matrix((np.ones(self._n_nodes), (np.arange(self._n_nodes), P_out)))
         self._P = P_out
         return CallResult(None)
