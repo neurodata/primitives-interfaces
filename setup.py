@@ -65,8 +65,8 @@ setup(
     # include_package_data = True,
     install_requires=['typing', 'numpy', 'scipy','networkx',
                       'sklearn', 'jinja2', 'd3m', 'scipy',
-                      'git+git://github.com/gatagat/lap.git',
-                      'git+git://github.com/src-d/lapjv'],
+                      'lap', 'lapjv'
+                     ],
     url='https://github.com/neurodata/primitives-interfaces',
     keywords = 'd3m_primitive'
 )
