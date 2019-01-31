@@ -7,4 +7,6 @@ __pycache__
 .*
 dist/*
 jhu_primitives.egg-info/*
+jhu_primitives/sgm/sgm_v2.py
+jhu_primitives/sgm/ben_sgm/*
 *~
