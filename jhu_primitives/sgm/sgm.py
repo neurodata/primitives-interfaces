@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 # sgm.py
-# Copyright (c) 2017. All rights reserved.
+# Copyright (c) 2019. All rights reserved.
 
-#special thanks to Eriq Augustine from UCSC for helping us
-#(Hayden and Joshua) understand how all this works
+# Thanks to Ben Johnson for his SGM code
 
 from typing import Sequence, TypeVar, Union, Dict
 import os
+import sys
 import pandas as pd
 import numpy as np
-import networkx
+import networkx as nx
+from scipy import sparse
 
-from rpy2 import robjects as ro
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
+from .sgm_ben.sgm.backends.sparse import JVSparseSGM
 
 from d3m import container
 from d3m import utils
@@ -22,34 +21,30 @@ from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m.primitive_interfaces.base import CallResult
 
-from ..utils.util import file_path_conversion
-
 Inputs = container.Dataset
 Outputs = container.DataFrame
-
-PRIMITIVE_FAMILY = "GRAPH_MATCHING"
 
 class Params(params.Params):
     None
 
 class Hyperparams(hyperparams.Hyperparams):
-    threshold = hyperparams.Bounded[float](
-            default = .1,
-            semantic_types = [
-            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-            ],
-            lower = 0.01,
-            upper = 1
-    )
-    reps = hyperparams.Bounded[int](
-            default = 1,
-            semantic_types = [
-                'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-            ],
-            lower = 1,
-            upper = None
-    )
-
+    None
+    # threshold = hyperparams.Bounded[float](
+    #         default = 0, #0.1
+    #         semantic_types = [
+    #         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    #         ],
+    #         lower = 0, #0.01
+    #         upper = 1
+    # )
+    # reps = hyperparams.Bounded[int](
+    #         default = 1,
+    #         semantic_types = [
+    #             'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    #         ],
+    #         lower = 1,
+    #         upper = None
+    # )
 
 class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Params, Hyperparams]):
     """
@@ -64,7 +59,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.graph_matching.seeded_graph_matching.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graph', 'graph matching'],
+        'keywords': ['graph matching'],
         'source': {
             'name': "JHU",
             'uris': [
@@ -101,7 +96,6 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             #metadata_module.PrimitiveAlgorithmType.FRANK_WOLFE_ALGORITHM
         ],
         'primitive_family':
-        #metadata_module.PrimitiveFamily.GRAPH_MATCHING,
             'GRAPH_MATCHING',
         'preconditions': [
             'NO_MISSING_VALUES'
@@ -110,143 +104,93 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
-        self._training_dataset = None
         self._g1 = None
         self._g2 = None
-        self._g1_node_attributes = None
-        self._g2_node_attributes = None
+        self._csv = None
+        self._g1_nodeIDs = None
+        self._g2_nodeIDs = None
+        self._g1_idmap = None
+        self._g2_idmap = None
+        self._g1_adjmat = None
+        self._g2_adjmat = None
+        self._P = None
 
-    def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
-        return CallResult[None]
+    def _pad_graph(self, G1, G2):
+        n_nodes = max(G1.order(), G2.order())
+        for i in range(G1.order(), n_nodes):
+            G1.add_node('__pad_g1_%d' % i, attr_dict = {'nodeID': i})
 
-    def set_training_data(self,*,inputs: Inputs) -> None:
-        self._training_dataset = inputs
-        self._g1 = self._training_dataset['0']
-        self._g2 = self._training_dataset['1']
-        self._g1_node_attributes = list(networkx.get_node_attributes(self._g1, 'label').values())
-        self._g2_node_attributes = list(networkx.get_node_attributes(self._g2, 'label').values())
-        #technically, this is unsupervised, as there is no fit function
-        #instead, we just hang on to the training data and run produce with the two graphs and seeds
-        #and use that to predict later on.
+        for i in range(G2.order(), n_nodes):
+            G2.add_node('__pad_g2_%d' % i, attr_dict = {'nodeID': i})
+        assert G1.order() == G2.order()
+        return G1, G2, n_nodes
 
     def get_params(self) -> None:
         return Params
 
     def set_params(self, *, params: Params) -> None:
         pass
-    #UnsupervisedLearner
+
+    def set_training_data(self, *, inputs: Inputs) -> None:
+        self._g1 = inputs['0']
+        self._g2 = inputs['1']
+        try:
+            self._csv = inputs['learningData']
+        except:
+            self._csv = inputs['2']
+
+        self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2) # TODO old 0s = -1, new 0s = 0, old 1s = 1
+
+        self._g1_nodeIDs = list(nx.get_node_attributes(self._g1, 'nodeID').values())
+        self._g2_nodeIDs = list(nx.get_node_attributes(self._g2, 'nodeID').values())
+
+        # replace G1.nodeID with matching G1.id (same for G2) to index vertices from nodeID
+        self._g1_idmap = np.zeros(self._n_nodes)
+        for i in self._g1_nodeIDs:
+            self._g1_idmap[i] = np.where(np.array(self._g1_nodeIDs) == i)[0][0]
+        self._g2_idmap = np.zeros(self._n_nodes)
+        for i in self._g2_nodeIDs:
+            self._g2_idmap[i] = np.where(np.array(self._g2_nodeIDs) == i)[0][0]
+
+        self._g1_adjmat = nx.adjacency_matrix(self._g1)
+        self._g2_adjmat = nx.adjacency_matrix(self._g2)
+
+        # symmetrize
+        self._g1_adjmat = ((self._g1_adjmat + self._g1_adjmat.T) > 0).astype(np.float32)
+        self._g2_adjmat = ((self._g2_adjmat + self._g2_adjmat.T) > 0).astype(np.float32)
+
+    def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
+        # reps = self.hyperparams['reps']
+        csv_array = np.array(self._csv)
+        P = csv_array[:, 1:3][csv_array[:, -1] == '1'].astype(int)
+        P = sparse.csr_matrix((np.ones(P.shape[0]), (self._g1_idmap[P[:,0]].astype(int), self._g2_idmap[P[:,1]].astype(int))), shape=(self._n_nodes, self._n_nodes))
+
+        sgm = JVSparseSGM(A = self._g1_adjmat, B = self._g2_adjmat, P = P)
+        P_out = sgm.run(
+            num_iters = 20,
+            tolerance = 1)
+        # print(P_out, file=sys.stderr)
+        P_out = sparse.csr_matrix((np.ones(self._n_nodes), (np.arange(self._n_nodes), P_out)))
+        self._P = P_out
+        return CallResult(None)
+
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        #produce takes the training dataset and runs seeded graph matching using the seeds
-        #then predicts using the resulting permutation_matrix
+        permutation_matrix = self._P
+        try:
+            testing = inputs['learningData']
+        except:
+            testing = inputs['2']
 
-        permutation_matrix = np.asmatrix(self._seeded_graph_match(training_data=self._training_dataset))
-
-        predictions = self._get_predictions(permutation_matrix=permutation_matrix, inputs = inputs)
-
-        return base.CallResult(predictions)
-
-    def _get_predictions(self,*, permutation_matrix: np.matrix, inputs: Inputs):
-        testing = inputs['learningData']
-
-        threshold = self.hyperparams['threshold']
+        #threshold = self.hyperparams['threshold']
+        threshold = 0
 
         for i in range(testing.shape[0]):
-            testing['match'][i] = 0
-            v1 = testing['G1.nodeID'][i]
-            v2 = testing['G2.nodeID'][i]
-            found = False
-            j = 0
-            while not found:
-                if self._g1_node_attributes[j] == int(v1):
-                    found = True
-                    v1 = j
-                j += 1
-            # print(found)
-            found = False
-            j = 0
-
-            while not found:
-                if self._g2_node_attributes[j] == int(v2):
-                    found = True
-                    v2 = j
-                j += 1
-
-            if permutation_matrix[v1, v2] > threshold:
+            g1_ind = self._g1_idmap[int(testing['G1.nodeID'].iloc[i])]
+            g2_ind = self._g2_idmap[int(testing['G2.nodeID'].iloc[i])]
+            if permutation_matrix[int(g1_ind), int(g2_ind)] > threshold: #this is the thing we need
                 testing['match'][i] = 1
             else:
                 testing['match'][i] = 0
 
-        df = container.DataFrame({"d3mIndex": testing['d3mIndex'], "match": testing['match']})
-        return df
-
-    def _seeded_graph_match(self,*, training_data = None):
-        if training_data is None:
-            training_data = self._training_dataset
-        seeds = training_data['learningData']
-
-        new_seeds = pd.DataFrame(
-            {'G1.nodeID': seeds['G1.nodeID'], 'G2.nodeID': seeds['G2.nodeID'], 'match': seeds['match']})
-        new_seeds = new_seeds[new_seeds['match'] == '1']
-        # we now have a seeds correspondence of nodeIDs,
-        #  but we need a seed correspondence of actual vertex numbers
-
-        # initialize the integer values to nothing:
-        new_seeds['g1_vertex'] = ""
-        new_seeds['g2_vertex'] = ""
-
-        # for every seed, locate the corresponding vertex integer
-        for j in range(new_seeds.shape[0]):
-            found = False
-            i = 0
-            while not found:
-                if (new_seeds['G1.nodeID'][j] == self._g1_node_attributes[i]):
-                    new_seeds['g1_vertex'][j] = i
-                    found = True
-                i += 1
-
-        for j in range(new_seeds.shape[0]):
-            found = False
-            i = 0
-            while not found:
-                if (new_seeds['G2.nodeID'][j] == self._g2_node_attributes[i]):
-                    new_seeds['g2_vertex'][j] = i
-                    found = True
-                i += 1
-
-        # store the vertex pairs as an m x 2 array and convert to a matrix
-        seeds_array = np.array(new_seeds[['g1_vertex', 'g2_vertex']])
-        seeds_array = seeds_array.astype(int)
-
-        seeds = seeds_array
-        nr, nc = seeds.shape
-        seeds = ro.r.matrix(seeds, nrow=nr, ncol=nc)
-        ro.r.assign("seeds", seeds)
-
-        g1_matrix = networkx.to_numpy_array(self._g1)
-        nr, nc = g1_matrix.shape
-        g1_matrix = ro.r.matrix(g1_matrix, nrow=nr, ncol=nc)
-        ro.r.assign("g1_matrix", g1_matrix)
-
-        g2_matrix = networkx.to_numpy_array(self._g2)
-        nr, nc = g2_matrix.shape
-        g2_matrix = ro.r.matrix(g2_matrix, nrow=nr, ncol=nc)
-        ro.r.assign("g2_matrix", g2_matrix)
-
-        reps = self.hyperparams['reps']
-        ro.r.assign("reps",reps)
-
-        # run the R code:
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                            "sgm.interface.R")
-        path = file_path_conversion(path, uri="")
-
-        cmd = """
-                source("%s")
-                fn <- function(g1_matrix, g2_matrix, seeds,reps) {
-                    sgm.interface(g1_matrix, g2_matrix, seeds,reps)
-                }
-                """ % path
-
-        result = np.array(ro.r(cmd)(g1_matrix, g2_matrix, seeds,reps))
-
-        return container.ndarray(result)
+        predictions = {"d3mIndex": testing['d3mIndex'], "match": testing['match']}
+        return base.CallResult(container.DataFrame(predictions), has_finished = True, iterations_done = 1)

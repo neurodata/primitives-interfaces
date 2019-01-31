@@ -27,27 +27,27 @@ For reference, the pipelines that are functional are the following:
 """
 
 PROBLEM_TYPES = [
-    # "graphMatching",
+    "graphMatching",
     "vertexNomination_class",
     "vertexNomination_clust",
     # "communityDetection"
     ]
 
 DATASETS = {
-            # "graphMatching": [
-            #     "49_facebook",
-            #     "LL1_Blogosphere_net",
-            #     "LL1_DIC28_net",
-            #     "LL1_ERDOS972_net",
-            #     "LL1_IzmenjavaBratSestra_net",
-            #     "LL1_REVIJE_net",
-            #     "LL1_SAMPSON_net",
-            #     "LL1_USAIR97_net",
-            #     "LL1_imports_net"
-            #     ],
+            "graphMatching": [
+                "49_facebook",
+                # "LL1_Blogosphere_net",
+                # "LL1_DIC28_net",
+                # "LL1_ERDOS972_net",
+                # "LL1_IzmenjavaBratSestra_net",
+                # "LL1_REVIJE_net",
+                # "LL1_SAMPSON_net",
+                # "LL1_USAIR97_net",
+                # "LL1_imports_net"
+                ],
             "vertexNomination_class": [
                 "LL1_net_nomination_seed",
-                # "LL1_EDGELIST_net_nomination_seed"
+                "LL1_EDGELIST_net_nomination_seed"
                 ],
             "vertexNomination_clust": [
                 "DS01876"
@@ -65,10 +65,10 @@ DATASETS = {
             }
 
 PIPELINES = {
-            # "graphMatching": [
-            #     "sgm_pipeline",
-            #     "sgm_pipeline_10"
-            #     ],
+            "graphMatching": [
+                "sgm_pipeline",
+                # "sgm_pipeline_10"
+                ],
              "vertexNomination_class": [
                 "gclass_ase_pipeline",
                 "gclass_lse_pipeline",
@@ -136,22 +136,20 @@ def generate_json(type_):
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
 
     version = "v2019.1.21"
-    """
-    while version == "-1":
-        version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n4 for v2019.1.21 \n")
-        if version == "0":
-            version = "v2018.1.26"
-        elif version == "1":
-            version = "v2018.4.18"
-        elif version == "2":
-            version = "v2018.6.5"
-        elif version == "3":
-            version = "v2018.7.10"
-        elif version == "4":
-            version = "v2019.1.21"
-    """
+    # while version == "-1":
+    #     version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n4 for v2019.1.21 \n")
+    #     if version == "0":
+    #         version = "v2018.1.26"
+    #     elif version == "1":
+    #         version = "v2018.4.18"
+    #     elif version == "2":
+    #         version = "v2018.6.5"
+    #     elif version == "3":
+    #         version = "v2018.7.10"
+    #     elif version == "4":
+    #         version = "v2019.1.21"
     path = os.path.join(os.path.abspath(os.getcwd()),"")
-             
+
     if version == "v2019.1.21":
         jhu_path = os.path.join(path, "primitives_repo", version, "JHU", "")
     else:
@@ -338,7 +336,7 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_
         return
 
     if datasetDoc:
-        s = s + "/" + data_dir + "/" 
+        s = s + "/" + data_dir + "/"
         if dataset_type == "":
             s = s + folder + "_dataset/datasetDoc.json"
         elif dataset_type == "TRAIN":
