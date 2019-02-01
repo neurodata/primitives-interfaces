@@ -68,13 +68,9 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
-            'contact': 'mailto:jagterb1@jhu.edu',
+            'contact': 'mailto:hhelm2@jhu.edu',
         },
-        'installation': [{
-                'type': 'UBUNTU',
-                'package': 'r-base',
-                'version': '3.4.2'
-            },
+        'installation': [
             {
                 'type': 'UBUNTU',
                 'package': 'libxml2-dev',
@@ -132,25 +128,33 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         pass
 
     def set_training_data(self, *, inputs: Inputs) -> None:
-        self._g1 = inputs['0']
-        self._g2 = inputs['1']
+        self._g1 = nx.Graph(inputs['0']).copy()
+        self._g2 = nx.Graph(inputs['1']).copy()
+
+
+
+        print(inputs['0'], file = sys.stderr)
+        print(inputs['1'], file = sys.stderr)
         try:
             self._csv_TRAIN = inputs['learningData']
         except:
             self._csv_TRAIN = inputs['2']
+
+        print(self._csv_TRAIN, file = sys.stderr)
 
         self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2) # TODO old 0s = -1, new 0s = 0, old 1s = 1
 
         self._g1_nodeIDs_TRAIN = self._csv_TRAIN['G1.nodeID'].values
         self._g1_nodeIDs_TRAIN = self._g1_nodeIDs_TRAIN.astype(str)
 
+        print(self._g1_nodeIDs_TRAIN, file = sys.stderr)
         self._g2_nodeIDs_TRAIN = self._csv_TRAIN['G2.nodeID'].values
         self._g2_nodeIDs_TRAIN = self._g2_nodeIDs_TRAIN.astype(str)
 
-        self._g1_nodeIDs = list(nx.get_node_attributes(self._g1, 'nodeID').values())
+        self._g1_nodeIDs = list(nx.get_node_attributes(self._g1, 'label').values())
         self._g1_nodeIDs = np.array(self._g1_nodeIDs).astype(str)
 
-        self._g2_nodeIDs = list(nx.get_node_attributes(self._g2, 'nodeID').values())
+        self._g2_nodeIDs = list(nx.get_node_attributes(self._g2, 'label').values())
         self._g2_nodeIDs = np.array(self._g2_nodeIDs).astype(str)
 
         # replace G1.nodeID with matching G1.id (same for G2) to index vertices from nodeID
@@ -158,6 +162,9 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         self._g1_idmap = dict(zip(self._g1_nodeIDs, range(self._n_nodes)))
         self._g2_idmap = dict(zip(self._g2_nodeIDs, range(self._n_nodes)))
 
+        print(self._g1_idmap, file = sys.stderr)
+
+        print(self._g1_nodeIDs, file = sys.stderr)
         self._csv_TRAIN['new_g1_id'] = pd.Series(self._g1_nodeIDs_TRAIN).apply(lambda x: self._g1_idmap[x])
         self._csv_TRAIN['new_g2_id'] = pd.Series(self._g2_nodeIDs_TRAIN).apply(lambda x: self._g2_idmap[x])
      

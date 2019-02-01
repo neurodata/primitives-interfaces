@@ -12,7 +12,8 @@ from .backends.classic import (
 )
 
 from .backends.fused import AuctionFusedSGM, JVFusedSGM
-from .backends.sparse import AuctionSparseSGM, JVSparseSGM
+#from .backends.sparse import AuctionSparseSGM, 
+from .backends.sparse import JVSparseSGM
 
 __backends = {
     "scipy" : {
@@ -25,7 +26,7 @@ __backends = {
             "jv"      : JVFusedSGM,
         },
         "sparse" : {
-            "auction" : AuctionSparseSGM,
+        #    "auction" : AuctionSparseSGM,
             "jv"      : JVSparseSGM,
         },
     },

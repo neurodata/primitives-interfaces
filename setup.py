@@ -63,9 +63,37 @@ setup(
     },
     # package_data = {'': ['*.r', '*.R']},
     # include_package_data = True,
-    install_requires=['typing', 'numpy', 'scipy','networkx',
-                      'sklearn', 'jinja2', 'd3m', 'scipy',
-                      'lap', 'lapjv'
+    install_requires=['d3m', # jhu dependency
+                      'typing', # jhu dependency
+                      'scipy', # jhu dependency
+                      # 'networkx', # jhu dependency
+                      'numpy', # jhu dependency
+                      # 'sklearn', # jhu dependency
+                      'jinja2', # jhu dependency
+                      'scipy', # jhu dependency
+                      'lap',  # jhu dependency
+                      'lapjv', # jhu dependency
+
+                      'scikit-learn[alldeps]==0.20.2',
+                      # 'pytypes==1.0b5', # d3m dependency
+                      # 'frozendict==1.2', # d3m dependency
+                      # 'numpy==1.15.4', # d3m dependency
+                      # 'jsonschema==2.6.0', # d3m dependency
+                      # 'requests==2.19.1', # d3m dependency
+                      # 'strict-rfc3339==0.7', # d3m dependency
+                      # 'rfc3987==1.3.8', # d3m dependency
+                      # 'webcolors==1.8.1', # d3m dependency
+                      # 'dateparser==0.7.0', # d3m dependency
+                      # 'pandas==0.23.4', # d3m dependency
+                      'networkx==2.2', # d3m dependency
+                      # 'typing-inspect==0.3.1', # d3m dependency
+                      # 'GitPython==2.1.11', # d3m dependency
+                      # 'jsonpath-ng==1.4.3', # d3m dependency
+                      # 'custom-inherit==2.2.0', # d3m dependency
+                      # 'PyYAML==3.13', # d3m dependency
+                      # 'pycurl==7.43.0.2', # d3m dependency
+                      # 'pyarrow==0.11.1', # d3m dependency
+                      # 'gputil==1.3.0', # d3m dependency
                      ],
     url='https://github.com/neurodata/primitives-interfaces',
     keywords = 'd3m_primitive'
