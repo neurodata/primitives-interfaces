@@ -77,7 +77,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         'description': 'Spectral-based trasformation of weighted or unweighted adjacency matrix',
         'hyperparams_configuration': {
             'max_dimension': 'The maximum dimension that can be used for eigendecomposition',
-            'which_elbow': 'The odered elbow to use for dimensionality selection. High values leads to more dimensions selected.',
+            'which_elbow': 'The scree plot "elbow" to use for dimensionality reduction. High values leads to more dimensions selected.',
             'use_attributes': 'Boolean which indicates whether to use the attributes of the nodes.'
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
