@@ -77,6 +77,9 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
                 ),
         }],
         'description': 'Expecation-Maxmization algorithm for clustering',
+        'hyperparams_configuration': {
+            'max_clusters': 'The maximum number of clusters that the gaussian mixture model will allow.'
+        },
         # URIs at which one can obtain code for the primitive, if available.
         # 'location_uris':
         #     'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
@@ -164,7 +167,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         testing['classLabel'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'classLabel']])
         outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'classLabel']].astype(int)
-        
+
         return base.CallResult(outputs)
 
 
