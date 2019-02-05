@@ -16,7 +16,7 @@ from scipy import sparse
 have_torch = False
 
 
-from lap import lapjv as __lapjv_gatagat
+#from lap import lapjv as __lapjv_gatagat
 from lapjv import lapjv as __lapjv_srcd
 
 # try:
@@ -36,9 +36,9 @@ def jv(cost, jv_backend):
         print(type(cost))
         raise Exception('_gatagat_lapjv: cost has unknown type!')
 
-    if jv_backend == 'gatagat':
-        _, idx, _ = __lapjv_gatagat(cost_.max() - cost_)
-    elif jv_backend == 'srcd':
+    #if jv_backend == 'gatagat':
+    #    _, idx, _ = __lapjv_gatagat(cost_.max() - cost_)
+    if jv_backend == 'srcd':
         idx, _, _ = __lapjv_srcd(cost_.max() - cost_)
     else:
         raise Exception('ERROR: sgm.lap_solvers: unknown jv_backend=%s' % jv_backend)

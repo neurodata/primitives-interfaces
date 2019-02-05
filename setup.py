@@ -67,12 +67,14 @@ setup(
                       'typing', # jhu dependency
                       'scipy', # jhu dependency
                       # 'networkx', # jhu dependency
-                      'numpy', # jhu dependency
+                      'numpy==1.15.4', # jhu dependency
                       # 'sklearn', # jhu dependency
                       'jinja2', # jhu dependency
                       'scipy', # jhu dependency
-                      'lap',  # jhu dependency
-                      'lapjv', # jhu dependency
+                      # 'lap',  # unnecessary jhu dependency
+                      'cython', # jhu dependency,
+                      'lapjv==1.3.0',
+
 
                       'scikit-learn[alldeps]==0.20.2',
                       # 'pytypes==1.0b5', # d3m dependency
@@ -96,5 +98,6 @@ setup(
                       # 'gputil==1.3.0', # d3m dependency
                      ],
     url='https://github.com/neurodata/primitives-interfaces',
+    #dependency_links=['https://github.com/src-d/lapjv/master#egg=lapjv-1.3.0'],
     keywords = 'd3m_primitive'
 )
