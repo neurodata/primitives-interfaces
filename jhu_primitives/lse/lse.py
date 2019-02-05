@@ -65,6 +65,11 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             'contact': 'mailto:hhelm2@jhu.edu'
         },
         'description': 'Spectral-based trasformation of the Laplacian',
+        'hyperparams_configuration': {
+            'max_dimension': 'The maximum dimension that can be used for eigendecomposition',
+            'which_elbow': 'The scree plot "elbow" to use for dimensionality reduction. High values leads to more dimensions selected.',
+            'use_attributes': 'Boolean which indicates whether to use the attributes of the nodes.'
+        },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
         # install a Python package first to be even able to run setup.py of another package. Or you have
