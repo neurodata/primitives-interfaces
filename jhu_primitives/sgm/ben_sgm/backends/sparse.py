@@ -90,7 +90,7 @@ class JVSparseSGM(_JVMixin, _ScipySGMSparse):
         if rowcol_offsets is not None:
             cost = cost + rowcol_offsets
         
-        idx = lap_solvers.jv(cost, jv_backend=self.jv_backend)
+        idx = lap_solvers.jv(cost, jv_backend= 'srcd')
         if final:
             return idx
         

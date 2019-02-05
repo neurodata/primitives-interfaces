@@ -68,13 +68,9 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
-            'contact': 'mailto:jagterb1@jhu.edu',
+            'contact': 'mailto:hhelm2@jhu.edu',
         },
-        'installation': [{
-                'type': 'UBUNTU',
-                'package': 'r-base',
-                'version': '3.4.2'
-            },
+        'installation': [
             {
                 'type': 'UBUNTU',
                 'package': 'libxml2-dev',
@@ -132,65 +128,105 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         pass
 
     def set_training_data(self, *, inputs: Inputs) -> None:
-        self._g1 = inputs['0']
-        self._g2 = inputs['1']
+        # Grab both graphs. Cast as a Graph object in case inputs are Multigraphs.
+        self._g1 = nx.Graph(inputs['0']).copy()
+        self._g2 = nx.Graph(inputs['1']).copy()
+        
+        # Grab training data csv
         try:
-            self._csv = inputs['learningData']
+            self._csv_TRAIN = inputs['learningData']
         except:
-            self._csv = inputs['2']
+            self._csv_TRAIN = inputs['2']
 
-        self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2) # TODO old 0s = -1, new 0s = 0, old 1s = 1
+        # Pad graphs if needed. As of 2/4/2019 only "naive" padding implemented.
+        self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2)
 
-        self._g1_nodeIDs = list(nx.get_node_attributes(self._g1, 'nodeID').values())
-        self._g2_nodeIDs = list(nx.get_node_attributes(self._g2, 'nodeID').values())
+        # Grab the G1 training nodeIDs and cast to string. The cast to string is important to
+        # allow handling of more general nodeID types.
+        self._g1_nodeIDs_TRAIN = self._csv_TRAIN['G1.nodeID'].values
+        self._g1_nodeIDs_TRAIN = self._g1_nodeIDs_TRAIN.astype(str)
 
-        # replace G1.nodeID with matching G1.id (same for G2) to index vertices from nodeID
-        self._g1_idmap = np.zeros(self._n_nodes)
-        for i in self._g1_nodeIDs:
-            self._g1_idmap[i] = np.where(np.array(self._g1_nodeIDs) == i)[0][0]
-        self._g2_idmap = np.zeros(self._n_nodes)
-        for i in self._g2_nodeIDs:
-            self._g2_idmap[i] = np.where(np.array(self._g2_nodeIDs) == i)[0][0]
+        # Do the same for the seeds for G2.
+        self._g2_nodeIDs_TRAIN = self._csv_TRAIN['G2.nodeID'].values
+        self._g2_nodeIDs_TRAIN = self._g2_nodeIDs_TRAIN.astype(str)
 
+        # Do the same for all of G1.
+        self._g1_nodeIDs = list(nx.get_node_attributes(self._g1, 'label').values())
+        self._g1_nodeIDs = np.array(self._g1_nodeIDs).astype(str)
+
+        # Do the same for all of G2.
+        self._g2_nodeIDs = list(nx.get_node_attributes(self._g2, 'label').values())
+        self._g2_nodeIDs = np.array(self._g2_nodeIDs).astype(str)
+
+        # Create mapping from nodeID to the node's index in its respective graph.
+        # i.e. self._g1_idmap[nodeID_1] = node_1
+        self._g1_idmap = dict(zip(self._g1_nodeIDs, range(self._n_nodes)))
+        self._g2_idmap = dict(zip(self._g2_nodeIDs, range(self._n_nodes)))
+
+        # Create new columns in the training csv for easy access of node indices.
+        self._csv_TRAIN['new_g1_id'] = pd.Series(self._g1_nodeIDs_TRAIN).apply(lambda x: self._g1_idmap[x])
+        self._csv_TRAIN['new_g2_id'] = pd.Series(self._g2_nodeIDs_TRAIN).apply(lambda x: self._g2_idmap[x])
+     
+        # Grab G1, G2 adjacency matrices.
         self._g1_adjmat = nx.adjacency_matrix(self._g1)
         self._g2_adjmat = nx.adjacency_matrix(self._g2)
 
-        # symmetrize
+        # Symmetrize the adjacency matrices of G1, G2.
         self._g1_adjmat = ((self._g1_adjmat + self._g1_adjmat.T) > 0).astype(np.float32)
         self._g2_adjmat = ((self._g2_adjmat + self._g2_adjmat.T) > 0).astype(np.float32)
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
         # reps = self.hyperparams['reps']
-        csv_array = np.array(self._csv)
-        P = csv_array[:, 1:3][csv_array[:, -1] == '1'].astype(int)
-        P = sparse.csr_matrix((np.ones(P.shape[0]), (self._g1_idmap[P[:,0]].astype(int), self._g2_idmap[P[:,1]].astype(int))), shape=(self._n_nodes, self._n_nodes))
+        # Grab trianing csv to access seed information.
+        csv_array = np.array(self._csv_TRAIN)
 
+        # Grab row indices of seeds.
+        seed_idx = self._csv_TRAIN['match'] == '1'
+
+        # Initialize P as an array of ones.
+        P = csv_array[:, -2:][seed_idx]
+
+        # Transform P into an (n_nodes x n_nodes) sparse matrix with 1's corresponding to the seeded matches.
+        P = sparse.csr_matrix((np.ones(P.shape[0]), (P[:,0].astype(int), P[:,1].astype(int))), shape=(self._n_nodes, self._n_nodes))
+
+        # Initialize an SGM object that will perform the optimization.
         sgm = JVSparseSGM(A = self._g1_adjmat, B = self._g2_adjmat, P = P)
+
+        # Frank Wolfe / LAP solver.
         P_out = sgm.run(
             num_iters = 20,
-            tolerance = 1)
-        # print(P_out, file=sys.stderr)
+            tolerance = 1,
+            verbose = False)
+        
+        # Final P.
         P_out = sparse.csr_matrix((np.ones(self._n_nodes), (np.arange(self._n_nodes), P_out)))
+
+        # Accessible later.
         self._P = P_out
         return CallResult(None)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         permutation_matrix = self._P
-        try:
-            testing = inputs['learningData']
-        except:
-            testing = inputs['2']
+        csv_TEST = inputs['learningData']
+
+        g1_nodeIDs_TEST = csv_TEST['G1.nodeID'].values
+        g1_nodeIDs_TEST = g1_nodeIDs_TEST.astype(str)
+
+        g2_nodeIDs_TEST = csv_TEST['G2.nodeID'].values
+        g2_nodeIDs_TEST = g2_nodeIDs_TEST.astype(str)
+
+        n_test = len(g1_nodeIDs_TEST)
 
         #threshold = self.hyperparams['threshold']
         threshold = 0
 
-        for i in range(testing.shape[0]):
-            g1_ind = self._g1_idmap[int(testing['G1.nodeID'].iloc[i])]
-            g2_ind = self._g2_idmap[int(testing['G2.nodeID'].iloc[i])]
+        for i in range(n_test):
+            g1_ind = self._g1_idmap[str(csv_TEST['G1.nodeID'].iloc[i])]
+            g2_ind = self._g2_idmap[str(csv_TEST['G2.nodeID'].iloc[i])]
             if permutation_matrix[int(g1_ind), int(g2_ind)] > threshold: #this is the thing we need
-                testing['match'][i] = 1
+                csv_TEST['match'][i] = 1
             else:
-                testing['match'][i] = 0
+                csv_TEST['match'][i] = 0
 
-        predictions = {"d3mIndex": testing['d3mIndex'], "match": testing['match']}
+        predictions = {"d3mIndex": csv_TEST['d3mIndex'], "match": csv_TEST['match']}
         return base.CallResult(container.DataFrame(predictions), has_finished = True, iterations_done = 1)
