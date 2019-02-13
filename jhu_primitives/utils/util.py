@@ -36,14 +36,14 @@ PROBLEM_TYPES = [
 DATASETS = {
             "graphMatching": [
                 "49_facebook",
-                # "LL1_Blogosphere_net",
-                # "LL1_DIC28_net",
-                # "LL1_ERDOS972_net",
-                # "LL1_IzmenjavaBratSestra_net",
-                # "LL1_REVIJE_net",
-                # "LL1_SAMPSON_net",
-                # "LL1_USAIR97_net",
-                # "LL1_imports_net"
+                "LL1_Blogosphere_net",
+                "LL1_DIC28_net",
+                "LL1_ERDOS972_net",
+                "LL1_IzmenjavaBratSestra_net",
+                "LL1_REVIJE_net",
+                "LL1_SAMPSON_net",
+                "LL1_USAIR97_net",
+                "LL1_imports_net"
                 ],
             "vertexNomination_class": [
                 "LL1_net_nomination_seed",
@@ -150,7 +150,7 @@ def generate_json(type_):
     #         version = "v2019.1.21"
     path = os.path.join(os.path.abspath(os.getcwd()),"")
 
-    if version == "v2019.1.21":
+    if version == "v2019.2.12":
         jhu_path = os.path.join(path, "primitives_repo", version, "JHU", "")
     else:
         jhu_path = os.path.join(path, "primitives_repo", "archive", version, "JHU", "")
