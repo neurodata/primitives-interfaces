@@ -135,7 +135,7 @@ def generate_json(type_):
     if type_ not in ['pipelines', 'primitives']:
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
 
-    version = "v2019.1.21"
+    version = "v2019.2.12"
     # while version == "-1":
     #     version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n4 for v2019.1.21 \n")
     #     if version == "0":
