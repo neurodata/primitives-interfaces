@@ -5,7 +5,9 @@ from jhu_primitives.pipelines.base import BasePipeline
 from jhu_primitives.sgc  import SpectralGraphClustering
 
 DATASETS = {
-    'DS01876'
+    'DS01876',
+    'LL1_net_nomination_seed',
+    'LL1_EDGELIST_net_nomination_seed'
 }
 
 

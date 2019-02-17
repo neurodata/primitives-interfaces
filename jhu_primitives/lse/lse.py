@@ -198,6 +198,9 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         n = g.shape[0]
 
+        if self.hyperparams['max_dimension'] >= n:
+            self.hyperparams['max_dimension'] = n - 1
+
         if self.hyperparams['use_attributes']:
             adj = [g]
             MORE_ATTR = True
