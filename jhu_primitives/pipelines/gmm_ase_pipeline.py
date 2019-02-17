@@ -36,6 +36,21 @@ class gmm_ase_pipeline(BasePipeline):
                 argument_type = ArgumentType.CONTAINER,
                 data_reference = 'steps.0.produce'
         )
+        step_1.add_argument(
+            name='inputs',
+            argument_type=ArgumentType.CONTAINER,
+            data_reference='steps.0.produce'
+        )
+        step_1.add_hyperparameter(
+                name = 'max_dimension',
+                argument_type = ArgumentType.VALUE,
+                data = 5
+        )
+        step_1.add_hyperparameter(
+                name = 'use_attributes',
+                argument_type = ArgumentType.VALUE,
+                data = True
+        )
 
         step_1.add_output('produce')
         pipeline.add_step(step_1)
