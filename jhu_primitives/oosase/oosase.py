@@ -182,24 +182,47 @@ class OutOfSampleAdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Out
         """
         np.random.seed(1234)
 
-        g = inputs[0].copy()
+        g = inputs[0].copy() # Get a copy of the graph
+
+        in_sample_n = self.hyperparams['n_in_sample'] # Number of in sample nodes
+
+        n = g.__len__() # Number of nodes in the graph
+
+        if in_sample_n > n:
+            in_sample_n = n # Bounds the number of in sample nodes by the number of total nodes,
+                            # avoiding possible indexing errors later on
+
+        if in_sample_n > 20000:
+            in_sample_n = 20000 # Bounds the number of in sample nodes by an arbitrary but large number,
+                                # avoiding possible memory errors
+
+        d_max = self.hyperparams['max_dimension']
+        if d_max >= in_sample_n: # Max dimension should be less than the total number of nodes
+            d_max = in_sample_n - 1 # The inclusion is to avoid errors when using Sci-kit
+                                                                # Learn's truncated SVD
+
+        # Typically, we would want to handle the graph directly. For large graphs, this is 
+        # not possible due to memory constraints. To get around this, and to still have a 
+        # useful method, we need to work with an induced graph(s).
+
+        # First, we find a random set of indices
+        in_sample_idx = np.random.choice(n, in_sample_n)
+
+        # Then, the rest of the indices..
+        out_sample_idx = np.setdiff1d(list(range(n)), in_sample_idx)
+
+        # Now, create a new Graph object on the in sample vertices
+        g_prime = nx.Graph(g.nodes[in_sample_idx])
+
+        
+
+
         if type(g) == networkx.classes.graph.Graph:
             g = networkx.to_numpy_array(g)
 
         n = g.shape[0]
 
-        in_sample_n = self.hyperparams['n_in_sample']
-
-        if self.hyperparams['max_dimension'] >= in_sample_n:
-            self.hyperparams['max_dimension'] = in_sample_n - 1
         
-        d_max = self.hyperparams['max_dimension']
-
-        if in_sample_n > n:
-            in_sample_n = n
-            # TODO ASE HERE
-        in_sample_idx = np.random.choice(n, in_sample_n)
-        out_sample_idx = np.setdiff1d(list(range(n)), in_sample_idx)
 
         in_sample_A = g[np.ix_(in_sample_idx, in_sample_idx)]
         out_sample_A = g[np.ix_(out_sample_idx, in_sample_idx)]

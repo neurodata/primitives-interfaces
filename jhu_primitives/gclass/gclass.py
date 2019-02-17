@@ -149,9 +149,14 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = int(label)
         else:
+
             for i in range(len(testing_nodeIDs)):
                 temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
-                weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
+                try:
+                    weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
+                except:
+                    self._covariances += self._covariances + np.ones(self._covariances.shape)*0.00001
+                    weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = int(label)
 
@@ -231,37 +236,32 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         mean_centered_sums = np.zeros(shape = (K, d, d))
 
-        for i in range(len(self._seeds)):
-            nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
-            temp_feature_vector = self._embedding[nodeID, :].copy()
-            temp_label = self._labels[i]
-            mean_centered_feature_vector = temp_feature_vector - estimated_means[self._labels[i]]
-            temp_feature_vector = np.reshape(temp_feature_vector, (len(temp_feature_vector), 1))
-            mcfv_squared = temp_feature_vector.dot(temp_feature_vector.T)
-            mean_centered_sums[temp_label, :, :] += mcfv_squared
+        covs = np.zeros(shape = (K, d, d))
+        for i in range(K):
+            feature_vectors = self._embedding[self._seeds[self._labels == i], :]
+            covs[i] = np.cov(feature_vectors, rowvar = False)
 
         if self._ENOUGH_SEEDS:
-            estimated_cov = np.zeros(shape = (K, d, d))
-            for i in range(K):
-                estimated_cov[i] = mean_centered_sums[i,:]/(label_counts[i] - 1)
+            estimated_cov = covs
         else:
             estimated_cov = np.zeros(shape = (d,d))
             for i in range(K):
-                estimated_cov += mean_centered_sums[i, :]*(label_counts[i] - 1)
-            estimated_cov = estimated_cov / (n - d)
+                estimated_cov += covs[i]*(label_counts[i] - 1)
+            estimated_cov = estimated_cov / (n - K)
 
         self._PD = True
-        eps = 0.001
-        if self._ENOUGH_SEEDS:
-            for i in range(K):
-                try:
-                    eig_values = np.linalg.svd(estimated_cov[i, :, :])[1]
-                    if len(eig_values) > len(eig_values[eig_values > -eps]):
-                        self._PD = False
-                        break
-                except:
-                    self._PD = False
-                    break
+
+        # eps = 0.001
+        # if self._ENOUGH_SEEDS:
+        #     for i in range(K):
+        #         try:
+        #             eig_values = np.linalg.svd(estimated_cov[i, :, :])[1]
+        #             if len(eig_values) > len(eig_values[eig_values > -eps]):
+        #                 self._PD = False
+        #                 break
+        #         except:
+        #             self._PD = False
+        #             break
 
         self._means = container.ndarray(estimated_means)
         self._covariances = container.ndarray(estimated_cov)

@@ -198,8 +198,10 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         n = g.shape[0]
 
-        if self.hyperparams['max_dimension'] >= n:
-            self.hyperparams['max_dimension'] = n - 1
+        max_dimension = self.hyperparams['max_dimension']
+
+        if max_dimension >= n:
+            max_dimension = n - 1
 
         if self.hyperparams['use_attributes']:
             adj = [g]
@@ -223,7 +225,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
                 M = len(adj)
 
-                tsvd = TruncatedSVD(n_components = self.hyperparams['max_dimension'])
+                tsvd = TruncatedSVD(n_components = max_dimension)
                 tsvd.fit(L)
 
                 eig_vectors = tsvd.components_.T
@@ -250,17 +252,14 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         L = D @ g @ D
 
-        d_max = self.hyperparams['max_dimension']
-
-        tsvd = TruncatedSVD(n_components = d_max)
+        tsvd = TruncatedSVD(n_components = max_dimension)
         tsvd.fit(L)
 
         eig_vectors = tsvd.components_.T
         eig_values = tsvd.singular_values_
 
-        eig_vectors_copy = eig_vectors[:,:].copy()
-
-        X_hat = eig_vectors_copy.dot(np.diag(eig_values**0.5))
+        d = self._get_elbows(eigenvalues=eig_values)
+        X_hat = eig_vectors[:, :d].copy() @ np.diag(eig_values[:d])**0.5
 
         inputs[0] = container.ndarray(X_hat)
 
@@ -270,6 +269,8 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         elbows = self._profile_likelihood_maximization(U=eigenvalues
                                                    , n_elbows=self.hyperparams['which_elbow']
                                                    )
+        if len(elbows) == 0: # This is an issue with profile_likelihood_maximization
+            return 1
         return (elbows[- 1])
 
     def _pass_to_ranks(self, G, nedges = networkx.number_of_edges, matrix = False):

@@ -142,7 +142,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         elbows = []
 
         if len(U) == 1:
-            return np.array(elbows.append(U[0]))
+            elbows.append(1)
+            return elbows
 
         # select values greater than the threshold
         U.sort()  # sort
@@ -210,8 +211,10 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         n = g.shape[0]
 
-        if self.hyperparams['max_dimension'] >= n:
-            self.hyperparams['max_dimension'] = n - 1
+        max_dimension = self.hyperparams['max_dimension']
+
+        if max_dimension >= n:
+            max_dimension = n - 1
 
         if self.hyperparams['use_attributes']:
             adj = [g]
@@ -232,7 +235,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 g = self._omni(adj)
                 M = len(adj)
 
-                tsvd = TruncatedSVD(n_components = self.hyperparams['max_dimension'])
+                tsvd = TruncatedSVD(n_components = max_dimension)
                 tsvd.fit(g)
 
                 eig_vectors = tsvd.components_.T
@@ -256,9 +259,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
                 return base.CallResult(inputs)
 
-        d_max = self.hyperparams['max_dimension']
-
-        tsvd = TruncatedSVD(n_components = d_max)
+        tsvd = TruncatedSVD(n_components = max_dimension)
         tsvd.fit(g)
 
         eig_vectors = tsvd.components_.T
@@ -274,9 +275,10 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def _get_elbows(self,  eigenvalues):
         elbows = self._profile_likelihood_maximization(
                     U=eigenvalues,
-                    n_elbows=self.hyperparams['which_elbow'
-                    ]
+                    n_elbows=self.hyperparams['which_elbow']
                     )
+        if elbows is None: # This is an issue with profile_likelihood_maximization
+            return 1
         return(elbows[-1])
 
     def _pass_to_ranks(self, G, nedges = 0, matrix = False):
