@@ -35,11 +35,6 @@ class gmm_lse_pipeline(BasePipeline):
             argument_type=ArgumentType.CONTAINER,
             data_reference='steps.0.produce'
         )
-        step_1.add_argument(
-            name='inputs',
-            argument_type=ArgumentType.CONTAINER,
-            data_reference='steps.0.produce'
-        )
         step_1.add_hyperparameter(
                 name = 'max_dimension',
                 argument_type = ArgumentType.VALUE,
@@ -59,6 +54,11 @@ class gmm_lse_pipeline(BasePipeline):
             name='inputs',
             argument_type=ArgumentType.CONTAINER,
             data_reference='steps.1.produce'
+        )
+        step_2.add_hyperparameter(
+                name = 'max_clusters',
+                argument_type = ArgumentType.VALUE,
+                data = 10
         )
 
         step_2.add_output('produce')
