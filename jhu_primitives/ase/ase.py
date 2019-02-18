@@ -194,8 +194,19 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         G = inputs[0].copy()
 
+        try:
+            link_predicton = inputs[3]
+            if type(link_predicton) is not bool:
+                link_predicton = False
+        except:
+            link_predicton = False
+
+
         # PTR is very very slow
-        if type(G) == networkx.classes.graph.Graph:
+
+        if link_predicton:
+            g = G.copy()
+        elif type(G) == networkx.classes.graph.Graph:
             if networkx.is_weighted(G):
                 E = int(networkx.number_of_edges(G))
                 g = self._pass_to_ranks(G, nedges = E)

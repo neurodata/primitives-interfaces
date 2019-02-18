@@ -6,6 +6,8 @@ __all__ = [
            "GaussianClassification",
            "GaussianClustering",
            "LargestConnectedComponent",
+           "LinkPredictionGraphReader",
+           "LinkPredictionRankClassifier",
            # "OutOfSampleAdjacencySpectralEmbedding",
            # "OutOfSampleLaplacianSpectralEmbedding",
            "SpectralGraphClustering",
@@ -17,6 +19,8 @@ from .lse import LaplacianSpectralEmbedding
 from .gclass import GaussianClassification
 from .gclust import GaussianClustering
 from .lcc import LargestConnectedComponent
+from .link_pred_graph_reader import LinkPredictionGraphReader
+from .link_pred_rc import LinkPredictionRankClassifier
 # from .oosase import OutOfSampleAdjacencySpectralEmbedding
 # from .ooslse import OutOfSampleLaplacianSpectralEmbedding
 from .sgc import SpectralGraphClustering

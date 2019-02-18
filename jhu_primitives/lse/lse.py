@@ -131,7 +131,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         elbows = []
 
         if len(U) == 1:
-            return np.array(elbows.append(U[0]))
+            return np.array(elbows.append(0))
 
         # select values greater than the threshold
         U.sort()  # sort

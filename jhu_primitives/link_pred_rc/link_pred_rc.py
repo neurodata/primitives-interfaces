@@ -12,7 +12,7 @@ from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 
 Inputs = container.List
-Outputs = container.List
+Outputs = container.DataFrame
 
 class Params(params.Params):
     embeddings: container.List
@@ -65,9 +65,9 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
             },
             ],
         'algorithm_types': [
-            "SINGULAR_VALUE_DECOMPOSITION" # need to find an appropriate tag
+            "HEURISTIC"
         ],
-        'primitive_family': "DATA_TRANSFORMATION",
+        'primitive_family': "LINK_PREDICTION",
         'preconditions': ['NO_MISSING_VALUES']
     })
 
@@ -80,51 +80,172 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         if not self._fitted:
             raise ValueError("Not fitted")
-        
-        print(inputs)
 
-        return base.CallResult(inputs)
+        #np.random.seed(1)
+
+        csv = inputs[1]
+        source_nodeID = np.array(csv['source_nodeID']).astype(int)
+        target_nodeID = np.array(csv['target_nodeID']).astype(int)
+        link_types = np.array(csv['linkType']).astype(int)
+
+        n_links = len(self._inner_products) - 1
+        n_nodes = int(self._embeddings.shape[0] / n_links)
+
+        n_preds = csv.shape[0]
+
+        predictions = np.zeros(n_preds)
+
+        global_noexists = self._inner_products[-1][0]
+        global_exists = self._inner_products[-1][1]
+
+        # for i in range(n_preds):
+        #     temp_source = source_nodeID[i]
+        #     temp_target = target_nodeID[i]
+        #     temp_link = link_types[i]
+        #     temp_inner_product = self._embeddings[temp_link*n_nodes + temp_source] @ self._embeddings[temp_link*n_nodes + temp_target]
+        #     temp_noexists = self._inner_products[temp_link][0]
+        #     temp_exists = self._inner_products[temp_link][1]
+
+            # There are three 'degenerate' cases --
+            # 1) Both the exists and no exists lists are empty (first 'if')
+            # 2/3) One but not the other is empty ('elif')
+            # if len(temp_noexists) == 0 and len(temp_exists) == 0:
+            #     rank_noexists = np.sum(temp_inner_product > global_noexists)
+            #     quantile_noexists = rank_noexists / len(global_noexists)
+
+            #     rank_exists = np.sum(temp_inner_product > global_noexists)
+            #     quantile_exists = rank_exists / len(global_exists)                  
+
+            #     if abs(quantile_noexists - 1/2) < abs(quantile_exists - 1/2):
+            #         predictions[i] = int(0)
+            #     elif abs(quantile_noexists - 1/2) > abs(quantile_exists - 1/2):
+            #         predictions[i] = int(1)
+            #     else:
+            #         predictions[i] = int(np.random.binomial(1, 0.5))
+            # elif len(temp_noexists) == 0 or len(temp_exists) == 0:
+            #     idx = np.argmax([len(temp_noexists), len(temp_exists)])
+            #     non_empty_ips = self._inner_products[temp_link][idx]
+                
+            #     rank = np.sum(temp_inner_product > non_empty_ips)
+            #     quantile = rank / len(non_empty_ips)
+
+            #     if 4*abs(quantile - 1/2) < 1:
+            #         predictions[i] += int(idx)
+            #     elif 4*abs(quantile - 1/2) == 1:
+            #         predictions[i] = int(np.random.binomial(1, 0.5))
+            #     else:
+            #         if idx == 0:
+            #             predictions[i] = 1
+            #         else:
+            #             predictions[i] = 0
+            # else:
+            #     rank_noexists = np.sum(temp_inner_product > temp_noexists)
+            #     quantile_noexists = rank_noexists / len(temp_noexists)
+
+            #     rank_exists = np.sum(temp_inner_product > temp_exists)
+            #     quantile_exists = rank_exists / len(temp_exists)  
+
+            #     if abs(quantile_noexists - 1/2) < abs(quantile_exists - 1/2):
+            #         predictions[i] = 0
+            #     elif abs(quantile_noexists - 1/2) > abs(quantile_exists - 1/2):
+            #         predictions[i] = 1
+            #     else:
+            #         predictions[i] = int(np.random.binomial(1, 0.5))
+
+        # The following code is used for "global" classification only; i.e. we ignore edge type training data
+        for i in range(n_preds):
+            temp_source = source_nodeID[i]
+            temp_target = target_nodeID[i]
+            temp_link = link_types[i]
+            temp_inner_product = self._embeddings[temp_link*n_nodes + temp_source] @ self._embeddings[temp_link*n_nodes + temp_target]
+            temp_noexists = self._inner_products[temp_link][0]
+            temp_exists = self._inner_products[temp_link][1]
+
+            # There are three 'degenerate' cases --
+            # 1) Both the exists and no exists lists are empty (first 'if')
+            # 2/3) One but not the other is empty ('elif')
+            # if len(temp_noexists) == 0 and len(temp_exists) == 0:
+            rank_noexists = np.sum(temp_inner_product > global_noexists)
+            quantile_noexists = rank_noexists / len(global_noexists)
+
+            rank_exists = np.sum(temp_inner_product > global_noexists)
+            quantile_exists = rank_exists / len(global_exists)                  
+
+            if abs(quantile_noexists - 1/2) < abs(quantile_exists - 1/2):
+                predictions[i] = int(0)
+            elif abs(quantile_noexists - 1/2) > abs(quantile_exists - 1/2):
+                predictions[i] = int(1)
+            else:
+                predictions[i] = int(np.random.binomial(1, 0.5))
+            
+        csv['linkExists'] = predictions.astype(int)
+        outputs = container.DataFrame(csv[['d3mIndex', 'linkExists']])
+
+        return base.CallResult(outputs)
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
         if self._fitted:
             return base.CallResult(None)
 
-        K = len(self._training_inputs) # K = number of link types
+        embeddings = self._training_inputs[0]
+        csv = self._training_inputs[1]
+        n_nodes, n_links = self._training_inputs[2][0], self._training_inputs[2][1]
 
-        self._embeddings = [self._training_inputs[i][0] for i in range(K)]
-        self._embeddings = container.List(self._embeddings)
+        n_info = csv.shape[0]
+        ranks = [[[], []] for i in range(n_links + 1)]
 
-        n_info_each_graph = np.zeros(len(self._training_inputs))
-        n_edges_each_graph = np.zeros(len(self._training_inputs))
+        for i in range(n_info):
+            temp_link = int(np.array(csv['linkType'])[i])
+            temp_exists = int(np.array(csv['linkExists'])[i])
+            temp_source = int(np.array(csv['source_nodeID'])[i])
+            temp_target = int(np.array(csv['target_nodeID'])[i])
+            temp_dot = embeddings[temp_link*n_nodes + temp_source] @ embeddings[temp_link*n_nodes + temp_target]
+            ranks[temp_link][temp_exists].append(temp_dot)
+            ranks[-1][temp_exists].append(temp_dot)
 
-        for i in range(K):
-            for j in range(len(self._training_inputs[i][1])):
-                n_info_each_graph[i] += 1
-                n_edges_each_graph[i] += int(self._training_inputs[i][1][j][2])
+        for i in range(len(ranks)):
+            ranks[i][0] = np.sort(ranks[i][0])
+            ranks[i][1] = np.sort(ranks[i][1])
 
-        inner_products = [[np.zeros(int(n_info_each_graph[i] - n_edges_each_graph[i])), np.zeros(int(n_edges_each_graph[i]))] for i in range(K)]
+        self._embeddings = embeddings
+        self._inner_products = ranks
 
-        for i in range(K):
-            zeros, ones = 0, 0
-            for j in range(len(self._training_inputs[i][1])):
-                temp_node_1 = int(self._training_inputs[i][1][j][0])
-                temp_node_2 = int(self._training_inputs[i][1][j][1])
-                temp_class = int(self._training_inputs[i][1][j][2])
+        # K = len(self._training_inputs) # K = number of link types
 
-                if temp_class == 0:
-                    inner_products[i][temp_class][zeros] = self._embeddings[i][temp_node_1] @ self._embeddings[i][temp_node_2]
-                    zeros += 1
-                else:
-                    inner_products[i][temp_class][ones] = self._embeddings[i][temp_node_1] @ self._embeddings[i][temp_node_2]
-                    ones += 1
+        # self._embeddings = [self._training_inputs[i][0] for i in range(K)]
+        # self._embeddings = container.List(self._embeddings)
 
-        self._inner_products = container.List()
+        # n_info_each_graph = np.zeros(len(self._training_inputs))
+        # n_edges_each_graph = np.zeros(len(self._training_inputs))
 
-        for i in range(K):
-            sorted_class0 = np.sort(inner_products[i][0])
-            sortec_class1 = np.sort(inner_products[i][1])
-            self._training_inputs[i][1] = container.List([container.ndarray(inner_products[i][0]), container.ndarray(inner_products[i][1])]) # replacing training data info with lists
-            self._inner_products.append(self._training_inputs[i][1])
+        # for i in range(K):
+        #     for j in range(len(self._training_inputs[i][1])):
+        #         n_info_each_graph[i] += 1
+        #         n_edges_each_graph[i] += int(self._training_inputs[i][1][j][2])
+
+        # inner_products = [[np.zeros(int(n_info_each_graph[i] - n_edges_each_graph[i])), np.zeros(int(n_edges_each_graph[i]))] for i in range(K)]
+
+        # for i in range(K):
+        #     zeros, ones = 0, 0
+        #     for j in range(len(self._training_inputs[i][1])):
+        #         temp_node_1 = int(self._training_inputs[i][1][j][0])
+        #         temp_node_2 = int(self._training_inputs[i][1][j][1])
+        #         temp_class = int(self._training_inputs[i][1][j][2])
+
+        #         if temp_class == 0:
+        #             inner_products[i][temp_class][zeros] = self._embeddings[i][temp_node_1] @ self._embeddings[i][temp_node_2]
+        #             zeros += 1
+        #         else:
+        #             inner_products[i][temp_class][ones] = self._embeddings[i][temp_node_1] @ self._embeddings[i][temp_node_2]
+        #             ones += 1
+
+        # self._inner_products = container.List()
+
+        # for i in range(K):
+        #     sorted_class0 = np.sort(inner_products[i][0])
+        #     sortec_class1 = np.sort(inner_products[i][1])
+        #     self._training_inputs[i][1] = container.List([container.ndarray(inner_products[i][0]), container.ndarray(inner_products[i][1])]) # replacing training data info with lists
+        #     self._inner_products.append(self._training_inputs[i][1])
 
         self._fitted = True
 
