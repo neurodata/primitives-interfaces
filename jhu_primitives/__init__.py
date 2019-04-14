@@ -10,6 +10,7 @@ __all__ = [
            "LinkPredictionRankClassifier",
            # "OutOfSampleAdjacencySpectralEmbedding",
            # "OutOfSampleLaplacianSpectralEmbedding",
+           "SingleGraphVertexNomination",
            "SpectralGraphClustering",
            "SeededGraphMatching",
            ]
@@ -25,4 +26,6 @@ from .link_pred_rc import LinkPredictionRankClassifier
 # from .ooslse import OutOfSampleLaplacianSpectralEmbedding
 from .sgc import SpectralGraphClustering
 from .sgm import SeededGraphMatching
+from .sgvn import SingleGraphVertexNomination
 from .utils import file_path_conversion
+

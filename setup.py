@@ -47,6 +47,7 @@ setup(
               # 'jhu_primitives.ooslse',
               'jhu_primitives.sgc',
               'jhu_primitives.sgm',
+              'jhu_primitives.sgvn',
               'jhu_primitives.utils',
     ],
     entry_points = {
@@ -60,6 +61,7 @@ setup(
             'link_prediction.heuristic.JHU=jhu_primitives.LinkPredictionRankClassifier',
             # 'data_transformation.out_of_sample_adjacency_spectral_embedding.JHU=jhu_primitives.oosase:OutOfSampleAdjacencySpectralEmbedding',
             # 'data_transformation.out_of_sample_laplacian_spectral_embedding.JHU=jhu_primitives.ooslse:OutOfSampleLaplacianSpectralEmbedding',
+            'vertex_nomination.spectral_vertex_nomination.JHU=jhu_primitives.sgvn:SingleGraphVertexNomination',
             'vertex_nomination.spectral_graph_clustering.JHU=jhu_primitives.sgc:SpectralGraphClustering',
             'graph_matching.seeded_graph_matching.JHU=jhu_primitives.sgm:SeededGraphMatching'
             ]
@@ -77,6 +79,7 @@ setup(
                       # 'lap',  # unnecessary jhu dependency
                       'cython', # jhu dependency,
                       'lapjv==1.3.0',
+                      # Need to add graspy, RerF
 
 
                       'scikit-learn[alldeps]==0.20.2',
