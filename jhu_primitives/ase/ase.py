@@ -185,10 +185,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             if M > 1:
                 omni_object = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
                 X_hats = omni_object.fit_transform(adj)
-                d = X_hats.shape[1]
-
-                X_hats_reshaped = X_hats.reshape((M, n, d))
-                X_hat = np.mean(X_hats_reshaped, axis = 0)
+                X_hat = np.mean(X_hats, axis = 0)
 
                 embedding = X_hat.copy()
 

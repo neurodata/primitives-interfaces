@@ -78,7 +78,7 @@ setup(
                       'scipy', # jhu dependency
                       # 'lap',  # unnecessary jhu dependency
                       'cython', # jhu dependency,
-                      'lapjv==1.3.0',
+                      'lapjv==1.3.1',
                       # Need to add graspy, RerF
 
 
@@ -104,6 +104,6 @@ setup(
                       # 'gputil==1.3.0', # d3m dependency
                      ],
     url='https://github.com/neurodata/primitives-interfaces',
-    #dependency_links=['https://github.com/src-d/lapjv/master#egg=lapjv-1.3.0'],
+    dependency_links=['git+https://github.com/hhelm10/graspy.git#egg=master'],
     keywords = 'd3m_primitive'
 )
