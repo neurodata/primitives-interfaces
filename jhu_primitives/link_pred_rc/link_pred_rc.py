@@ -30,7 +30,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         'version': "0.1.0",
         'name': "jhu.link_pred_rc",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.jhu_primitives.LinkPredictionRankClassifier',
+        'python_path': 'd3m.primitives.link_prediction.rank_classification.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['graph', 'inner product'],
         'source': {
