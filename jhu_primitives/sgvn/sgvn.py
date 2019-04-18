@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-
-# gclust.py
-# Copyright (c) 2017. All rights reserved.
-
 from typing import Sequence, TypeVar, Union, Dict
 import os
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
@@ -32,25 +27,25 @@ class Hyperparams(hyperparams.Hyperparams):
         upper = None
     )
 
-class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
+class SingleGraphVertexNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params,Hyperparams]):
     """
     Expecation-Maxmization algorithm for clustering
     """
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
-        'id': '5194ef94-3683-319a-9d8d-5c3fdd09de24',
+        'id': 'dad3e96a-88a3-4e96-ba38-c152c210912f',
         'version': "0.1.0",
-        'name': "jhu.gclust",
+        'name': "jhu.1gvn",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.graph_clustering.gaussian_clustering.JHU',
+        'python_path': 'd3m.primitives.vertex_nomination.spectral_vertex_nomination.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['graph', 'gaussian clustering'],
+        'keywords': ['graph', 'gaussian clustering', 'vertex nomination'],
         'source': {
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/gclust/gclust.py',
+                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/1gvn/1gvn.py',
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
@@ -74,10 +69,10 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             {
             'type': metadata_module.PrimitiveInstallationType.PIP,
             'package_uri': 'git+https://github.com/neurodata/primitives-interfaces.git@{git_commit}#egg=jhu_primitives'.format(
-                git_commit=utils.current_git_commit(os.path.dirname(__file__)),
-                ),
+            git_commit=utils.current_git_commit(os.path.dirname(__file__)),
+            ),
         }],
-        'description': 'Expecation-Maxmization algorithm for clustering',
+        'description': 'ingle graph vertex nomination via hierarchical clustering and Expecation-Maxmization.',
         # URIs at which one can obtain code for the primitive, if available.
         # 'location_uris':
         #     'https://gitlab.com/datadrivendiscovery/tests-data/raw/{git_commit}/primitives/test_primitives/monomial.py'.format(
@@ -89,32 +84,21 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         'algorithm_types': [
             "EXPECTATION_MAXIMIZATION_ALGORITHM"
         ],
-        'primitive_family': "GRAPH_CLUSTERING",
+        'primitive_family': "VERTEX_NOMINATION",
         'preconditions': ['NO_MISSING_VALUES']
-    })
-
+        })
+    
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
         self._embedding: container.ndarray = None
-
+            
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        """
-        TODO: YP description
-
-        **Positional Arguments:**
-
-        inputs:
-            - A matrix
-
-        **Optional Arguments:**
-
-        dim:
-            - The number of clusters in which to assign the data
-        """
 
         if self._embedding is None:
             self._embedding = inputs[0]
+            
+        N, d = self._embedding.shape
 
         nodeIDs = inputs[1]
         nodeIDS = np.array([int(i) for i in nodeIDs])
@@ -124,29 +108,47 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         if max_clusters < self._embedding.shape[1]:
             self._embedding = self._embedding[:, :max_clusters].copy()
 
-        gclust_object = graspyGCLUST(min_components=max_clusters, covariance_type="all")
+        gclust_object = graspyGCLUST(max_components=max_clusters, covariance_type="all")
         gclust_object.fit(self._embedding)
         model = gclust_object.model_
+        
+        pis, means, precs = model.weights_, model.means_, model.precisions_
 
         predictions = model.predict(self._embedding)
-
-        testing = inputs[2]
-
-        testing_nodeIDs = np.asarray(testing['G1.nodeID'])
-        testing_nodeIDs = np.array([int(i) for i in testing_nodeIDs])
-        final_labels = np.zeros(len(testing))
-
-        for i in range(len(testing_nodeIDs)):
-            label = predictions[i]
-            final_labels[i] = int(label) + 1
-
-        testing['classLabel'] = final_labels
-        outputs = container.DataFrame(testing[['d3mIndex', 'classLabel']])
-        outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'classLabel']].astype(int)
         
-        return base.CallResult(outputs)
+        D = np.zeros(shape=(N, N))
+        
+        if d == 1:
+            cluster_label = predictions[i]
+            i_embedding = self._embedding[i]
+            for j in range(i + 1, N):
+                j_embedding = self._embedding[j]
+                eucl_dist = i_embedding - j_embedding
+                Mahal_dist = eucl_dist * precs[cluster_label] * eucl_dist
+                D[i, j] = Mahal_dist
+                D[j, i] = Mahal_dist
+        else:
+            for i in range(N):
+                cluster_label = predictions[i]
+                i_embedding = self._embedding[i]
+                for j in range(i + 1, N):
+                    j_embedding = self._embedding[j]
+                    eucl_dist = i_embedding - j_embedding
+                    Mahal_dist = eucl_dist @ precs[cluster_label] @ eucl_dist[None].T
+                    D[i, j] = Mahal_dist[0]
+                    D[j, i] = D[i, j]
+                
+        D_idx = np.zeros(shape=(N, N-1))
+        for i in range(N):
+            D_idx[i] = np.argsort(D[i])[1:]
 
+        columns = ['match%i'%(i + 1) for i in range(N - 1)]
+    
+        # May need to create nodeID <-> d3m index map 
+        output = container.DataFrame(D_idx, index = nodeIDs, columns = columns).astype(int)
+        output.index.name = "d3mIndex"
 
+        return base.CallResult(output)
     def set_training_data(self, *, inputs: Inputs) -> None:
         self._training_inputs = inputs
 
@@ -159,26 +161,3 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
     def fit(self, *, timeout: float = None, iterations: int = None) -> None:
         return base.CallResult(None)
 
-
-        # clf.fit(self._embedding)
-        # BIC_max = -clf.bic(self._embedding)
-        # cluster_likelihood_max = 1
-        # cov_type_likelihood_max = "spherical"
-
-        # for i in range(1, max_clusters):
-        #     for k in cov_types:
-        #         clf = GaussianMixture(n_components=i,
-        #                             covariance_type=k)
-
-        #         clf.fit(self._embedding)
-
-        #         current_bic = -clf.bic(self._embedding)
-
-        #         if current_bic > BIC_max:
-        #             BIC_max = current_bic
-        #             cluster_likelihood_max = i
-        #             cov_type_likelihood_max = k
-
-        # clf = GaussianMixture(n_components = cluster_likelihood_max,
-        #                 covariance_type = cov_type_likelihood_max)
-        # clf.fit(self._embedding)

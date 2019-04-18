@@ -23,7 +23,10 @@ class Hyperparams(hyperparams.Hyperparams):
     # Add hyperparameter that controls how missing values are imputed
 
 class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
-    # This should contain only metadata which cannot be automatically determined from the code.
+    """
+    A primitive for reading in a multi-graph, typically used in a JHU link prediction pipeline.
+    """
+    
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
         'id': '09f2eea8-667c-44b8-a955-6a153ba9ccc3',

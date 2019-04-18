@@ -206,8 +206,19 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         return CallResult(None)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        permutation_matrix = self._P
         csv_TEST = inputs['learningData']
+
+        g1_dense = self._g1_adjmat.todense()
+        g2_dense = self._g2_adjmat.todense()
+
+        identity_objective = np.linalg.norm(g1_dense - g2_dense)
+
+        found_P_objective = np.linalg.norm(g1_dense - self._P.T @ g2_dense @ self._P)
+
+        if identity_objective < found_P_objective:
+            self._P = np.eye(self._g1_adjmat.shape[0])
+
+        permutation_matrix = self._P
 
         g1_nodeIDs_TEST = csv_TEST['G1.nodeID'].values
         g1_nodeIDs_TEST = g1_nodeIDs_TEST.astype(str)
