@@ -33,8 +33,8 @@ setup(
     version=VERSION,
     description='JHU Python interfaces for TA1 primitives for d3m',
     long_description='A library wrapping JHU\'s Python interfaces for the D3M program\'s TA1 primitives.',
-    author='Disa Mhembere, Eric Bridgeford, Youngser Park, Heather G. Patsolic, Tyler M. Tomita, Jesse L. Patsolic, Hayden S. Helm, Joshua Agterberg, Bijan Varjavand',
-    author_email="disa@jhu.edu",
+    author='Hayden S. Helm, Joshua Agterberg, Bijan Varjavand, Disa Mhembere, Eric Bridgeford, Youngser Park, Heather G. Patsolic, Tyler M. Tomita, Jesse L. Patsolic',
+    author_email="hhelm2@jhu.edu",
     packages=[
               PACKAGE_NAME,
               'jhu_primitives.ase',
@@ -43,11 +43,12 @@ setup(
               'jhu_primitives.lcc',
               'jhu_primitives.lse',
               'jhu_primitives.link_pred_graph_reader',
+              'jhu_primitives.link_pred_rc',
               # 'jhu_primitives.oosase',
               # 'jhu_primitives.ooslse',
               'jhu_primitives.sgc',
               'jhu_primitives.sgm',
-              'jhu_primitives.sgvn',
+              # 'jhu_primitives.sgvn',
               'jhu_primitives.utils',
     ],
     entry_points = {
@@ -58,11 +59,11 @@ setup(
             'graph_clustering.gaussian_clustering.JHU=jhu_primitives.gclust:GaussianClustering',
             'data_transformation.laplacian_spectral_embedding.JHU=jhu_primitives.lse:LaplacianSpectralEmbedding',
             'link_prediction.data_conversion.JHU=jhu_primitives.LinkPredictionGraphReader',
-            'link_prediction.heuristic.JHU=jhu_primitives.LinkPredictionRankClassifier',
+            'link_prediction.rank_classification.JHU=jhu_primitives.LinkPredictionRankClassifier',
             # 'data_transformation.out_of_sample_adjacency_spectral_embedding.JHU=jhu_primitives.oosase:OutOfSampleAdjacencySpectralEmbedding',
             # 'data_transformation.out_of_sample_laplacian_spectral_embedding.JHU=jhu_primitives.ooslse:OutOfSampleLaplacianSpectralEmbedding',
-            'vertex_nomination.spectral_vertex_nomination.JHU=jhu_primitives.sgvn:SingleGraphVertexNomination',
-            'vertex_nomination.spectral_graph_clustering.JHU=jhu_primitives.sgc:SpectralGraphClustering',
+            # 'vertex_nomination.spectral_vertex_nomination.JHU=jhu_primitives.sgvn:SingleGraphVertexNomination',
+            # 'vertex_nomination.spectral_graph_clustering.JHU=jhu_primitives.sgc:SpectralGraphClustering',
             'graph_matching.seeded_graph_matching.JHU=jhu_primitives.sgm:SeededGraphMatching'
             ]
     },
@@ -79,10 +80,10 @@ setup(
                       # 'lap',  # unnecessary jhu dependency
                       'cython', # jhu dependency,
                       'lapjv==1.3.1',
-                      # Need to add graspy, RerF
 
 
-                      'scikit-learn[alldeps]==0.20.2',
+                      # Begin d3m dependenc
+                      'scikit-learn[alldeps]==0.20.3',
                       # 'pytypes==1.0b5', # d3m dependency
                       # 'frozendict==1.2', # d3m dependency
                       # 'numpy==1.15.4', # d3m dependency
@@ -104,6 +105,6 @@ setup(
                       # 'gputil==1.3.0', # d3m dependency
                      ],
     url='https://github.com/neurodata/primitives-interfaces',
-    dependency_links=['git+https://github.com/hhelm10/graspy.git#egg=master'],
+    dependency_links=['git+https://github.com/neurodata/graspy.git#egg=master'],
     keywords = 'd3m_primitive'
 )

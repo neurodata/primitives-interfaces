@@ -27,7 +27,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
     A primitive that predicts the existence of a link if it falls within the interquartile range of
     inner products.
     """
-    
+
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -70,7 +70,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
             },
             ],
         'algorithm_types': [
-            "HEURISTIC"
+            "RANK_CLASSIFICATION"
         ],
         'primitive_family': "LINK_PREDICTION",
         'preconditions': ['NO_MISSING_VALUES']
