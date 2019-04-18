@@ -79,7 +79,7 @@ setup(
                       'scipy', # jhu dependency
                       # 'lap',  # unnecessary jhu dependency
                       'cython', # jhu dependency,
-                      'lapjv==1.3.1',
+                      'lapjv==1.2.0',
 
 
                       # Begin d3m dependenc
