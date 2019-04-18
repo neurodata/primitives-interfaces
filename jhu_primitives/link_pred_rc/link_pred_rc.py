@@ -70,7 +70,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
             },
             ],
         'algorithm_types': [
-            "RANK_CLASSIFICATION"
+            "HEURISTIC"
         ],
         'primitive_family': "LINK_PREDICTION",
         'preconditions': ['NO_MISSING_VALUES']
