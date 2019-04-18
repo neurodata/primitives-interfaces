@@ -23,6 +23,11 @@ class Hyperparams(hyperparams.Hyperparams):
     dim = None
 
 class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
+    """
+    A primitive that predicts the existence of a link if it falls within the interquartile range of
+    inner products.
+    """
+    
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -98,60 +103,6 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         global_noexists = self._inner_products[-1][0]
         global_exists = self._inner_products[-1][1]
 
-        # for i in range(n_preds):
-        #     temp_source = source_nodeID[i]
-        #     temp_target = target_nodeID[i]
-        #     temp_link = link_types[i]
-        #     temp_inner_product = self._embeddings[temp_link*n_nodes + temp_source] @ self._embeddings[temp_link*n_nodes + temp_target]
-        #     temp_noexists = self._inner_products[temp_link][0]
-        #     temp_exists = self._inner_products[temp_link][1]
-
-            # There are three 'degenerate' cases --
-            # 1) Both the exists and no exists lists are empty (first 'if')
-            # 2/3) One but not the other is empty ('elif')
-            # if len(temp_noexists) == 0 and len(temp_exists) == 0:
-            #     rank_noexists = np.sum(temp_inner_product > global_noexists)
-            #     quantile_noexists = rank_noexists / len(global_noexists)
-
-            #     rank_exists = np.sum(temp_inner_product > global_noexists)
-            #     quantile_exists = rank_exists / len(global_exists)                  
-
-            #     if abs(quantile_noexists - 1/2) < abs(quantile_exists - 1/2):
-            #         predictions[i] = int(0)
-            #     elif abs(quantile_noexists - 1/2) > abs(quantile_exists - 1/2):
-            #         predictions[i] = int(1)
-            #     else:
-            #         predictions[i] = int(np.random.binomial(1, 0.5))
-            # elif len(temp_noexists) == 0 or len(temp_exists) == 0:
-            #     idx = np.argmax([len(temp_noexists), len(temp_exists)])
-            #     non_empty_ips = self._inner_products[temp_link][idx]
-                
-            #     rank = np.sum(temp_inner_product > non_empty_ips)
-            #     quantile = rank / len(non_empty_ips)
-
-            #     if 4*abs(quantile - 1/2) < 1:
-            #         predictions[i] += int(idx)
-            #     elif 4*abs(quantile - 1/2) == 1:
-            #         predictions[i] = int(np.random.binomial(1, 0.5))
-            #     else:
-            #         if idx == 0:
-            #             predictions[i] = 1
-            #         else:
-            #             predictions[i] = 0
-            # else:
-            #     rank_noexists = np.sum(temp_inner_product > temp_noexists)
-            #     quantile_noexists = rank_noexists / len(temp_noexists)
-
-            #     rank_exists = np.sum(temp_inner_product > temp_exists)
-            #     quantile_exists = rank_exists / len(temp_exists)  
-
-            #     if abs(quantile_noexists - 1/2) < abs(quantile_exists - 1/2):
-            #         predictions[i] = 0
-            #     elif abs(quantile_noexists - 1/2) > abs(quantile_exists - 1/2):
-            #         predictions[i] = 1
-            #     else:
-            #         predictions[i] = int(np.random.binomial(1, 0.5))
-
         # The following code is used for "global" classification only; i.e. we ignore edge type training data
         for i in range(n_preds):
             temp_source = source_nodeID[i]
@@ -209,43 +160,6 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
 
         self._embeddings = embeddings
         self._inner_products = ranks
-
-        # K = len(self._training_inputs) # K = number of link types
-
-        # self._embeddings = [self._training_inputs[i][0] for i in range(K)]
-        # self._embeddings = container.List(self._embeddings)
-
-        # n_info_each_graph = np.zeros(len(self._training_inputs))
-        # n_edges_each_graph = np.zeros(len(self._training_inputs))
-
-        # for i in range(K):
-        #     for j in range(len(self._training_inputs[i][1])):
-        #         n_info_each_graph[i] += 1
-        #         n_edges_each_graph[i] += int(self._training_inputs[i][1][j][2])
-
-        # inner_products = [[np.zeros(int(n_info_each_graph[i] - n_edges_each_graph[i])), np.zeros(int(n_edges_each_graph[i]))] for i in range(K)]
-
-        # for i in range(K):
-        #     zeros, ones = 0, 0
-        #     for j in range(len(self._training_inputs[i][1])):
-        #         temp_node_1 = int(self._training_inputs[i][1][j][0])
-        #         temp_node_2 = int(self._training_inputs[i][1][j][1])
-        #         temp_class = int(self._training_inputs[i][1][j][2])
-
-        #         if temp_class == 0:
-        #             inner_products[i][temp_class][zeros] = self._embeddings[i][temp_node_1] @ self._embeddings[i][temp_node_2]
-        #             zeros += 1
-        #         else:
-        #             inner_products[i][temp_class][ones] = self._embeddings[i][temp_node_1] @ self._embeddings[i][temp_node_2]
-        #             ones += 1
-
-        # self._inner_products = container.List()
-
-        # for i in range(K):
-        #     sorted_class0 = np.sort(inner_products[i][0])
-        #     sortec_class1 = np.sort(inner_products[i][1])
-        #     self._training_inputs[i][1] = container.List([container.ndarray(inner_products[i][0]), container.ndarray(inner_products[i][1])]) # replacing training data info with lists
-        #     self._inner_products.append(self._training_inputs[i][1])
 
         self._fitted = True
 
