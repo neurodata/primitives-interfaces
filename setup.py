@@ -83,7 +83,7 @@ setup(
 
 
                       # Begin d3m dependenc
-                      'scikit-learn[alldeps]==0.20.3',
+                      'scikit-learn[alldeps]==0.20.2',
                       # 'pytypes==1.0b5', # d3m dependency
                       # 'frozendict==1.2', # d3m dependency
                       # 'numpy==1.15.4', # d3m dependency
