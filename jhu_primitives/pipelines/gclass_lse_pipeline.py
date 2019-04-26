@@ -35,11 +35,6 @@ class gclass_lse_pipeline(BasePipeline):
             argument_type=ArgumentType.CONTAINER,
             data_reference='steps.0.produce'
         )
-        step_1.add_argument(
-            name='inputs',
-            argument_type=ArgumentType.CONTAINER,
-            data_reference='steps.0.produce'
-        )
         step_1.add_hyperparameter(
                 name = 'max_dimension',
                 argument_type = ArgumentType.VALUE,
