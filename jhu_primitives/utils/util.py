@@ -28,22 +28,22 @@ For reference, the pipelines that are functional are the following:
 
 PROBLEM_TYPES = [
     "graphMatching",
-#    "vertexNomination_class",
-#    "vertexNomination_clust",
+    "vertexNomination_class",
+    "vertexNomination_clust",
     # "communityDetection"
     ]
 
 DATASETS = {
             "graphMatching": [
-                 "49_facebook",
-                #"LL1_Blogosphere_net",
-                # "LL1_DIC28_net",
-                # "LL1_ERDOS972_net",
-                # "LL1_IzmenjavaBratSestra_net",
-                # "LL1_REVIJE_net",
-                # "LL1_SAMPSON_net",
-                # "LL1_USAIR97_net",
-                # "LL1_imports_net"
+                "49_facebook",
+                "LL1_Blogosphere_net",
+                "LL1_DIC28_net",
+                "LL1_ERDOS972_net",
+                "LL1_IzmenjavaBratSestra_net",
+                "LL1_REVIJE_net",
+                "LL1_SAMPSON_net",
+                "LL1_USAIR97_net",
+                "LL1_imports_net"
                 ],
             "vertexNomination_class": [
                 "LL1_net_nomination_seed",
@@ -112,7 +112,6 @@ TRAIN_AND_TEST_SCHEMA_DATASETS = ["49_facebook",
                                 "59_umls",
                                 "DS01876",
                                 "LL1_net_nomination_seed",
-                                "LL1_EDGELIST_net_nomination_seed",
                                 "6_70_com_amazon",
                                 "6_86_com_DBLP"
                                 ]
@@ -136,7 +135,7 @@ def generate_json(type_):
     if type_ not in ['pipelines', 'primitives']:
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
 
-    version = "v2019.1.21"
+    version = "v2019.2.12"
     # while version == "-1":
     #     version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n4 for v2019.1.21 \n")
     #     if version == "0":
@@ -151,7 +150,7 @@ def generate_json(type_):
     #         version = "v2019.1.21"
     path = os.path.join(os.path.abspath(os.getcwd()),"")
 
-    if version == "v2019.1.21":
+    if version == "v2019.2.12":
         jhu_path = os.path.join(path, "primitives_repo", version, "JHU", "")
     else:
         jhu_path = os.path.join(path, "primitives_repo", "archive", version, "JHU", "")
@@ -218,8 +217,7 @@ def generate_json(type_):
                     primitive_id = json_object['steps'][-1]['primitive']['id']
 
                     for primitive in primitives:
-                        print(python_paths[primitive])
-                        temp_path = os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', "")       
+                        temp_path = os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', "")
                         shutil.copy(os.path.join(path, 'temp.json'),
                                     os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', pipeline_id + '.json'))       # creates the pipeline json
                         write_meta(pipeline_id, dataset, dataset_new, temp_path + pipeline_id)
@@ -283,14 +281,9 @@ def file_path_conversion(abs_file_path, uri="file"):
 def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_type = ""):
     if abs_file_path == "":
         raise ValueError("Need absolute file path ( os.path.abspath(os.getcwd()) )")
-
-    try:
-        local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
-        path_sep = file_path[0]
-        file_path = file_path[1:]  # Remove initial separator
-    except:
-        file_path = abs_file_path
-        path_sep = "/"
+    local_drive, file_path = abs_file_path.split(':')[0], abs_file_path.split(':')[1]
+    path_sep = file_path[0]
+    file_path = file_path[1:]  # Remove initial separator
     if len(file_path) == 0:
         print("Invalid file path: len(file_path) == 0")
         return
@@ -314,23 +307,11 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_
             print("Please enter 0, 1 or 2")
 
     valid_folder = False
-    LL0_or_LL1 = ""
-    if type_ == '2':
-        LL0_or_LL1 = input("Enter \n 0: exit \n LL0 \n LL1 \n")
-
     while not valid_folder:
-        folder = input("Enter \n 0: exit \n Name of the data folder (case sensitive; must be in " + data_dir + 
-                        LL0_or_LL1 + ") \n")
+        folder = input("Enter \n 0: exit \n Name of the data folder (case sensitive; must be in " + data_dir + ") \n")
         if folder == "0":
             return
-
-        if type_ == '2':
-                if LL0_or_LL1 == '0':
-                        return
-                else:
-                        data_dir = os.path.join(data_dir, LL0_or_LL1, "")
-                        valid_folder = True
-        elif type_ == '3':
+        if type_ == '3':
             if os.path.isdir(folder):
                 data_dir += folder
                 valid_folder= True
@@ -338,14 +319,15 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_
             if os.path.isdir(data_dir  + "/" + folder):
                 data_dir += "/" + folder
                 valid_folder = True
-                
 
-    
+    s = ""
     if path_sep == "/":
-        s = file_path
+        splits = file_path.split("/")
+        #data_folder = splits[-1]
 
     elif path_sep == "\\":
         splits = file_path.split("\\")
+        #data_folder = splits[-1]
         for i in splits:
             if i != "":
                 s += "/" + i
@@ -354,14 +336,9 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_
         return
 
     if datasetDoc:
-        if path_sep == "/":
-            s = s + "/" + data_dir
-        else:
-            s = s + "/" + data_dir + "/"
-        if dataset_type == "": 
-            s = s + "/" + folder + "_dataset/datasetDoc.json"
-        elif type_ == '2':
-            s = s + folder + "/" + folder + "_dataset/datasetDoc.json"
+        s = s + "/" + data_dir + "/"
+        if dataset_type == "":
+            s = s + folder + "_dataset/datasetDoc.json"
         elif dataset_type == "TRAIN":
             s = s + "/" + "TRAIN/dataset_TRAIN/datasetDoc.json"
         elif dataset_type == "TEST":
