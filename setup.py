@@ -58,12 +58,12 @@ setup(
             'classification.gaussian_classification.JHU=jhu_primitives.gclass:GaussianClassification',
             'graph_clustering.gaussian_clustering.JHU=jhu_primitives.gclust:GaussianClustering',
             'data_transformation.laplacian_spectral_embedding.JHU=jhu_primitives.lse:LaplacianSpectralEmbedding',
-            'link_prediction.data_conversion.JHU=jhu_primitives.LinkPredictionGraphReader',
-            'link_prediction.rank_classification.JHU=jhu_primitives.LinkPredictionRankClassifier',
+            'link_prediction.data_conversion.JHU=jhu_primitives.link_pred_graph_reader:LinkPredictionGraphReader',
+            'link_prediction.rank_classification.JHU=jhu_primitives.link_pred_rc:LinkPredictionRankClassifier',
             # 'data_transformation.out_of_sample_adjacency_spectral_embedding.JHU=jhu_primitives.oosase:OutOfSampleAdjacencySpectralEmbedding',
             # 'data_transformation.out_of_sample_laplacian_spectral_embedding.JHU=jhu_primitives.ooslse:OutOfSampleLaplacianSpectralEmbedding',
-            # 'vertex_nomination.spectral_vertex_nomination.JHU=jhu_primitives.sgvn:SingleGraphVertexNomination',
-            # 'vertex_nomination.spectral_graph_clustering.JHU=jhu_primitives.sgc:SpectralGraphClustering',
+            'vertex_nomination.spectral_vertex_nomination.JHU=jhu_primitives.sgvn:SingleGraphVertexNomination',
+            'vertex_nomination.spectral_graph_clustering.JHU=jhu_primitives.sgc:SpectralGraphClustering',
             'graph_matching.seeded_graph_matching.JHU=jhu_primitives.sgm:SeededGraphMatching'
             ]
     },

@@ -51,7 +51,7 @@ DATASETS = {
                 ],
             "vertexNomination_clust": [
                 "DS01876"
-                ]# ,
+                ],
             # "communityDetection": [
             #     "6_70_com_amazon",
             #     "6_86_com_DBLP",
@@ -59,9 +59,9 @@ DATASETS = {
             #     "LL1_bn_fly_drosophila_medulla_net",
             #     "LL1_eco_florida_net"
             #     ]
-            # "linkPrediction": [
-            #     "59_umls"
-            #     ]
+            "linkPrediction": [
+                "59_umls"
+                ]
             }
 
 PIPELINES = {
@@ -135,7 +135,7 @@ def generate_json(type_):
     if type_ not in ['pipelines', 'primitives']:
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
 
-    version = "v2019.2.12"
+    version = "v2019.4.4"
     # while version == "-1":
     #     version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n4 for v2019.1.21 \n")
     #     if version == "0":
@@ -150,7 +150,7 @@ def generate_json(type_):
     #         version = "v2019.1.21"
     path = os.path.join(os.path.abspath(os.getcwd()),"")
 
-    if version == "v2019.2.12":
+    if version == "v2019.4.4":
         jhu_path = os.path.join(path, "primitives_repo", version, "JHU", "")
     else:
         jhu_path = os.path.join(path, "primitives_repo", "archive", version, "JHU", "")
