@@ -82,11 +82,14 @@ PIPELINES = {
                 # "gmm_oosase_pipeline",
                 # "gmm_ooslse_pipeline",
                 "sgc_pipeline"
-                ]# ,
+                ],
             # "communityDetection": [
             #     "gmm_oosase_pipeline",
             #     "gmm_ooslse_pipeline"
             #     ]
+             "linkPrediction": [
+                 "link_pred_pipeline",
+                ],
              }
 
 DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
