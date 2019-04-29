@@ -80,7 +80,7 @@ setup(
                       # 'lap',  # unnecessary jhu dependency
                       'cython', # jhu dependency,
                       'lapjv==1.2.0',
-                      'git+https://github.com/neurodata/graspy.git#egg=master',
+                      'graspy>=0.0.2',
 
 
                       # Begin d3m dependenc
@@ -106,6 +106,6 @@ setup(
                       # 'gputil==1.3.0', # d3m dependency
                      ],
     url='https://github.com/neurodata/primitives-interfaces',
-#     dependency_links=['git+https://github.com/neurodata/graspy.git#egg=master'],
+    dependency_links=['git+https://github.com/neurodata/graspy.git#egg=master'],
     keywords = 'd3m_primitive'
 )
