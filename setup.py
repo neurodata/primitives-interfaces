@@ -83,8 +83,7 @@ setup(
                       'graspy>=0.0.2',
 
 
-                      # Begin d3m dependenc
-                      'scikit-learn[alldeps]==0.20.2',
+                      # Begin d3m dependency
                       # 'pytypes==1.0b5', # d3m dependency
                       # 'frozendict==1.2', # d3m dependency
                       # 'numpy==1.15.4', # d3m dependency
