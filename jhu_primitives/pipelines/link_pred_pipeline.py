@@ -2,9 +2,9 @@ from d3m.metadata import pipeline as meta_pipeline
 from d3m.metadata.base import Context, ArgumentType
 
 from jhu_primitives.pipelines.base import BasePipeline
-from jhu_primitives.link_pred_graph_reader import LinkPredictionGraphReader
+from jhu_primitives.link_pred_graph_reader import LinkPredictionGraphReader as DataConversion
 from jhu_primitives.ase import AdjacencySpectralEmbedding
-from jhu_primitives.link_pred_rc import LinkPredictionRankClassifier
+from jhu_primitives.link_pred_rc import LinkPredictionRankClassifier as RankClassification
 
 
 DATASETS = {
@@ -20,7 +20,7 @@ class link_pred_pipeline(BasePipeline):
         pipeline = meta_pipeline.Pipeline(context = Context.TESTING)
         pipeline.add_input(name = 'inputs')
 
-        step_0 = meta_pipeline.PrimitiveStep(primitive_description = LinkPredictionGraphReader.metadata.query())
+        step_0 = meta_pipeline.PrimitiveStep(primitive_description = DataConversion.metadata.query())
         step_0.add_argument(
             name = 'inputs',
             argument_type=ArgumentType.CONTAINER,
@@ -56,16 +56,11 @@ class link_pred_pipeline(BasePipeline):
         pipeline.add_step(step_1)
 
 
-        step_2 = meta_pipeline.PrimitiveStep(primitive_description = LinkPredictionRankClassifier.metadata.query())
+        step_2 = meta_pipeline.PrimitiveStep(primitive_description = RankClassification.metadata.query())
         step_2.add_argument(
             name = 'inputs',
             argument_type= ArgumentType.CONTAINER,
             data_reference=  'steps.1.produce'
-        )
-        step_2.add_hyperparameter(
-                name = 'max_clusters',
-                argument_type = ArgumentType.VALUE,
-                data = 10
         )
 
         step_2.add_output('produce')

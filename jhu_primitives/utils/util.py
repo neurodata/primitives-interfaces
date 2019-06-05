@@ -30,6 +30,7 @@ PROBLEM_TYPES = [
     "graphMatching",
     "vertexNomination_class",
     "vertexNomination_clust",
+    "linkPrediction",
     # "communityDetection"
     ]
 
