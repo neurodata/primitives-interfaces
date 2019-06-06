@@ -159,10 +159,11 @@ def generate_json(target_repo, type_):
     #         version = "v2019.1.21"
     path = os.path.join(os.path.abspath(os.getcwd()),"")
 
-    if version == "v2019.4.4":
-        jhu_path = os.path.join(path, target_repo, version, "JHU", "")
-    else:
-        jhu_path = os.path.join(path, target_repo, "archive", version, "JHU", "")
+    jhu_path = os.path.join(path, target_repo, version, "JHU", "")
+    # if version == "v2019.5.8":
+    #     jhu_path = os.path.join(path, target_repo, version, "JHU", "")
+    # else:
+    #     jhu_path = os.path.join(path, target_repo, "archive", version, "JHU", "")
 
     all_primitives = os.listdir(jhu_path)
     primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
