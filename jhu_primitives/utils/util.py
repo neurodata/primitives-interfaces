@@ -175,7 +175,7 @@ def generate_json(target_repo, type_):
     if type_ == 'primitives':
         for i in range(len(all_primitives)):
             temp = jhu_path + all_primitives[i]
-            os.system('python -m d3m.index describe -i 4 ' + all_primitives[i] + ' > ' + os.path.join(temp, versions[primitive_names[i]], 'primitive.json'))
+            os.system('python -m d3m index describe -i 4 ' + all_primitives[i] + ' > ' + os.path.join(temp, versions[primitive_names[i]], 'primitive.json'))
     else:
         python_paths = {}
         for python_path in all_primitives:
@@ -204,7 +204,6 @@ def generate_json(target_repo, type_):
                 p_dir = [convert(p) for p in pipeline_dir]
                 primitives = [prim for prim in primitive_names if prim in p_dir]
                 print(primitives)
-                #print(primitive_names)
 
                 for dataset in datasets:
 
