@@ -71,8 +71,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/ase/ase.py',
-                'https://github.com/neurodata/primitives-interfaces.git',
+                'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/ase/ase.py',
+                'https://github.com/neurodata/primitives-interfaces',
             ],
             'contact': 'mailto:hhelm2@jhu.edu'
         },
