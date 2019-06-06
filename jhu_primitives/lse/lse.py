@@ -23,8 +23,6 @@ from graspy.embed import LaplacianSpectralEmbed as graspyLSE
 from graspy.embed import OmnibusEmbed as graspyOMNI
 from graspy.utils import pass_to_ranks as graspyPTR
 
-from ..utils.util import file_path_conversion
-
 Inputs = container.List
 Outputs = container.List
 
@@ -111,96 +109,12 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
-    def _profile_likelihood_maximization(self,U, n_elbows):
-        """
-        Inputs
-            U - An ordered or unordered list of eigenvalues
-            n - The number of elbows to return
-
-        Return
-            elbows - A numpy array containing elbows
-        """
-        if type(U) == list:  # cast to array for functionality later
-            U = np.array(U)
-
-        if n_elbows == 0:  # nothing to do..
-            return np.array([])
-
-        if U.ndim == 2:
-            U = np.std(U, axis=0)
-
-        if len(U) == 0:
-            return np.array([])
-
-        elbows = []
-
-        if len(U) == 1:
-            return np.array(elbows.append(0))
-
-        # select values greater than the threshold
-        U.sort()  # sort
-        U = U[::-1]  # reverse array so that it is sorted in descending order
-        n = len(U)
-
-        U = U[:self.hyperparams['max_dimension']].copy()
-
-        while len(elbows) < n_elbows and len(U) > 1:
-            d = 1
-            sample_var = np.var(U, ddof=1)
-            sample_scale = sample_var ** (1 / 2)
-            elbow = 0
-            likelihood_elbow = -1000000
-            while d < len(U):
-                mean_sig = np.mean(U[:d])
-                mean_noise = np.mean(U[d:])
-                sig_likelihood = 0
-                noise_likelihood = 0
-                for i in range(d):
-                    sig_likelihood += norm.pdf(U[i], mean_sig, sample_scale)
-                for i in range(d, len(U)):
-                    noise_likelihood += norm.pdf(U[i], mean_noise, sample_scale)
-
-                likelihood = noise_likelihood + sig_likelihood
-
-                if likelihood > likelihood_elbow:
-                    likelihood_elbow = likelihood
-                    elbow = d
-                d += 1
-            if len(elbows) == 0:
-                elbows.append(elbow)
-            else:
-                elbows.append(elbow + elbows[-1])
-            U = U[elbow:]
-
-        if len(elbows) == n_elbows:
-            return np.array(elbows)
-
-        if len(U) == 0:
-            return np.array(elbows)
-        else:
-            elbows.append(n)
-            return np.array(elbows)
-
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(1234)
 
         G = inputs[0].copy()
 
         g = graspyPTR(G)
-
-        # elif type(G) == networkx.classes.graph.Graph:
-        #     if networkx.is_weighted(G):
-        #         E = int(networkx.number_of_edges(G))
-        #         g = self._pass_to_ranks(G, nedges = E)
-        #     else:
-        #         E = int(networkx.number_of_edges(G))
-        #         g = networkx.to_numpy_array(G)
-        # elif type(G) is np.ndarray or type(G) is container.numpy.ndarray:
-        #     G = networkx.to_networkx_graph(G)
-        #     E = int(networkx.number_of_edges(G))
-        #     g = self._pass_to_ranks(G, nedges = E)
-        # else:
-        #     raise ValueError("networkx Graph and n x d numpy arrays only")
 
         n = g.shape[0]
 
@@ -210,6 +124,9 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             max_dimension = n 
 
         n_elbows = self.hyperparams['which_elbow']
+
+        """
+        What does Omni(DAD) even look like? 
 
         if self.hyperparams['use_attributes']:
             adj = [g]
@@ -241,6 +158,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 inputs[0] = container.ndarray(embedding)
 
                 return base.CallResult(inputs)
+        """
 
         lse_object = graspyLSE(n_components = max_dimension, n_elbows=n_elbows)
         X_hat = lse_object.fit_transform(g)
@@ -248,107 +166,3 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         inputs[0] = container.ndarray(X_hat)
 
         return base.CallResult(inputs)
-
-    
-
-    def _omni(self, list_of_sim_matrices):
-        """
-        Inputs
-            list_of_sim_matrices - The adjacencies to create the omni for
-
-        Returns
-            omni - The omni of the adjacency matrix and its attributes
-        """
-
-        M = len(list_of_sim_matrices)
-        n = np.array(list_of_sim_matrices[0]).shape[0]
-
-        omni = np.zeros(shape = (M*n, M*n))
-
-        for i in range(M):
-            for j in range(i, M):
-                temp_i = np.array(list_of_sim_matrices[i])
-                temp_j = np.array(list_of_sim_matrices[j])
-
-                if i == j:
-                    omni[i*n : (i + 1)*n, i*n : (i + 1)*n] = temp_i
-                else:
-                    omni[i*n : (i + 1)*n, j*n : (j + 1)*n] = (temp_i + temp_j)/2
-                    omni[j*n : (j + 1)*n, i*n : (i + 1)*n] = (temp_i + temp_j)/2
-                # for k in range(n):
-                #     for m in range(k + 1, n):
-                #         if i == j:
-                #             omni[i*n + k, j*n + m] = list_of_sim_matrices[i][k, m]
-                #             omni[j*n + m, i*n + k] = list_of_sim_matrices[i][k, m] # symmetric
-                #         else:
-                #             omni[i*n + k, j*n + m] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
-                #             omni[j*n + m, i*n + k] = (list_of_sim_matrices[i][k,m] + list_of_sim_matrices[j][k,m])/2
-        return omni
-
-
-    # def _get_elbows(self, eigenvalues):
-    #     elbows = self._profile_likelihood_maximization(U=eigenvalues
-    #                                                , n_elbows=self.hyperparams['which_elbow']
-    #                                                )
-    #     if len(elbows) == 0: # This is an issue with profile_likelihood_maximization
-    #         return 1
-    #     return (elbows[- 1])
-
-    # def _pass_to_ranks(self, G, nedges = networkx.number_of_edges, matrix = False):
-    #     #iterates through edges twice
-
-    #     #initialize edges
-    #     if not matrix:
-    #         edges = np.repeat(0,networkx.number_of_edges(G))
-
-    #         #loop over the edges and store in an array
-    #         j = 0
-    #         for u, v, d in G.edges(data=True):
-    #             edges[j] = d['weight']
-    #             j += 1
-
-
-    #         #grab the number of edges
-    #         #nedges = networkx.number_of_edges(G)
-
-    #         #ranked_values = np.argsort(edges) #+ 1#get the index of the sorted elements
-    #         #ranked_values = np.argsort(ranked_values) + 1
-
-    #         ranked_values = rankdata(edges)
-    #         #loop through the edges and assign the new weight:
-    #         j = 0
-    #         for u, v, d in G.edges(data=True):
-    #             #edges[j] = ranked_values[j]*2/(nedges + 1)
-    #             #d['weight'] = edges[j]
-    #             d['weight'] = ranked_values[j]*2/(nedges + 1)
-    #             j += 1
-
-    #         return networkx.to_numpy_array(G)
-
-    #     else:
-    #         n = len(G)
-    #         similarity_mat = np.zeros(shape = (n, n))
-    #         for i in range(n):
-    #             for k in range(i + 1, n):
-    #                 temp = -np.sqrt((G[i] - G[k])**2)
-    #                 similarity_mat[i,k] = np.exp(temp)
-    #                 similarity_mat[k,i] = similarity_mat[i,k]
-    #         unraveled_sim = similarity_mat.ravel()
-    #         sorted_indices = np.argsort(unraveled_sim)
-
-    #         if nedges == 0:
-    #             E = int((n**2 - n)/2) # or E = int(len(single)/a1_sim.shape[0])
-    #             for i in range(E):
-    #                 unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1)]] = i/E
-    #                 unraveled_sim[sorted_indices[(n - 2) + 2*(i + 1) + 1]] = i/E
-
-    #         else:
-    #             for i in range(nedges):
-    #                 unraveled_sim[sorted_indices[-2*i - 1]] = (nedges - i)/nedges
-    #                 unraveled_sim[sorted_indices[-2*i - 2]] = (nedges - i)/nedges
-
-    #             for i in range(n**2 - int(2*nedges)):
-    #                 unraveled_sim[sorted_indices[i]] = 0
-
-    #         ptred = unraveled_sim.reshape((n,n))
-    #         return ptred
