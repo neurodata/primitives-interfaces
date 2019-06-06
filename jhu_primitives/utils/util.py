@@ -128,18 +128,23 @@ def convert(name):
 def load_args():
     parser = argparse.ArgumentParser(description = "Output a pipeline's JSON")
     parser.add_argument(
+        'target_repo',
+        action = 'store',
+        help = "the type of object to generate jsons for",
+    )
+    parser.add_argument(
         'primitives_or_pipelines',
         action = 'store',
         help = "the type of object to generate jsons for",
     )
     arguments = parser.parse_args()
-    return arguments.primitives_or_pipelines
+    return [arguments.target_repo, arguments.primitives_or_pipelines]
 
-def generate_json(type_):
+def generate_json(target_repo, type_):
     if type_ not in ['pipelines', 'primitives']:
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
 
-    version = "v2019.4.4"
+    version = "v2019.5.8"
     # while version == "-1":
     #     version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n4 for v2019.1.21 \n")
     #     if version == "0":
@@ -155,9 +160,9 @@ def generate_json(type_):
     path = os.path.join(os.path.abspath(os.getcwd()),"")
 
     if version == "v2019.4.4":
-        jhu_path = os.path.join(path, "primitives_repo", version, "JHU", "")
+        jhu_path = os.path.join(path, target_repo, version, "JHU", "")
     else:
-        jhu_path = os.path.join(path, "primitives_repo", "archive", version, "JHU", "")
+        jhu_path = os.path.join(path, target_repo, "archive", version, "JHU", "")
 
     all_primitives = os.listdir(jhu_path)
     primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
@@ -243,9 +248,11 @@ def write_meta(pipeline_id, dataset, dataset_new, path):
         json.dump(meta, file)
 
 if __name__ == '__main__':
-    type_ = load_args()
-    generate_json(type_)
+    target_repo, type_ = load_args()
+    generate_json(target_repo, type_)
 
+"""
+file_path_conversion is no longer used in the package. 
 
 def file_path_conversion(abs_file_path, uri="file"):
     local_drive = abs_file_path.split(':')[0]
@@ -281,6 +288,7 @@ def file_path_conversion(abs_file_path, uri="file"):
         return s
     else:
         return local_drive + ":" + s
+"""
 
 def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_type = ""):
     if abs_file_path == "":

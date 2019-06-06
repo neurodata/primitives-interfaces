@@ -7,7 +7,7 @@ from sys import platform
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
-VERSION = '2019.2.12'
+VERSION = '2019.5.8'
 
 def check_python_version():
     """Exit when the Python version is too low."""
