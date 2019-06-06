@@ -25,8 +25,6 @@ from graspy.embed import AdjacencySpectralEmbed as graspyASE
 from graspy.embed import OmnibusEmbed as graspyOMNI
 from graspy.utils import pass_to_ranks as graspyPTR
 
-from ..utils.util import file_path_conversion
-
 Inputs = container.List
 Outputs = container.List
 
