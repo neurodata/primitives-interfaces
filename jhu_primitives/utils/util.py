@@ -148,7 +148,7 @@ def generate_json(target_repo, type_):
     if type_ not in ['pipelines', 'primitives']:
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
 
-    version = "v2019.5.8"
+    version = "v2019.6.7"
     path = os.path.join(os.path.abspath(os.getcwd()),"")
 
     jhu_path = os.path.join(path, target_repo, version, "JHU", "")
