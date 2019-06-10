@@ -15,13 +15,14 @@ import re
 """
 For reference, the pipelines that are functional are the following:
     gclass_ase_pipeline
-    gclass_oosase_pipeline
+    Xgclass_oosase_pipeline
     gclass_lse_pipeline
-    gclass_ooslse_pipeline
+    Xgclass_ooslse_pipeline
     gmm_ase_pipeline
-    gmm_oosase_pipeline
+    Xgmm_oosase_pipeline
     gmm_lse_pipeline
-    gmm_ooslse_pipeline
+    Xgmm_ooslse_pipeline
+    link_pred_pipeline
     sgc_pipeline
     sgm_pipeline
 """
@@ -37,14 +38,14 @@ PROBLEM_TYPES = [
 DATASETS = {
             "graphMatching": [
                 "49_facebook",
-                "LL1_Blogosphere_net",
-                "LL1_DIC28_net",
-                "LL1_ERDOS972_net",
-                "LL1_IzmenjavaBratSestra_net",
-                "LL1_REVIJE_net",
-                "LL1_SAMPSON_net",
-                "LL1_USAIR97_net",
-                "LL1_imports_net"
+                # "LL1_Blogosphere_net",
+                # "LL1_DIC28_net",
+                # "LL1_ERDOS972_net",
+                # "LL1_IzmenjavaBratSestra_net",
+                # "LL1_REVIJE_net",
+                # "LL1_SAMPSON_net",
+                # "LL1_USAIR97_net",
+                # "LL1_imports_net"
                 ],
             "vertexNomination_class": [
                 "LL1_net_nomination_seed",
@@ -96,19 +97,21 @@ PIPELINES = {
 DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
                                 "49_facebook",
                                 "DS01876",
-                                "LL1_Blogosphere_net",
-                                "LL1_DIC28_net",
-                                "LL1_ERDOS972_net",
-                                "LL1_IzmenjavaBratSestra_net",
-                                "LL1_REVIJE_net",
-                                "LL1_SAMPSON_net",
-                                "LL1_USAIR97_net",
-                                "LL1_imports_net",
-                                "6_70_com_amazon",
-                                "6_86_com_DBLP",
-                                "LL1_Bio_dmela_net",
-                                "LL1_bn_fly_drosophila_medulla_net",
-                                "LL1_eco_florida_net"
+                                "59_umls",
+                                "LL1_EDGELIST_net_nomination_seed",
+                                # "LL1_Blogosphere_net",
+                                # "LL1_DIC28_net",
+                                # "LL1_ERDOS972_net",
+                                # "LL1_IzmenjavaBratSestra_net",
+                                # "LL1_REVIJE_net",
+                                # "LL1_SAMPSON_net",
+                                # "LL1_USAIR97_net",
+                                # "LL1_imports_net",
+                                # "6_70_com_amazon",
+                                # "6_86_com_DBLP",
+                                # "LL1_Bio_dmela_net",
+                                # "LL1_bn_fly_drosophila_medulla_net",
+                                # "LL1_eco_florida_net"
                                 ]
 
 
@@ -117,7 +120,8 @@ TRAIN_AND_TEST_SCHEMA_DATASETS = ["49_facebook",
                                 "DS01876",
                                 "LL1_net_nomination_seed",
                                 "6_70_com_amazon",
-                                "6_86_com_DBLP"
+                                "6_86_com_DBLP",
+                                "LL1_EDGELIST_net_nomination_seed",
                                 ]
 
 
@@ -145,25 +149,9 @@ def generate_json(target_repo, type_):
         raise ValueError("Unsupported object type; 'pipelines' or 'primitives' only.")
 
     version = "v2019.5.8"
-    # while version == "-1":
-    #     version = input("Please select API version. \n0 for v2018.1.26 \n1 for v2018.4.18 \n2 for v2018.6.5\n3 for v2018.7.10 \n4 for v2019.1.21 \n")
-    #     if version == "0":
-    #         version = "v2018.1.26"
-    #     elif version == "1":
-    #         version = "v2018.4.18"
-    #     elif version == "2":
-    #         version = "v2018.6.5"
-    #     elif version == "3":
-    #         version = "v2018.7.10"
-    #     elif version == "4":
-    #         version = "v2019.1.21"
     path = os.path.join(os.path.abspath(os.getcwd()),"")
 
     jhu_path = os.path.join(path, target_repo, version, "JHU", "")
-    # if version == "v2019.5.8":
-    #     jhu_path = os.path.join(path, target_repo, version, "JHU", "")
-    # else:
-    #     jhu_path = os.path.join(path, target_repo, "archive", version, "JHU", "")
 
     all_primitives = os.listdir(jhu_path)
     primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
@@ -206,16 +194,8 @@ def generate_json(target_repo, type_):
                 print(primitives)
 
                 for dataset in datasets:
-
                     pipeline_object = pipeline_class()
-
-                    if dataset in DATASETS_THAT_MATCH_PROBLEM:
-                        dataset_new = dataset + '_dataset'
-                    elif dataset == '49_facebook':
-                        dataset_new = '49_facebook_dataset'
-                    elif dataset == 'LL1_net_nomination_seed':
-                        dataset_new = 'LL1_net_nomination_seed_dataset'
-
+                    dataset_new = dataset + '_dataset'
 
                     with open('temp.json', 'w') as file:
                         text = pipeline_object.get_json()
@@ -250,45 +230,6 @@ def write_meta(pipeline_id, dataset, dataset_new, path):
 if __name__ == '__main__':
     target_repo, type_ = load_args()
     generate_json(target_repo, type_)
-
-"""
-file_path_conversion is no longer used in the package. 
-
-def file_path_conversion(abs_file_path, uri="file"):
-    local_drive = abs_file_path.split(':')[0]
-    try:
-        file_path = abs_file_path.split(':')[1]
-    except IndexError:
-        file_path = local_drive
-        local_drive = None
-        return file_path
-
-    path_sep = file_path[0]
-    file_path = file_path[1:]  # Remove initial separator
-    if len(file_path) == 0:
-        print("Invalid file path: len(file_path) == 0")
-        return
-
-    s = ""
-    if path_sep == "/":
-        s = file_path
-    elif path_sep == "\\":
-        splits = file_path.split("\\")
-        data_folder = splits[-1]
-        for i in splits:
-            if i != "":
-                s += "/" + i
-    else:
-        print("Unsupported path separator!")
-        return
-
-    if uri == "file":
-        return "file://localhost" + s
-    elif local_drive is None:
-        return s
-    else:
-        return local_drive + ":" + s
-"""
 
 def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_type = ""):
     if abs_file_path == "":
