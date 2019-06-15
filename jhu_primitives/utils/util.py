@@ -39,9 +39,9 @@ DATASETS = {
             "graphMatching": [
                 "49_facebook",
                 # "LL1_Blogosphere_net",
-                # "LL1_DIC28_net",
+                "LL1_DIC28_net",
                 # "LL1_ERDOS972_net",
-                # "LL1_IzmenjavaBratSestra_net",
+                "LL1_IzmenjavaBratSestra_net",
                 # "LL1_REVIJE_net",
                 # "LL1_SAMPSON_net",
                 # "LL1_USAIR97_net",
@@ -49,7 +49,9 @@ DATASETS = {
                 ],
             "vertexNomination_class": [
                 "LL1_net_nomination_seed",
-                "LL1_EDGELIST_net_nomination_seed"
+                "LL1_EDGELIST_net_nomination_seed",
+                "LL1_VTXC_1343_cora",
+                "LL1_VTXC_1369_synthetic",
                 ],
             # "vertexNomination_clust": [
             #     "DS01876"
@@ -62,7 +64,8 @@ DATASETS = {
             #     "LL1_eco_florida_net"
             #     ]
             "linkPrediction": [
-                "59_umls"
+                "59_umls",
+                "59_LP_karate"
                 ]
             }
 
@@ -100,9 +103,9 @@ DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
                                 "59_umls",
                                 "LL1_EDGELIST_net_nomination_seed",
                                 # "LL1_Blogosphere_net",
-                                # "LL1_DIC28_net",
+                                "LL1_DIC28_net",
                                 # "LL1_ERDOS972_net",
-                                # "LL1_IzmenjavaBratSestra_net",
+                                "LL1_IzmenjavaBratSestra_net",
                                 # "LL1_REVIJE_net",
                                 # "LL1_SAMPSON_net",
                                 # "LL1_USAIR97_net",
@@ -111,7 +114,10 @@ DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
                                 # "6_86_com_DBLP",
                                 # "LL1_Bio_dmela_net",
                                 # "LL1_bn_fly_drosophila_medulla_net",
-                                # "LL1_eco_florida_net"
+                                # "LL1_eco_florida_net",
+                                "LL1_VTXC_1343_cora",
+                                "LL1_VTXC_1369_synthetic",
+                                "59_LP_karate"
                                 ]
 
 

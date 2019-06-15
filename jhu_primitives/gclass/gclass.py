@@ -207,7 +207,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         self._ENOUGH_SEEDS = True # For full estimation
 
-        #get unique labels
+        # get unique labels
         unique_labels, label_counts = np.unique(self._labels, return_counts = True)
         for i in range(K):
             if label_counts[i] < d*(d + 1)/2:
@@ -217,13 +217,13 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._pis = label_counts/len(self._seeds)
 
 
-        #reindex labels if necessary
+        # reindex labels if necessary
         for i in range(len(self._labels)): # reset labels to [0,.., K-1]
             itemindex = np.where(unique_labels==self._labels[i])[0][0]
             self._labels[i] = int(itemindex)
 
 
-        #gather the meanss
+        # gather the means
         x_sums = np.zeros(shape = (K, d))
 
         for i in range(len(self._seeds)):
@@ -250,18 +250,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             estimated_cov = estimated_cov / (n - K)
 
         self._PD = True
-
-        # eps = 0.001
-        # if self._ENOUGH_SEEDS:
-        #     for i in range(K):
-        #         try:
-        #             eig_values = np.linalg.svd(estimated_cov[i, :, :])[1]
-        #             if len(eig_values) > len(eig_values[eig_values > -eps]):
-        #                 self._PD = False
-        #                 break
-        #         except:
-        #             self._PD = False
-        #             break
 
         self._means = container.ndarray(estimated_means)
         self._covariances = container.ndarray(estimated_cov)
