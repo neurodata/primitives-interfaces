@@ -17,7 +17,7 @@ class sgm_pipeline(BasePipeline):
         super().__init__(DATASETS)
 
     def _gen_pipeline(self):
-        pipeline = meta_pipeline.Pipeline(context = meta_pipeline.metadata_base.Context.TESTING)
+        pipeline = meta_pipeline.Pipeline()
         pipeline.add_input(name = 'inputs')
 
         step_0 = meta_pipeline.PrimitiveStep(primitive_description = SeededGraphMatching.metadata.query())

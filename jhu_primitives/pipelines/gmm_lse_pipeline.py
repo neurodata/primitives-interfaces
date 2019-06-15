@@ -16,7 +16,7 @@ class gmm_lse_pipeline(BasePipeline):
         super().__init__(DATASETS)
 
     def _gen_pipeline(self):
-        pipeline = meta_pipeline.Pipeline(context=Context.TESTING)
+        pipeline = meta_pipeline.Pipeline()
         pipeline.add_input(name='inputs')
 
         step_0 = meta_pipeline.PrimitiveStep(primitive_description=LargestConnectedComponent.metadata.query())
