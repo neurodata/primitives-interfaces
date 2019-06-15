@@ -51,9 +51,9 @@ DATASETS = {
                 "LL1_net_nomination_seed",
                 "LL1_EDGELIST_net_nomination_seed"
                 ],
-            "vertexNomination_clust": [
-                "DS01876"
-                ],
+            # "vertexNomination_clust": [
+            #     "DS01876"
+            #     ],
             # "communityDetection": [
             #     "6_70_com_amazon",
             #     "6_86_com_DBLP",
