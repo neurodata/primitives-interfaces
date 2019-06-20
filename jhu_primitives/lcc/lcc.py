@@ -90,9 +90,14 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             G = inputs['0']
         except:
             edge_list = inputs['1'] # for edge lists
-            V1_nodeIDs = np.array(edge_list.V1_nodeID.values).astype(int)
-            V2_nodeIDs = np.array(edge_list.V2_nodeID.values).astype(int)
-            edge_weights = np.array(edge_list.edge_weight.values).astype(float).astype(int)
+            try:
+                V1_nodeIDs = np.array(edge_list.V1_nodeID.values).astype(int)
+                V2_nodeIDs = np.array(edge_list.V2_nodeID.values).astype(int)
+                edge_weights = np.array(edge_list.edge_weight.values).astype(float).astype(int)
+            except:
+                V1_nodeIDs = np.array(edge_list.node1.values).astype(int)
+                V2_nodeIDs = np.array(edge_list.node2.values).astype(int)
+                edge_weights = np.ones(len(V1_nodeIDs))
             n_edges = len(V1_nodeIDs)
 
             unique_V1_nodeIDs = np.unique(V1_nodeIDs)
@@ -111,11 +116,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 G.add_edge(V1_nodeIDs[i], V2_nodeIDs[i], weight = edge_weights[i])
 
         csv = inputs['learningData']
-
-        #if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-        #    nx.set_node_attributes(G,'nodeID',-1)
-        #    for i in range(len(G)):
-        #        G.node[i]['nodeID'] = i
 
         if len(csv) != 0:
             if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
