@@ -86,8 +86,6 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         if not self._fitted:
             raise ValueError("Not fitted")
 
-        #np.random.seed(1)
-
         csv = inputs[1]
         source_nodeID = np.array(csv['source_nodeID']).astype(int)
         target_nodeID = np.array(csv['target_nodeID']).astype(int)
