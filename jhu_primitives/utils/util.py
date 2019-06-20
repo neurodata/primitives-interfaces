@@ -81,13 +81,13 @@ PIPELINES = {
                 # "gclass_ooslse_pipeline",
                 "sgc_pipeline"
                 ],
-             "vertexNomination_clust": [
-                "gmm_ase_pipeline",
-                "gmm_lse_pipeline",
+             # "vertexNomination_clust": [
+                # "gmm_ase_pipeline",
+                # "gmm_lse_pipeline",
                 # "gmm_oosase_pipeline",
                 # "gmm_ooslse_pipeline",
-                "sgc_pipeline"
-                ],
+                # "sgc_pipeline"
+                # ],
             # "communityDetection": [
             #     "gmm_oosase_pipeline",
             #     "gmm_ooslse_pipeline"
