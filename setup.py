@@ -73,7 +73,7 @@ setup(
                       'typing', # jhu dependency
                       'scipy', # jhu dependency
                       # 'networkx', # jhu dependency
-                      'numpy==1.15.4', # jhu dependency
+                      'numpy', # ==1.15.4', # jhu dependency'
                       # 'sklearn', # jhu dependency
                       'jinja2', # jhu dependency
                       'scipy', # jhu dependency
@@ -94,7 +94,7 @@ setup(
                       # 'webcolors==1.8.1', # d3m dependency
                       # 'dateparser==0.7.0', # d3m dependency
                       # 'pandas==0.23.4', # d3m dependency
-                      'networkx==2.2', # d3m dependency
+                      'networkx' # ==2.2', # d3m dependency
                       # 'typing-inspect==0.3.1', # d3m dependency
                       # 'GitPython==2.1.11', # d3m dependency
                       # 'jsonpath-ng==1.4.3', # d3m dependency
