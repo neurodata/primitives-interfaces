@@ -136,19 +136,26 @@ def convert(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 def load_args():
-    parser = argparse.ArgumentParser(description = "Output a pipeline's JSON")
+    parser = argparse.ArgumentParser(description = "Pipeline runner")
+    
     parser.add_argument(
         'target_repo',
         action = 'store',
         help = "the type of object to generate jsons for",
     )
+
     parser.add_argument(
-        'primitives_or_pipelines',
+        'problem_type',
         action = 'store',
-        help = "the type of object to generate jsons for",
+        help = 'the d3m problem type to check'
     )
+    # parser.add_argument(
+    #     'primitives_or_pipelines',
+    #     action = 'store',
+    #     help = "the type of object to generate jsons for",
+    # )
     arguments = parser.parse_args()
-    return [arguments.target_repo, arguments.primitives_or_pipelines]
+    return [arguments.target_repo, arguments.problem_type]
 
 def generate_json(target_repo, type_):
     if type_ not in ['pipelines', 'primitives']:
@@ -169,7 +176,7 @@ def generate_json(target_repo, type_):
     if type_ == 'primitives':
         for i in range(len(all_primitives)):
             temp = jhu_path + all_primitives[i]
-            os.system('python -m d3m index describe -i 4 ' + all_primitives[i] + ' > ' + os.path.join(temp, versions[primitive_names[i]], 'primitive.json'))
+            os.system('python3 -m d3m index describe -i 4 ' + all_primitives[i] + ' > ' + os.path.join(temp, versions[primitive_names[i]], 'primitive.json'))
     else:
         python_paths = {}
         for python_path in all_primitives:
@@ -180,9 +187,11 @@ def generate_json(target_repo, type_):
             for file in temp_dir:
                 os.remove(temp_path + file)
 
+        pipeline_id_dic = {}
         for problem_type in PROBLEM_TYPES:
             datasets = DATASETS[problem_type]
             pipelines = PIPELINES[problem_type]
+            pipeline_id_dic[problem_type] = []
             for pipeline in pipelines:
                 path_to_pipeline = os.path.join(path, 'primitives-interfaces', 'jhu_primitives', 'pipelines', pipeline)
 
@@ -211,12 +220,15 @@ def generate_json(target_repo, type_):
                     pipeline_id = json_object['id']
                     primitive_id = json_object['steps'][-1]['primitive']['id']
 
+                    pipeline_id_dic[problem_type].append(pipeline_id)
+
                     for primitive in primitives:
                         temp_path = os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', "")
                         shutil.copy(os.path.join(path, 'temp.json'),
                                     os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', pipeline_id + '.json'))       # creates the pipeline json
                         write_meta(pipeline_id, dataset, dataset_new, temp_path + pipeline_id)
         os.remove('temp.json')
+        return pipeline_id_dic
 
 def write_meta(pipeline_id, dataset, dataset_new, path):
     meta = {}
@@ -234,8 +246,36 @@ def write_meta(pipeline_id, dataset, dataset_new, path):
         json.dump(meta, file)
 
 if __name__ == '__main__':
-    target_repo, type_ = load_args()
-    generate_json(target_repo, type_)
+    target_repo, problem_type = load_args()
+    generate_json(target_repo, "primitives")
+    pipeline_id_dic = generate_json(target_repo, "pipelines")
+    # target_repo, type_ = load_args()
+    # generate_json(target_repo, type_)
+    pipeline_run(problem_type, target_repo, pipeline_id_dic)
+
+def pipeline_run(problem_type, pipeline_id_dic):
+    datasets = DATASETS[problem_type]
+    pipeline_ids = pipeline_id_dic[problem_type]
+
+    path = os.path.join(os.path.abspath(os.getcwd()),"")
+    jhu_path = os.path.join(path, target_repo, VERSION, "JHU", "")
+    all_primitives = os.listdir(jhu_path)
+    primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
+
+    path_to_primitives = 
+
+    for dataset in datasets:
+        for id_ in pipeline_ids:
+            dataset_path = "datasets/training_datasets/seed_datasets_archive/" + dataset + "/"
+            cmd = "python3 -m d3m runtime fit-score -p " + id_ + ".json -r "
+            cmd += dataset_path + "TRAIN/problem_TRAIN/problemDoc.json -i "
+            cmd += dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json - t "
+            cmd += dataset_path + "TEST/dataset_TEST/datasetDoc.json -a "
+            cmd += dataset_path + "SCORE/dataset_TEST/datasetDoc.json -O "
+            cmd += id_ + "_run.yaml"
+
+            os.system(cmd)
+
 
 def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_type = ""):
     if abs_file_path == "":
