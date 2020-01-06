@@ -226,12 +226,12 @@ def generate_json(target_repo, type_):
                         full_path = os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', pipeline_id)
                         shutil.copy(os.path.join(path, 'temp.json'),
                                     full_path + '.json')       # creates the pipeline json
-                        write_meta(pipeline_id, dataset_name, dataset_new, temp_path + pipeline_id)
+                        write_meta(dataset_name, dataset_new, temp_path + pipeline_id)
                         paths_to_pipelines[problem_type].append(full_path)
         os.remove('temp.json')
-        return pipeline_id_dic
+        return paths_to_pipelines
 
-def write_meta(pipeline_id, dataset_name, dataset_new, path):
+def write_meta(dataset_name, dataset_new, path):
     meta = {}
     meta['problem'] = dataset_name + '_problem'
     meta['full_inputs'] = [dataset_new]
@@ -249,19 +249,19 @@ def write_meta(pipeline_id, dataset_name, dataset_new, path):
 if __name__ == '__main__':
     target_repo, problem_type = load_args()
     generate_json(target_repo, "primitives")
-    pipeline_id_dic = generate_json(target_repo, "pipelines")
+    paths_to_pipelines = generate_json(target_repo, "pipelines")
     # target_repo, type_ = load_args()
     # generate_json(target_repo, type_)
-    pipeline_run(problem_type, target_repo, pipeline_id_dic)
+    pipeline_run(problem_type, target_repo, paths_to_pipelines)
 
 def pipeline_run(problem_type, target_repo, paths_to_pipelines):
     datasets = DATASETS[problem_type]
-    pipeline_ids = pipeline_id_dic[problem_type]
+    paths_to_pipelines_probem_type = paths_to_pipelines[problem_type]
 
     # TODO data set path
 
     for dataset in datasets:
-        for path in paths_to_pipelines:
+        for path in paths_to_pipelines_problem_type:
             dataset_path = dataset + "/"
             cmd = "python3 -m d3m runtime fit-score -p " + path + ".json -r "
             cmd += dataset_path + "TRAIN/problem_TRAIN/problemDoc.json -i "
