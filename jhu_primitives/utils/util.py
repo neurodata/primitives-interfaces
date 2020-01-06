@@ -37,21 +37,21 @@ PROBLEM_TYPES = [
 
 DATASETS = {
             "graphMatching": [
-                "49_facebook",
+                "datasets/training_datasets/seed_datasets_archive/49_facebook",
                 # "LL1_Blogosphere_net",
-                "LL1_DIC28_net",
+                # "LL1_DIC28_net",
                 # "LL1_ERDOS972_net",
-                "LL1_IzmenjavaBratSestra_net",
+                # "LL1_IzmenjavaBratSestra_net",
                 # "LL1_REVIJE_net",
                 # "LL1_SAMPSON_net",
                 # "LL1_USAIR97_net",
                 # "LL1_imports_net"
                 ],
             "vertexNomination_class": [
-                "LL1_net_nomination_seed",
-                "LL1_EDGELIST_net_nomination_seed",
-                "LL1_VTXC_1343_cora",
-                "LL1_VTXC_1369_synthetic",
+                "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
+                "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
+                # "LL1_VTXC_1343_cora",
+                # "LL1_VTXC_1369_synthetic",
                 ],
             # "vertexNomination_clust": [
             #     "DS01876"
@@ -64,8 +64,8 @@ DATASETS = {
             #     "LL1_eco_florida_net"
             #     ]
             "linkPrediction": [
-                "59_umls",
-                "59_LP_karate"
+                "datasets/training_datasets/seed_datasets_archive/59_umls",
+                # "59_LP_karate"
                 ]
             }
 
@@ -187,11 +187,11 @@ def generate_json(target_repo, type_):
             for file in temp_dir:
                 os.remove(temp_path + file)
 
-        pipeline_id_dic = {}
+        paths_to_pipelines = {}
         for problem_type in PROBLEM_TYPES:
             datasets = DATASETS[problem_type]
             pipelines = PIPELINES[problem_type]
-            pipeline_id_dic[problem_type] = []
+            paths_to_pipelines[problem_type] = []
             for pipeline in pipelines:
                 path_to_pipeline = os.path.join(path, 'primitives-interfaces', 'jhu_primitives', 'pipelines', pipeline)
 
@@ -209,8 +209,9 @@ def generate_json(target_repo, type_):
                 print(primitives)
 
                 for dataset in datasets:
+                    dataset_name = dataset.split("/")[-1]
                     pipeline_object = pipeline_class()
-                    dataset_new = dataset + '_dataset'
+                    dataset_new = dataset_name + '_dataset'
 
                     with open('temp.json', 'w') as file:
                         text = pipeline_object.get_json()
@@ -220,19 +221,19 @@ def generate_json(target_repo, type_):
                     pipeline_id = json_object['id']
                     primitive_id = json_object['steps'][-1]['primitive']['id']
 
-                    pipeline_id_dic[problem_type].append(pipeline_id)
-
                     for primitive in primitives:
                         temp_path = os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', "")
+                        full_path = os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', pipeline_id)
                         shutil.copy(os.path.join(path, 'temp.json'),
-                                    os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', pipeline_id + '.json'))       # creates the pipeline json
-                        write_meta(pipeline_id, dataset, dataset_new, temp_path + pipeline_id)
+                                    full_path + '.json')       # creates the pipeline json
+                        write_meta(pipeline_id, dataset_name, dataset_new, temp_path + pipeline_id)
+                        paths_to_pipelines[problem_type].append(full_path)
         os.remove('temp.json')
         return pipeline_id_dic
 
-def write_meta(pipeline_id, dataset, dataset_new, path):
+def write_meta(pipeline_id, dataset_name, dataset_new, path):
     meta = {}
-    meta['problem'] = dataset + '_problem'
+    meta['problem'] = dataset_name + '_problem'
     meta['full_inputs'] = [dataset_new]
     if dataset in TRAIN_AND_TEST_SCHEMA_DATASETS:
         meta['train_inputs'] = [dataset_new + "_TRAIN"]
@@ -253,27 +254,21 @@ if __name__ == '__main__':
     # generate_json(target_repo, type_)
     pipeline_run(problem_type, target_repo, pipeline_id_dic)
 
-def pipeline_run(problem_type, pipeline_id_dic):
+def pipeline_run(problem_type, target_repo, paths_to_pipelines):
     datasets = DATASETS[problem_type]
     pipeline_ids = pipeline_id_dic[problem_type]
 
-    path = os.path.join(os.path.abspath(os.getcwd()),"")
-    jhu_path = os.path.join(path, target_repo, VERSION, "JHU", "")
-    all_primitives = os.listdir(jhu_path)
-    primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
-
-    path_to_primitives = 
+    # TODO data set path
 
     for dataset in datasets:
-        for id_ in pipeline_ids:
-            dataset_path = "datasets/training_datasets/seed_datasets_archive/" + dataset + "/"
-            cmd = "python3 -m d3m runtime fit-score -p " + id_ + ".json -r "
+        for path in paths_to_pipelines:
+            dataset_path = dataset + "/"
+            cmd = "python3 -m d3m runtime fit-score -p " + path + ".json -r "
             cmd += dataset_path + "TRAIN/problem_TRAIN/problemDoc.json -i "
             cmd += dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json - t "
             cmd += dataset_path + "TEST/dataset_TEST/datasetDoc.json -a "
             cmd += dataset_path + "SCORE/dataset_TEST/datasetDoc.json -O "
-            cmd += id_ + "_run.yaml"
-
+            cmd += path + "_run.yaml"
             os.system(cmd)
 
 
