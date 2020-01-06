@@ -249,7 +249,7 @@ def write_meta(dataset_name, dataset_new, path):
 
 def pipeline_run(problem_type, target_repo, paths_to_pipelines):
     datasets = DATASETS[problem_type]
-    paths_to_pipelines_probem_type = paths_to_pipelines[problem_type]
+    paths_to_pipelines_problem_type = paths_to_pipelines[problem_type]
 
     # TODO data set path
 
@@ -272,7 +272,7 @@ if __name__ == '__main__':
     # target_repo, type_ = load_args()
     # generate_json(target_repo, type_)
     pipeline_run(problem_type, target_repo, paths_to_pipelines)
-    
+
 def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_type = ""):
     if abs_file_path == "":
         raise ValueError("Need absolute file path ( os.path.abspath(os.getcwd()) )")
