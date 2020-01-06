@@ -88,7 +88,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         """
         print(inputs, file=sys.stderr)
-	try:
+        try:
             G = inputs['0']
         except:
             edge_list = inputs['1'] # for edge lists
