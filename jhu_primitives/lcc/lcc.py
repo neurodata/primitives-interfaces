@@ -87,7 +87,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             The largest connected component of g
 
         """
-        print(inputs, file=sys.stderr)
+        print(dir(inputs), file=sys.stderr)
         try:
             G = inputs['0']
         except:
