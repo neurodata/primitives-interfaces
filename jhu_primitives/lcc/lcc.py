@@ -116,6 +116,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 G.add_edge(V1_nodeIDs[i], V2_nodeIDs[i], weight = edge_weights[i])
 
         csv = inputs['learningData']
+        print(type(G))
 
         if len(csv) != 0:
             if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:

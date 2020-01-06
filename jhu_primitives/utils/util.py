@@ -36,8 +36,8 @@ PROBLEM_TYPES = [
     ]
 
 DATASETS = {
-            "graphMatching": [
-                "datasets/training_datasets/seed_datasets_archive/49_facebook",
+            # "graphMatching": [
+                # "datasets/training_datasets/seed_datasets_archive/49_facebook",
                 # "LL1_Blogosphere_net",
                 # "LL1_DIC28_net",
                 # "LL1_ERDOS972_net",
@@ -46,7 +46,7 @@ DATASETS = {
                 # "LL1_SAMPSON_net",
                 # "LL1_USAIR97_net",
                 # "LL1_imports_net"
-                ],
+                # ],
             "vertexNomination_class": [
                 "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
                 # "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
@@ -63,17 +63,17 @@ DATASETS = {
             #     "LL1_bn_fly_drosophila_medulla_net",
             #     "LL1_eco_florida_net"
             #     ]
-            "linkPrediction": [
-                "datasets/training_datasets/seed_datasets_archive/59_umls",
+            # "linkPrediction": [
+                # "datasets/training_datasets/seed_datasets_archive/59_umls",
                 # "59_LP_karate"
-                ]
+                # ]
             }
 
 PIPELINES = {
-            "graphMatching": [
-                "sgm_pipeline",
+            # "graphMatching": [
+                # "sgm_pipeline",
                 # "sgm_pipeline_10"
-                ],
+                # ],
              "vertexNomination_class": [
                 "gclass_ase_pipeline",
                 # "gclass_lse_pipeline",
@@ -92,9 +92,9 @@ PIPELINES = {
             #     "gmm_oosase_pipeline",
             #     "gmm_ooslse_pipeline"
             #     ]
-             "linkPrediction": [
-                 "link_pred_pipeline",
-                ],
+             # "linkPrediction": [
+                 # "link_pred_pipeline",
+                # ],
              }
 
 DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
