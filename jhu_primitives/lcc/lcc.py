@@ -88,7 +88,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         """
         print(dir(inputs), file=sys.stderr)
-        print(inputs.values, file=sys.stderr)
+        print(inputs.values(), file=sys.stderr)
         print(inputs.to_json_structure(), file=sys.stderr)
         try:
             G = inputs['0']
