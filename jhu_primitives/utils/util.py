@@ -235,7 +235,7 @@ def write_meta(pipeline_id, dataset_name, dataset_new, path):
     meta = {}
     meta['problem'] = dataset_name + '_problem'
     meta['full_inputs'] = [dataset_new]
-    if dataset in TRAIN_AND_TEST_SCHEMA_DATASETS:
+    if dataset_name in TRAIN_AND_TEST_SCHEMA_DATASETS:
         meta['train_inputs'] = [dataset_new + "_TRAIN"]
         meta['test_inputs'] = [dataset_new + "_TEST"]
         meta['score_inputs'] = [dataset_new + "_SCORE"]
