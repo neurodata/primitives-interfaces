@@ -49,7 +49,7 @@ DATASETS = {
                 ],
             "vertexNomination_class": [
                 "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
-                "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
+                # "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
                 # "LL1_VTXC_1343_cora",
                 # "LL1_VTXC_1369_synthetic",
                 ],
@@ -253,6 +253,7 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
 
     # TODO data set path
 
+    print(paths_to_pipelines_problem_type)
     for dataset in datasets:
         for path in paths_to_pipelines_problem_type:
             dataset_path = dataset + "/"
