@@ -258,7 +258,7 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             dataset_path = dataset + "/"
             cmd = "python3 -m d3m runtime fit-score -p " + path + ".json -r "
             cmd += dataset_path + "TRAIN/problem_TRAIN/problemDoc.json -i "
-            cmd += dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json - t "
+            cmd += dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json -t "
             cmd += dataset_path + "TEST/dataset_TEST/datasetDoc.json -a "
             cmd += dataset_path + "SCORE/dataset_TEST/datasetDoc.json -O "
             cmd += path + "_run.yaml"
