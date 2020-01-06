@@ -246,13 +246,6 @@ def write_meta(dataset_name, dataset_new, path):
     with open(path + '.meta', 'w') as file:
         json.dump(meta, file)
 
-if __name__ == '__main__':
-    target_repo, problem_type = load_args()
-    generate_json(target_repo, "primitives")
-    paths_to_pipelines = generate_json(target_repo, "pipelines")
-    # target_repo, type_ = load_args()
-    # generate_json(target_repo, type_)
-    pipeline_run(problem_type, target_repo, paths_to_pipelines)
 
 def pipeline_run(problem_type, target_repo, paths_to_pipelines):
     datasets = DATASETS[problem_type]
@@ -272,6 +265,14 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             os.system(cmd)
 
 
+if __name__ == '__main__':
+    target_repo, problem_type = load_args()
+    generate_json(target_repo, "primitives")
+    paths_to_pipelines = generate_json(target_repo, "pipelines")
+    # target_repo, type_ = load_args()
+    # generate_json(target_repo, type_)
+    pipeline_run(problem_type, target_repo, paths_to_pipelines)
+    
 def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_type = ""):
     if abs_file_path == "":
         raise ValueError("Need absolute file path ( os.path.abspath(os.getcwd()) )")
