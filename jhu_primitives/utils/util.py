@@ -251,11 +251,19 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
     datasets = DATASETS[problem_type]
     paths_to_pipelines_problem_type = paths_to_pipelines[problem_type]
 
+
+    unique_paths = []
+    unique_ids = []
+    for path in paths_to_pipelines_problem_type:
+        pipeline_id = path.split("/")[-1]
+        if pipeline_id not in unique_ids:
+            unique_paths.append(path)
+            unique_ids.append(pipeline_id)
+
     # TODO data set path
 
-    print(paths_to_pipelines_problem_type)
     for dataset in datasets:
-        for path in paths_to_pipelines_problem_type:
+        for path in unique_paths:
             dataset_path = dataset + "/"
             cmd = "python3 -m d3m runtime fit-score -p " + path + ".json -r "
             cmd += dataset_path + "TRAIN/problem_TRAIN/problemDoc.json -i "
