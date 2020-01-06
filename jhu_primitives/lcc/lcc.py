@@ -91,6 +91,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         print(dir(inputs), file=sys.stderr)
         print(inputs.keys(), file=sys.stderr)
         print(inputs.get_relations_graph(), file=sys.stderr)
+        print(inputs.load(), file=sys.stderr)
         try:
             G = inputs['0']
         except:
