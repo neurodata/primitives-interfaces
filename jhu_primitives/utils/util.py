@@ -28,10 +28,10 @@ For reference, the pipelines that are functional are the following:
 """
 
 PROBLEM_TYPES = [
-    "graphMatching",
+    # "graphMatching",
     "vertexNomination_class",
     # "vertexNomination_clust",
-    "linkPrediction",
+    # "linkPrediction",
     # "communityDetection"
     ]
 
