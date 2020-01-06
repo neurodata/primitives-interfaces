@@ -76,10 +76,10 @@ PIPELINES = {
                 ],
              "vertexNomination_class": [
                 "gclass_ase_pipeline",
-                "gclass_lse_pipeline",
+                # "gclass_lse_pipeline",
                 # "gclass_oosase_pipeline",
                 # "gclass_ooslse_pipeline",
-                "sgc_pipeline"
+                # "sgc_pipeline"
                 ],
              # "vertexNomination_clust": [
                 # "gmm_ase_pipeline",
