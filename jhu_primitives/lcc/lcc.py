@@ -87,6 +87,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             The largest connected component of g
 
         """
+        print(inputs.keys(), file=sys.stderr)
         try:
             G = inputs['0']
         except:
@@ -118,6 +119,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         csv = inputs['learningData']
         print(G, file=sys.stderr)
+        print(csv, file=sys.stderr)
 
         if len(csv) != 0:
             if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
