@@ -93,7 +93,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         print(path_to_graph, file=sys.stderr)
         graph = nx.read_gml(path=path_to_graph[7:]) 
         print(path_to_graph[7:], file=sys.stderr)
-        print(graph, file=sys.stderr) 
+        print(graph.nodes, graph.edges, file=sys.stderr) 
         n = len(graph)
 
         # grab link types (values) and edge list (keys)
