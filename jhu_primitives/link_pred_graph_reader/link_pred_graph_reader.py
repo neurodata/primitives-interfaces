@@ -91,7 +91,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
         print(location_uri, file=sys.stderr)
         print(path_to_graph, file=sys.stderr)
-        graph = nx.read_gml(path=path_to_graph) 
+        graph = nx.read_gml(path=path_to_graph[7:]) 
        
         n = len(graph)
 
