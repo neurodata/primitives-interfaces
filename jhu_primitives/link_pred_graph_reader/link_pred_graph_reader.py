@@ -83,13 +83,12 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         graph_dataframe = inputs['0']
         csv = inputs['learningData']
         
-        print(graph, file=sys.stderr)
         print(dir(inputs), file=sys.stderr)
         print(inputs.items(), file=sys.stderr)
         print(inputs.to_json_structure(), file=sys.stderr)
         temp_json = inputs.to_json_structure()
         location_uri = temp_json['location_uris'][0]
-        path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.iloc[0]['filename'] 
+        path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
         print(location_uri, file=sys.stderr)
         print(path_to_graph, file=sys.stderr)
         
