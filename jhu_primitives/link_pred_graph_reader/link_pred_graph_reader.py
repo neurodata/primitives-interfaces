@@ -85,6 +85,8 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         csv = inputs['learningData']
         
         print(graph, file=sys.stderr)
+        print(dir(inputs), file=sys.stderr)
+        print(inputs.metadata, file=sys.stderr)
         n = len(graph)
 
         # grab link types (values) and edge list (keys)
