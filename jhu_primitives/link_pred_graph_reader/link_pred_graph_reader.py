@@ -89,7 +89,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         print(inputs.items(), file=sys.stderr)
         print(inputs.to_json_structure(), file=sys.stderr)
         temp_json = inputs.to_json_structure()
-        location_uri = temp_json['location_uri'][0]
+        location_uri = temp_json['location_uris'][0]
         print(location_uri)       
         n = len(graph)
 
