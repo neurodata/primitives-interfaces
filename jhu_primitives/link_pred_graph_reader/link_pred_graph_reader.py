@@ -113,7 +113,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         A_imps = [0.5*(0.5 + n_edges[i]/n_choose_2)*np.ones((n, n)) for i in range(M)]
 
         for i in range(len(values)):
-            temp_linktype = values[i]
+            temp_linktype = int(values[i])
             A_imps[temp_linktype][keys[i][0], keys[i][1]] = 1
             A_imps[temp_linktype][keys[i][1], keys[i][0]] = 1
 
