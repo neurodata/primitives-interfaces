@@ -29,9 +29,9 @@ For reference, the pipelines that are functional are the following:
 
 PROBLEM_TYPES = [
     # "graphMatching",
-    "vertexNomination_class",
+    # "vertexNomination_class",
     # "vertexNomination_clust",
-    # "linkPrediction",
+    "linkPrediction",
     # "communityDetection"
     ]
 
@@ -47,12 +47,12 @@ DATASETS = {
                 # "LL1_USAIR97_net",
                 # "LL1_imports_net"
                 # ],
-            "vertexNomination_class": [
+            # "vertexNomination_class": [
                 # "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
                 # "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
                 # "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1343_cora",
-                "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1369_synthetic",
-                ],
+                # "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1369_synthetic",
+            #    ],
             # "vertexNomination_clust": [
             #     "DS01876"
             #     ],
@@ -62,11 +62,11 @@ DATASETS = {
             #     "LL1_Bio_dmela_net",
             #     "LL1_bn_fly_drosophila_medulla_net",
             #     "LL1_eco_florida_net"
-            #     ]
-            # "linkPrediction": [
+            #     ],
+            "linkPrediction": [
                 # "datasets/training_datasets/seed_datasets_archive/59_umls",
-                # "59_LP_karate"
-                # ]
+                "59_LP_karate"
+                ]
             }
 
 PIPELINES = {
