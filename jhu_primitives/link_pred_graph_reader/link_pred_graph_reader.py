@@ -80,8 +80,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         # read in graph and training csv
         np.random.seed(self.random_seed)
-        
-        graph = inputs['0']
+        graph_dataframe = inputs['0']
         csv = inputs['learningData']
         
         print(graph, file=sys.stderr)
@@ -90,7 +89,11 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         print(inputs.to_json_structure(), file=sys.stderr)
         temp_json = inputs.to_json_structure()
         location_uri = temp_json['location_uris'][0]
-        print(location_uri)       
+        path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.iloc[0]['filename'] 
+        print(location_uri, file=sys.stderr)
+        print(path_to_graph, file=sys.stderr)
+        
+       
         n = len(graph)
 
         # grab link types (values) and edge list (keys)
