@@ -114,6 +114,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         for i in range(len(values)):
             temp_linktype = int(values[i])
+            print(temp_linktype, keys[i][0], keys[i][1], file=sys.stderr)
             A_imps[temp_linktype][keys[i][0], keys[i][1]] = 1
             A_imps[temp_linktype][keys[i][1], keys[i][0]] = 1
 
