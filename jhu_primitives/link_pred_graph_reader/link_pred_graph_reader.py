@@ -3,6 +3,7 @@ import networkx as nx
 import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
 import os
+import sys
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from d3m import container
@@ -82,7 +83,8 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         
         graph = inputs['0']
         csv = inputs['learningData']
-
+        
+        print(graph, file=sys.stderr)
         n = len(graph)
 
         # grab link types (values) and edge list (keys)
