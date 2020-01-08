@@ -65,7 +65,7 @@ DATASETS = {
             #     ],
             "linkPrediction": [
                 # "datasets/training_datasets/seed_datasets_archive/59_umls",
-                "59_LP_karate"
+                "datasets-public/seed_datasets_current/59_LP_karate"
                 ]
             }
 
@@ -74,13 +74,13 @@ PIPELINES = {
                 # "sgm_pipeline",
                 # "sgm_pipeline_10"
                 # ],
-             "vertexNomination_class": [
-                "gclass_ase_pipeline",
+             # "vertexNomination_class": [
+                # "gclass_ase_pipeline",
                 # "gclass_lse_pipeline",
                 # "gclass_oosase_pipeline",
                 # "gclass_ooslse_pipeline",
                 # "sgc_pipeline"
-                ],
+                # ],
              # "vertexNomination_clust": [
                 # "gmm_ase_pipeline",
                 # "gmm_lse_pipeline",
@@ -92,9 +92,9 @@ PIPELINES = {
             #     "gmm_oosase_pipeline",
             #     "gmm_ooslse_pipeline"
             #     ]
-             # "linkPrediction": [
-                 # "link_pred_pipeline",
-                # ],
+             "linkPrediction": [
+                 "link_pred_pipeline",
+                ],
              }
 
 DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
