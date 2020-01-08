@@ -89,10 +89,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         """
         print(inputs, file=sys.stderr)
         print(dir(inputs), file=sys.stderr)
-        print(inputs.keys(), file=sys.stderr)
-        print(inputs.get_relations_graph(), file=sys.stderr)
-        print(inputs.is_lazy(), file=sys.stderr)
-        print(inputs.metadata)
+        print(inputs.metadata, file=sys.stderr)
         #inputs = inputs.load(dat
         try:
             G = inputs['0']
