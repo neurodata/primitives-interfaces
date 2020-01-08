@@ -10,6 +10,7 @@ import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
 import networkx
 import os
+import sys
 
 from scipy.stats import norm
 from scipy.stats import rankdata
@@ -127,6 +128,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         np.random.seed(1234)
 
         G = inputs[0].copy()
+        print(type(G), file=sys.stderr)
 
         try:
             link_predicton = inputs[3]
