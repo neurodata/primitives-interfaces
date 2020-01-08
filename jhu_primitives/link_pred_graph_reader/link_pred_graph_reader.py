@@ -97,6 +97,12 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         uniq_linktypes = np.unique(values)
         M = len(uniq_linktypes)
 
+        if M == 0:
+            M=1
+            n_edges = len(list(graph.edges))
+            values = np.zeros(n_edges)
+            keys = np.array(list(graph.edges))    
+
         n_edges = np.zeros(M) # imputation
         n_choose_2 = (n**2 - n)/2
 
