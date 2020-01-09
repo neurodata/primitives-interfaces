@@ -91,10 +91,6 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         
         csv = inputs[1]
         
-        try:
-            int(np.array(csv['linkType'])[0])
-        except:
-            csv['linkType'] = np.zeros(n_info)
 
         print(csv, file=sys.stderr)
         csv_headers = csv.columns
@@ -106,6 +102,12 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         
         source_nodeID = np.array(csv[SOURCE]).astype(int)
         target_nodeID = np.array(csv[TARGET]).astype(int)
+        
+        try:
+            int(np.array(csv['linkType'])[0])
+        except:
+            csv['linkType'] = np.zeros(len(source_nodeID))
+        
         link_types = np.array(csv['linkType']).astype(int)
 
         n_links = len(self._inner_products) - 1
