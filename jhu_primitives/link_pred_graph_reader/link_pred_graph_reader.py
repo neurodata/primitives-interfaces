@@ -89,7 +89,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             print(i, file=sys.stderr)
             print(type(i), file=sys.stderr)
         print(type(inputs['0']), file=sys.stderr)
-        print(inputs['0'].edges.data(), file=sys.stderr)
+#        print(inputs['0'].edges.data(), file=sys.stderr)
         print(type(graph_dataframe.at[0, 'filename']))
 
         temp_json = inputs.to_json_structure()
