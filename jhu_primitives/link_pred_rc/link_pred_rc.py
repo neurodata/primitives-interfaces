@@ -90,8 +90,22 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         np.random.seed(self.random_seed)
         
         csv = inputs[1]
-        source_nodeID = np.array(csv['source_nodeID']).astype(int)
-        target_nodeID = np.array(csv['target_nodeID']).astype(int)
+        
+        try:
+            int(np.array(csv['linkType'])[0])
+        except:
+            csv['linkType'] = np.zeros(n_info)
+
+        print(csv, file=sys.stderr)
+        csv_headers = csv.columns
+        for header in csv_headers:
+            if header[:6] == "source":
+                SOURCE = header
+            elif header[:6] == "target":
+                TARGET = header
+        
+        source_nodeID = np.array(csv[SOURCE]).astype(int)
+        target_nodeID = np.array(csv[TARGET]).astype(int)
         link_types = np.array(csv['linkType']).astype(int)
 
         n_links = len(self._inner_products) - 1
