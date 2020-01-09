@@ -84,18 +84,18 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         csv = inputs['learningData']
         
         # antons debugging feel free to delete
-        print("start of anton debugging", file=sys.stderr)
+        # print("start of anton debugging", file=sys.stderr)
 
-        print(dir(inputs), file=sys.stderr)
-        for i in inputs:
-            print(i, file=sys.stderr)
-            print(type(i), file=sys.stderr)
-        print(type(inputs['0']), file=sys.stderr)
+        # print(dir(inputs), file=sys.stderr)
+        # for i in inputs:
+        #     print(i, file=sys.stderr)
+        #     print(type(i), file=sys.stderr)
+        # print(type(inputs['0']), file=sys.stderr)
 #        print(inputs['0'].edges.data(), file=sys.stderr)
-        print(type(graph_dataframe.at[0, 'filename']), file=sys.stderr)
-        print(graph_dataframe.at[0, 'filename'], file=sys.stderr)
+        # print(type(graph_dataframe.at[0, 'filename']), file=sys.stderr)
+        # print(graph_dataframe.at[0, 'filename'], file=sys.stderr)
 
-        print("end of anton debugging", file=sys.stderr)
+        # print("end of anton debugging", file=sys.stderr)
 
 
         temp_json = inputs.to_json_structure()
@@ -117,19 +117,21 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             n_edges = len(list(graph.edges))
             values = np.zeros(n_edges)
             keys = np.array(list(graph.edges))    
+        else:
+            n_edges = np.zeros(M) # imputation
 
-        n_edges = np.zeros(M) # imputation
-        n_choose_2 = (n**2 - n)/2
+            for i in range(len(values)):
+                temp_linktype = int(values[i])
+                n_edges[temp_linktype] += 1 # imputation
 
-        for i in range(len(values)):
-            temp_linktype = int(values[i])
-            n_edges[temp_linktype] += 1 # imputation
-
+        n_choose_2 = (n**2 - n) / 2
         A_imps = [0.5*(0.5 + n_edges[i]/n_choose_2)*np.ones((n, n)) for i in range(M)]
 
         for i in range(len(values)):
             temp_linktype = int(values[i])
             print(temp_linktype, keys[i][0], keys[i][1], file=sys.stderr)
+            print(type(temp_linktype), type(keys[i][0]), type(keys[i][1]), file=sys.stderr)
+            print(A_imps[temp_linktype].shape, file=sys.stderr)
             A_imps[temp_linktype][keys[i][0], keys[i][1]] = 1
             A_imps[temp_linktype][keys[i][1], keys[i][0]] = 1
 
