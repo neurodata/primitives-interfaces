@@ -84,16 +84,18 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         csv = inputs['learningData']
         
         # antons debugging feel free to delete
+        print("start of anton debugging", file=sys.stderr)
+
         print(dir(inputs), file=sys.stderr)
         for i in inputs:
             print(i, file=sys.stderr)
             print(type(i), file=sys.stderr)
         print(type(inputs['0']), file=sys.stderr)
 #        print(inputs['0'].edges.data(), file=sys.stderr)
-        print(type(graph_dataframe.at[0, 'filename']))
-        print(graph_dataframe.at[0, 'filename'])
+        print(type(graph_dataframe.at[0, 'filename']), file=sys.stderr)
+        print(graph_dataframe.at[0, 'filename'], file=sys.stderr)
 
-        print("End of anton debugging")
+        print("end of anton debugging", file=sys.stderr)
 
 
         temp_json = inputs.to_json_structure()
