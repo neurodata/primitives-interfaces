@@ -31,8 +31,8 @@ PROBLEM_TYPES = [
     # "graphMatching",
     # "vertexNomination_class",
     # "vertexNomination_clust",
-    "linkPrediction",
-    # "communityDetection"
+    # "linkPrediction",
+    "communityDetection"
     ]
 
 DATASETS = {
@@ -56,17 +56,17 @@ DATASETS = {
             # "vertexNomination_clust": [
             #     "DS01876"
             #     ],
-            # "communityDetection": [
+            "communityDetection": [
             #     "6_70_com_amazon",
             #     "6_86_com_DBLP",
             #     "LL1_Bio_dmela_net",
-            #     "LL1_bn_fly_drosophila_medulla_net",
+                "datasets-public/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net",
             #     "LL1_eco_florida_net"
-            #     ],
-            "linkPrediction": [
-                "datasets/training_datasets/seed_datasets_archive/59_umls",
-                "datasets-public/seed_datasets_current/59_LP_karate"
-                ]
+                ],
+            # "linkPrediction": [
+            #     "datasets/training_datasets/seed_datasets_archive/59_umls",
+            #     "datasets-public/seed_datasets_current/59_LP_karate"
+            #     ]
             }
 
 PIPELINES = {
@@ -88,13 +88,13 @@ PIPELINES = {
                 # "gmm_ooslse_pipeline",
                 # "sgc_pipeline"
                 # ],
-            # "communityDetection": [
-            #     "gmm_oosase_pipeline",
+            "communityDetection": [
+                "gmm_oosase_pipeline",
             #     "gmm_ooslse_pipeline"
-            #     ]
-             "linkPrediction": [
-                 "link_pred_pipeline",
-                ],
+                ]
+            #  "linkPrediction": [
+            #      "link_pred_pipeline",
+            #     ],
              }
 
 DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
@@ -113,7 +113,7 @@ DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
                                 # "6_70_com_amazon",
                                 # "6_86_com_DBLP",
                                 # "LL1_Bio_dmela_net",
-                                # "LL1_bn_fly_drosophila_medulla_net",
+                                "LL1_bn_fly_drosophila_medulla_net",
                                 # "LL1_eco_florida_net",
                                 "LL1_VTXC_1343_cora",
                                 "LL1_VTXC_1369_synthetic",
