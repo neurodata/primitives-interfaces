@@ -270,6 +270,7 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json -t "
             cmd += dataset_path + "TEST/dataset_TEST/datasetDoc.json -a "
             try:
+                assert 0==1
                 cmd1 = dataset_path + "SCORE/dataset_SCORE/datasetDoc.json -O "
                 cmd1 += path + "_run.yaml"
                 os.system(cmd + cmd1)
