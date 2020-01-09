@@ -3,6 +3,7 @@ import networkx as nx
 import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
 import os
+import sys
 
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m import container
@@ -144,6 +145,11 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
 
         n_info = csv.shape[0]
         ranks = [[[], []] for i in range(n_links + 1)]
+
+        try:
+            int(np.array(csv['linkType'])[0])
+        except:
+            csv['linkType'] = np.zeros(n_info)
 
         for i in range(n_info):
             temp_link = int(np.array(csv['linkType'])[i])
