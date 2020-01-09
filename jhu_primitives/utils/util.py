@@ -270,13 +270,13 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json -t "
             cmd += dataset_path + "TEST/dataset_TEST/datasetDoc.json -a "
             try:
-                cmd += dataset_path + "SCORE/dataset_SCORE/datasetDoc.json -O "
-                cmd += path + "_run.yaml"
-                os.system(cmd)
+                cmd1 = dataset_path + "SCORE/dataset_SCORE/datasetDoc.json -O "
+                cmd1 += path + "_run.yaml"
+                os.system(cmd + cmd1)
             except:
-                cmd += dataset_path + "SCORE/dataset_TEST/datasetDoc.json -O "
-                cmd += path + "_run.yaml"
-                os.system(cmd)
+                cmd1 = dataset_path + "SCORE/dataset_TEST/datasetDoc.json -O "
+                cmd1 += path + "_run.yaml"
+                os.system(cmd + cmd1)
 
 if __name__ == '__main__':
     target_repo, problem_type = load_args()
