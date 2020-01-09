@@ -86,6 +86,8 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         print(dir(inputs), file=sys.stderr)
         for i in inputs:
             print(i, file=sys.stderr)
+            print(type(i), file=sys.stderr)
+        print(type(inputs['0']), files=sys.stderr)
         print(type(inputs[0]), files=sys.stderr)
         print(inputs[0].edges.data(), file=sys.stderr)
 
