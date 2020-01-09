@@ -151,6 +151,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         except:
             csv['linkType'] = np.zeros(n_info)
 
+        print(csv, file=sys.stderr)
         for i in range(n_info):
             temp_link = int(np.array(csv['linkType'])[i])
             temp_exists = int(np.array(csv['linkExists'])[i])
