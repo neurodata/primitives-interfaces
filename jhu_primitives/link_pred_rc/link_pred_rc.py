@@ -162,8 +162,8 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         for i in range(n_info):
             temp_link = int(np.array(csv['linkType'])[i])
             temp_exists = int(np.array(csv['linkExists'])[i])
-            temp_source = int(np.array(csv['source_nodeID'])[i])
-            temp_target = int(np.array(csv['target_nodeID'])[i])
+            temp_source = int(np.array(csv[SOURCE])[i])
+            temp_target = int(np.array(csv[TARGET])[i])
             temp_dot = embeddings[temp_link*n_nodes + temp_source] @ embeddings[temp_link*n_nodes + temp_target]
             ranks[temp_link][temp_exists].append(temp_dot)
             ranks[-1][temp_exists].append(temp_dot)
