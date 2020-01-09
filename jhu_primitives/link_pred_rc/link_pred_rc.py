@@ -123,7 +123,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
             temp_source = source_nodeID[i]
             temp_target = target_nodeID[i]
             temp_link = link_types[i]
-            temp_inner_product = self._embeddings[temp_link*n_nodes + temp_source] @ self._embeddings[temp_link*n_nodes + temp_target]
+            temp_inner_product = self._embeddings[temp_link*n_nodes + temp_source-1] @ self._embeddings[temp_link*n_nodes + temp_target-1]
             temp_noexists = self._inner_products[temp_link][0]
             temp_exists = self._inner_products[temp_link][1]
 
