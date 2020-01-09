@@ -116,7 +116,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             M=1
             n_edges = np.array([len(list(graph.edges))])
             values = np.zeros(n_edges[0])
-            keys = np.array(list(graph.edges))    
+            keys = np.array(list(graph.edges), dype=int)    
         else:
             n_edges = np.zeros(M) # imputation
 
