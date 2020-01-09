@@ -64,7 +64,7 @@ DATASETS = {
             #     "LL1_eco_florida_net"
             #     ],
             "linkPrediction": [
-                # "datasets/training_datasets/seed_datasets_archive/59_umls",
+                "datasets/training_datasets/seed_datasets_archive/59_umls",
                 "datasets-public/seed_datasets_current/59_LP_karate"
                 ]
             }
@@ -269,10 +269,14 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += dataset_path + "TRAIN/problem_TRAIN/problemDoc.json -i "
             cmd += dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json -t "
             cmd += dataset_path + "TEST/dataset_TEST/datasetDoc.json -a "
-            cmd += dataset_path + "SCORE/dataset_SCORE/datasetDoc.json -O "
-            cmd += path + "_run.yaml"
-            os.system(cmd)
-
+            try:
+                cmd += dataset_path + "SCORE/dataset_SCORE/datasetDoc.json -O "
+                cmd += path + "_run.yaml"
+                os.system(cmd)
+            except:
+                cmd += dataset_path + "SCORE/dataset_TEST/datasetDoc.json -O "
+                cmd += path + "_run.yaml"
+                os.system(cmd)
 
 if __name__ == '__main__':
     target_repo, problem_type = load_args()
