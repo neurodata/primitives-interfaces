@@ -144,10 +144,13 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         predictions = np.zeros(len(testing))
         g_indices = np.where(testing['community'] == 1)[0].astype(int)
 
-        predictions[testing_nodeIDs] = model.predict(self._embedding)
-        for i in range(len(testing_nodeIDs)):
-            label = predictions[i]
-            final_labels[i] = int(label) + 1
+        predictions[g_indices] = model.predict(self._embedding)
+        for i in range(len(testing)):
+            if i in g_indices:
+                label = predictions[i]
+                final_labels[i] = int(label) + 1
+            else:
+                final_labels[i] = int(max(predictions)) + testing['community'][i]
     
         testing['community'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'community']])
