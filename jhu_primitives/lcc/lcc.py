@@ -88,6 +88,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         """
         np.random.seed(self.random_seed)
+        
         graph_dataframe = inputs['0']
         csv = inputs['learningData']
 
@@ -95,7 +96,8 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         location_uri = temp_json['location_uris'][0]
         path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
         G = nx.read_gml(path=path_to_graph[7:])
-        #inputs = inputs.load(dat
+        print(G.nodes, file=sys.stderr)
+
         try:
             G = inputs['0']
         except:
@@ -124,8 +126,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
             for i in range(n_edges):
                 G.add_edge(V1_nodeIDs[i], V2_nodeIDs[i], weight = edge_weights[i])
-
-        csv = inputs['learningData']
 
         if len(csv) != 0:
             if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
