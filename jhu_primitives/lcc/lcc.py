@@ -95,7 +95,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         temp_json = inputs.to_json_structure()
         location_uri = temp_json['location_uris'][0]
         path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
-        print(G.nodes, file=sys.stderr)
 
         try:
             G = inputs['0']
