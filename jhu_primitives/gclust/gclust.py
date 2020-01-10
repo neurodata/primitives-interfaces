@@ -136,7 +136,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             for i, node in testing['nodeID']:
                 print(i, node, file=sys.stderr)
         except:
-            return base.CallResult(None)
+            return base.CallResult(testing)
 
         # not sure whats going on here..
         testing_nodeIDs = np.asarray(testing['nodeID']).astype(int)
