@@ -95,7 +95,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         temp_json = inputs.to_json_structure()
         location_uri = temp_json['location_uris'][0]
         path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
-        G = nx.read_gml(path=path_to_graph[7:])
         print(G.nodes, file=sys.stderr)
 
         try:
@@ -127,6 +126,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             for i in range(n_edges):
                 G.add_edge(V1_nodeIDs[i], V2_nodeIDs[i], weight = edge_weights[i])
 
+        G = nx.read_gml(path=path_to_graph[7:])
         if len(csv) != 0:
             if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
                 nx.set_node_attributes(G,'nodeID',-1)
