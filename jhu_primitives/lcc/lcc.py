@@ -94,8 +94,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         temp_json = inputs.to_json_structure()
         location_uri = temp_json['location_uris'][0]
         path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
-        graph = nx.read_gml(path=path_to_graph[7:]) 
-        n = len(graph)
+        G = nx.read_gml(path=path_to_graph[7:])
         #inputs = inputs.load(dat
         try:
             G = inputs['0']
