@@ -140,6 +140,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         
         print(len(testing_nodeIDs), file=sys.stderr)
         for i in range(len(testing_nodeIDs)):
+            print(i, file=sys.stderr)
             label = predictions[i]
             final_labels[i] = int(label) + 1
     
