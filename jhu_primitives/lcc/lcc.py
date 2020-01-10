@@ -87,9 +87,15 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             The largest connected component of g
 
         """
-        print(inputs, file=sys.stderr)
-        print(dir(inputs), file=sys.stderr)
-        print(inputs.metadata, file=sys.stderr)
+        np.random.seed(self.random_seed)
+        graph_dataframe = inputs['0']
+        csv = inputs['learningData']
+
+        temp_json = inputs.to_json_structure()
+        location_uri = temp_json['location_uris'][0]
+        path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
+        graph = nx.read_gml(path=path_to_graph[7:]) 
+        n = len(graph)
         #inputs = inputs.load(dat
         try:
             G = inputs['0']
@@ -121,8 +127,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 G.add_edge(V1_nodeIDs[i], V2_nodeIDs[i], weight = edge_weights[i])
 
         csv = inputs['learningData']
-        print(G, file=sys.stderr)
-        print(csv, file=sys.stderr)
 
         if len(csv) != 0:
             if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
