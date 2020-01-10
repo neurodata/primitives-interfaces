@@ -132,8 +132,6 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         predictions = model.predict(self._embedding)
 
         testing = inputs[2]
-        print("testing", file=sys.stderr)
-        print(testing, file=sys.stderr)
 
         # not sure whats going on here..
         testing_nodeIDs = np.asarray(testing['nodeID']).astype(int)
@@ -144,7 +142,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             label = predictions[i]
             final_labels[i] = int(label) + 1
     
-        print(final_labels, file=sys.stderr)
+        print(final_labels[0], file=sys.stderr)
         testing['community'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'community']])
         outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'community']].astype(int)
