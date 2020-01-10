@@ -129,8 +129,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         gclust_object = graspyGCLUST(min_components=max_clusters, covariance_type="all")
         gclust_object.fit(self._embedding)
         model = gclust_object.model_
-
-        predictions = model.predict(self._embedding)
+        
 
         testing = inputs[2]
 
@@ -140,11 +139,11 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         except:
             return base.CallResult(testing)
 
-        print(len(testing), file=sys.stderr)
         final_labels = np.zeros(len(testing_nodeIDs))
         
+        predictions = np.zeros(len(testing)) 
+        predictions[testing_nodeIDs] = model.predict(self._embedding)
         for i in range(len(testing_nodeIDs)):
-            print(i, file=sys.stderr)
             label = predictions[i]
             final_labels[i] = int(label) + 1
     
