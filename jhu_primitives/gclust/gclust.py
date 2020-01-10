@@ -143,9 +143,9 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             label = predictions[i]
             final_labels[i] = int(label) + 1
 
-        testing['classLabel'] = final_labels
-        outputs = container.DataFrame(testing[['d3mIndex', 'classLabel']])
-        outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'classLabel']].astype(int)
+        testing['community'] = final_labels
+        outputs = container.DataFrame(testing[['d3mIndex', 'community']])
+        outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'community']].astype(int)
         
         return base.CallResult(outputs)
 
