@@ -136,13 +136,14 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         # not sure whats going on here..
         testing_nodeIDs = np.asarray(testing['nodeID']).astype(int)
         # testing_nodeIDs = np.array([int(i) for i in testing_nodeIDs])
-        final_labels = np.zeros(len(testing))
+        final_labels = np.zeros(len(testing_nodeIDs))
         
+        print(len(testing_nodeIDs))
         for i in range(len(testing_nodeIDs)):
             label = predictions[i]
             final_labels[i] = int(label) + 1
     
-        print(final_labels[0], file=sys.stderr)
+        print(final_labels, file=sys.stderr)
         testing['community'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'community']])
         outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'community']].astype(int)
