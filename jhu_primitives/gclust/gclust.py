@@ -145,7 +145,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         print(testing['community'], file=sys.stderr)
         print(testing['community'][0], file=sys.stderr)
         print(type(testing['community'][0]), file=sys.stderr)
-        g_indices = np.where(testing['community'] == 1)[0].astype(int)
+        g_indices = np.where(testing['components'] == 1)[0].astype(int)
 
         predictions[g_indices] = model.predict(self._embedding)
         for i in range(len(testing)):
