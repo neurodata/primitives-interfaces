@@ -134,7 +134,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
         testing = inputs[2]
         print(testing['nodeID'], file=sys.stderr)
-        print(type(testing['nodeID'], file=sys.stderr)
+        print(type(testing['nodeID']), file=sys.stderr)
         try:
             for i, node in testing['nodeID']:
                 print(i, node, file=sys.stderr)
