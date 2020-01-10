@@ -131,6 +131,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         predictions = model.predict(self._embedding)
 
         testing = inputs[2]
+        print(testing, file=sys.stderr)
 
         testing_nodeIDs = np.asarray(testing['G1.nodeID'])
         testing_nodeIDs = np.array([int(i) for i in testing_nodeIDs])
