@@ -133,10 +133,8 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         predictions = model.predict(self._embedding)
 
         testing = inputs[2]
-        print(testing['nodeID'], file=sys.stderr)
-        print(type(testing['nodeID']), file=sys.stderr)
         try:
-            for i, node in testing['nodeID']:
+            for i, node in np.array(testing['nodeID']):
                 print(i, node, file=sys.stderr)
         except:
             return base.CallResult(testing)
