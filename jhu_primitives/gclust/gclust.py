@@ -142,9 +142,6 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         final_labels = np.zeros(len(testing_nodeIDs))
         
         predictions = np.zeros(len(testing))
-        print(testing['community'], file=sys.stderr)
-        print(testing['community'][0], file=sys.stderr)
-        print(type(testing['community'][0]), file=sys.stderr)
         g_indices = np.where(testing['components'] == 1)[0].astype(int)
 
         predictions[g_indices] = model.predict(self._embedding)
@@ -157,7 +154,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
     
         testing['community'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'community']])
-        outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'community']].astype(int)
+        outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
         return base.CallResult(outputs)
 
 
