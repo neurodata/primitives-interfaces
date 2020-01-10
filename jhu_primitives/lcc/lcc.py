@@ -126,16 +126,16 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 G.add_edge(V1_nodeIDs[i], V2_nodeIDs[i], weight = edge_weights[i])
 
         G = nx.read_gml(path=path_to_graph[7:])
-        if len(csv) != 0:
-            if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-                nx.set_node_attributes(G,'nodeID',-1)
-                for i in range(len(G)):
-                    G.node[i]['nodeID'] = i
+        # if len(csv) != 0:
+        #   if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
+        #        nx.set_node_attributes(G,'nodeID',-1)
+        #        for i in range(len(G)):
+        #            G.node[i]['nodeID'] = i
 
-            nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values())
-            nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+        #    nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values())
+        #    nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
-            return base.CallResult(container.List([G.copy(), nodeIDs,csv]))
+        #    return base.CallResult(container.List([G.copy(), nodeIDs,csv]))
 
         if type(G) == np.ndarray:
             if G.ndim == 2:
@@ -145,13 +145,18 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                     raise TypeError("Networkx graphs or n x n numpy arrays only")
 
         subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
+        
+        components = np.zeros(len(G), dtype=int)
+        for i, connected_component in enumerate(nx.connected_components(G)):
+            components[connected_component] = i+1
 
+        csv['components'] = components
         G_connected = [[0]]
         for i in subgraphs:
             if len(i) > len(G_connected[0]):
                 G_connected = [i]
 
-        nodeIDs = list(nx.get_node_attributes(G_connected[0], 'nodeID').values())
+        nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values()) # used to be G_connected[0]
         nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
         return base.CallResult(container.List([G_connected[0].copy(), nodeIDs, csv]))
