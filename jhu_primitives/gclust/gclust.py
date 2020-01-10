@@ -134,8 +134,9 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         testing = inputs[2]
         print(testing, file=sys.stderr)
 
-        testing_nodeIDs = np.asarray(testing['G1.nodeID'])
-        testing_nodeIDs = np.array([int(i) for i in testing_nodeIDs])
+        # not sure whats going on here..
+        testing_nodeIDs = np.asarray(testing['nodeID']).astype(int)
+        # testing_nodeIDs = np.array([int(i) for i in testing_nodeIDs])
         final_labels = np.zeros(len(testing))
 
         for i in range(len(testing_nodeIDs)):
