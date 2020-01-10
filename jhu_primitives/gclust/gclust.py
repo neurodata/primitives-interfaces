@@ -138,7 +138,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         # testing_nodeIDs = np.array([int(i) for i in testing_nodeIDs])
         final_labels = np.zeros(len(testing_nodeIDs))
         
-        print(len(testing_nodeIDs))
+        print(len(testing_nodeIDs), file=sys.stderr)
         for i in range(len(testing_nodeIDs)):
             label = predictions[i]
             final_labels[i] = int(label) + 1
