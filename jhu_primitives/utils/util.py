@@ -272,7 +272,7 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += dataset_path + "TEST/dataset_TEST/datasetDoc.json -a "
             
             SCORE = ""
-            for f in listdir(dataset_path + "SCORE/"):
+            for f in os.listdir(dataset_path + "SCORE/"):
                 if str(f)[:7] == "dataset":
                     SCORE = str(f) + "/"
 
