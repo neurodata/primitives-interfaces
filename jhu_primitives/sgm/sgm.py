@@ -130,11 +130,16 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
     def set_training_data(self, *, inputs: Inputs) -> None:
         # Grab both graphs. Cast as a Graph object in case inputs are Multigraphs.
         print(type(inputs['0']), file=sys.stderr)
-        
-        self._g1 = nx.Graph(inputs['0']).copy()
-        self._g2 = nx.Graph(inputs['1']).copy()
+        graph_dataframe0 = inputs['0']
+        graph_dataframe1 = inputs['1']
 
-        print(type(self._g1), file=sys.stderr)
+        temp_json = inputs.to_json_structure()
+        location_uri = temp_json['location_uris'][0]
+        path_to_graph0 = location_uri[:-15] + "graphs/" + graph_dataframe0.at[0,'filename'] 
+        path_to_graph1 = location_uri[:-15] + "graphs/" + graph_dataframe0.at[1,'filename'] 
+
+        self._g1 = nx.read_gml(path=path_to_graph0[7:]) 
+        self._g2 = nx.read_gml(path=path_to_graph1[7:]) 
         
         # Grab training data csv
         try:
