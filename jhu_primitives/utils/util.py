@@ -73,7 +73,7 @@ PIPELINES = {
             # "graphMatching": [
                 # "sgm_pipeline",
                 # "sgm_pipeline_10"
-                ],
+                # ],
               "vertexNomination_class": [
                  "gclass_ase_pipeline",
                 # "gclass_lse_pipeline",
