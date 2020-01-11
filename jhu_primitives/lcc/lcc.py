@@ -150,6 +150,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         for i, connected_component in enumerate(nx.connected_components(G)):
             components[np.array(list(connected_component), dtype=int)] = i+1
 
+        print(len(G), len(components), file=sys.stderr)
         csv['components'] = components
         G_connected = [[0]]
         for i in subgraphs:
