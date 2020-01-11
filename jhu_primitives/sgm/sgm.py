@@ -129,6 +129,8 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
 
     def set_training_data(self, *, inputs: Inputs) -> None:
         # Grab both graphs. Cast as a Graph object in case inputs are Multigraphs.
+        print(type(inputs['0']), file=sys.stderr)
+        
         self._g1 = nx.Graph(inputs['0']).copy()
         self._g2 = nx.Graph(inputs['1']).copy()
 
