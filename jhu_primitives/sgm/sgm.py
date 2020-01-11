@@ -131,6 +131,8 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         # Grab both graphs. Cast as a Graph object in case inputs are Multigraphs.
         self._g1 = nx.Graph(inputs['0']).copy()
         self._g2 = nx.Graph(inputs['1']).copy()
+
+        print(type(self._g1), file=sys.stderr)
         
         # Grab training data csv
         try:
