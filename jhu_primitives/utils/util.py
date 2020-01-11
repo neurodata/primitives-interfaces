@@ -28,16 +28,16 @@ For reference, the pipelines that are functional are the following:
 """
 
 PROBLEM_TYPES = [
-    # "graphMatching",
+    "graphMatching",
     # "vertexNomination_class",
     # "vertexNomination_clust",
-    # "linkPrediction",
+    "linkPrediction",
     "communityDetection"
     ]
 
 DATASETS = {
-            # "graphMatching": [
-                # "datasets/training_datasets/seed_datasets_archive/49_facebook",
+             "graphMatching": [
+                 "datasets/training_datasets/seed_datasets_archive/49_facebook",
                 # "LL1_Blogosphere_net",
                 # "LL1_DIC28_net",
                 # "LL1_ERDOS972_net",
@@ -63,17 +63,17 @@ DATASETS = {
                 "datasets-public/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net",
             #     "LL1_eco_florida_net"
                 ],
-            # "linkPrediction": [
+             "linkPrediction": [
             #     "datasets/training_datasets/seed_datasets_archive/59_umls",
-            #     "datasets-public/seed_datasets_current/59_LP_karate"
-            #     ]
+                 "datasets-public/seed_datasets_current/59_LP_karate"
+                 ]
             }
 
 PIPELINES = {
-            # "graphMatching": [
-                # "sgm_pipeline",
+            "graphMatching": [
+                "sgm_pipeline",
                 # "sgm_pipeline_10"
-                # ],
+                ],
              # "vertexNomination_class": [
                 # "gclass_ase_pipeline",
                 # "gclass_lse_pipeline",
@@ -92,10 +92,10 @@ PIPELINES = {
                 "gmm_ase_pipeline",
             #    "gmm_oosase_pipeline",
             #    "gmm_ooslse_pipeline"
-                ]
-            #  "linkPrediction": [
-            #      "link_pred_pipeline",
-            #     ],
+                ],
+              "linkPrediction": [
+                  "link_pred_pipeline",
+                 ],
              }
 
 DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
