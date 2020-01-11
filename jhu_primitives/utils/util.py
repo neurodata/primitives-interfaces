@@ -46,7 +46,7 @@ DATASETS = {
                 # "LL1_SAMPSON_net",
                 # "LL1_USAIR97_net",
                 # "LL1_imports_net"
-                # ],
+                 ],
             # "vertexNomination_class": [
                 # "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
                 # "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
