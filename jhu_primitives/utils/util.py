@@ -270,12 +270,21 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += dataset_path + "TRAIN/problem_TRAIN/problemDoc.json -i "
             cmd += dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json -t "
             cmd += dataset_path + "TEST/dataset_TEST/datasetDoc.json -a "
-            if dataset_path.split("/")[1] == "training_datasets":
-                cmd += dataset_path + "SCORE/dataset_TEST/datasetDoc.json -O "
-                cmd += path + "_run.yaml"
-            else:
-                cmd += dataset_path + "SCORE/dataset_SCORE/datasetDoc.json -O "
-                cmd += path + "_run.yaml"
+            
+            SCORE = ""
+            for f in listdir(dataset_path + "SCORE/"):
+                if str(f)[:7] == "dataset":
+                    SCORE = str(f) + "/"
+
+            cmd += dataset_path + "SCORE/" + SCORE + "datasetDoc.json -O "
+            cmd += path + "_run.yaml"
+
+            #if dataset_path.split("/")[1] == "training_datasets":
+            #    cmd += dataset_path + "SCORE/dataset_TEST/datasetDoc.json -O "
+            #    cmd += path + "_run.yaml"
+            #else:
+            #    cmd += dataset_path + "SCORE/dataset_SCORE/datasetDoc.json -O "
+            #    cmd += path + "_run.yaml"
             os.system(cmd)
 
 if __name__ == '__main__':
