@@ -136,7 +136,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         temp_json = inputs.to_json_structure()
         location_uri = temp_json['location_uris'][0]
         path_to_graph0 = location_uri[:-15] + "graphs/" + graph_dataframe0.at[0,'filename'] 
-        path_to_graph1 = location_uri[:-15] + "graphs/" + graph_dataframe0.at[1,'filename'] 
+        path_to_graph1 = location_uri[:-15] + "graphs/" + graph_dataframe1.at[0,'filename'] 
 
         self._g1 = nx.read_gml(path=path_to_graph0[7:]) 
         self._g2 = nx.read_gml(path=path_to_graph1[7:]) 
