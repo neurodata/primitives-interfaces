@@ -37,15 +37,15 @@ PROBLEM_TYPES = [
 
 DATASETS = {
              "graphMatching": [
-                 "datasets/training_datasets/seed_datasets_archive/49_facebook",
-                # "LL1_Blogosphere_net",
+                # "datasets/training_datasets/seed_datasets_archive/49_facebook",
+                 "datasets/training_datasets/LL1/LL1_Blogosphere_net",
                 # "LL1_DIC28_net",
-                # "LL1_ERDOS972_net",
-                # "LL1_IzmenjavaBratSestra_net",
-                # "LL1_REVIJE_net",
-                # "LL1_SAMPSON_net",
-                # "LL1_USAIR97_net",
-                # "LL1_imports_net"
+                # "datasets/training_datasets/LL1/LL1_ERDOS972_net",
+                # "datasets/training_datasets/LL1/LL1_IzmenjavaBratSestra_net",
+                # "datasets/training_datasets/LL1/LL1_REVIJE_net",
+                # "datasets/training_datasets/LL1/LL1_SAMPSON_net",
+                # "datasets/training_datasets/LL1/LL1_USAIR97_net",
+                # "datasets/training_datasets/LL1/LL1_imports_net"
                  ],
             # "vertexNomination_class": [
                 # "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
