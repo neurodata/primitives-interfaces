@@ -28,7 +28,7 @@ For reference, the pipelines that are functional are the following:
 """
 
 PROBLEM_TYPES = [
-    "graphMatching",
+    # "graphMatching",
     # "vertexNomination_class",
     # "vertexNomination_clust",
     "linkPrediction",
@@ -36,9 +36,9 @@ PROBLEM_TYPES = [
     ]
 
 DATASETS = {
-             "graphMatching": [
+             # "graphMatching": [
                 # "datasets/training_datasets/seed_datasets_archive/49_facebook",
-                 "datasets/training_datasets/LL1/LL1_Blogosphere_net",
+                # "datasets/training_datasets/LL1/LL1_Blogosphere_net",
                 # "LL1_DIC28_net",
                 # "datasets/training_datasets/LL1/LL1_ERDOS972_net",
                 # "datasets/training_datasets/LL1/LL1_IzmenjavaBratSestra_net",
@@ -46,13 +46,13 @@ DATASETS = {
                 # "datasets/training_datasets/LL1/LL1_SAMPSON_net",
                 # "datasets/training_datasets/LL1/LL1_USAIR97_net",
                 # "datasets/training_datasets/LL1/LL1_imports_net"
-                 ],
-            # "vertexNomination_class": [
-                # "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
+                # ],
+             "vertexNomination_class": [
+                 "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
                 # "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
                 # "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1343_cora",
                 # "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1369_synthetic",
-            #    ],
+                ],
             # "vertexNomination_clust": [
             #     "DS01876"
             #     ],
@@ -70,17 +70,17 @@ DATASETS = {
             }
 
 PIPELINES = {
-            "graphMatching": [
-                "sgm_pipeline",
+            # "graphMatching": [
+                # "sgm_pipeline",
                 # "sgm_pipeline_10"
                 ],
-             # "vertexNomination_class": [
-                # "gclass_ase_pipeline",
+              "vertexNomination_class": [
+                 "gclass_ase_pipeline",
                 # "gclass_lse_pipeline",
                 # "gclass_oosase_pipeline",
                 # "gclass_ooslse_pipeline",
                 # "sgc_pipeline"
-                # ],
+                 ],
              # "vertexNomination_clust": [
                 # "gmm_ase_pipeline",
                 # "gmm_lse_pipeline",
