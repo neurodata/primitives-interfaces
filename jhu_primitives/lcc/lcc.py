@@ -106,7 +106,8 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             if f in ['TRAIN', 'TEST', 'SCORE']:
                 path_to_problem += folders[f_count-1] + "_problem/problemDoc.json"
                 found=True
-            path_to_problem += f + "/"
+            else: 
+                path_to_problem += f + "/"
             f_count+=1
         
         with open(path_to_problem) as json_file:
