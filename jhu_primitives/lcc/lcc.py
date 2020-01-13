@@ -102,6 +102,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         f_count=0
         found=False
         while not found:
+            f = folders[f_count]
             if f in ['TRAIN', 'TEST', 'SCORE']:
                 path_to_problem += folders[f_count-1] + "_problem/problemDoc.json"
                 found=True
