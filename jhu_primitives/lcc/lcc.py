@@ -179,9 +179,9 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         for header in csv.columns:
             if "nodeID" in header:
                 NODEID = header
-        if TASK is "vertexClassification":
+        if TASK == "vertexClassification":
             csv['components'] = components[np.array(csv[NODEID], dtype=int)]
-        elif TASK is "communityDetection":
+        elif TASK == "communityDetection":
             csv['components'] = components        
 
         G_connected = [[0]]
