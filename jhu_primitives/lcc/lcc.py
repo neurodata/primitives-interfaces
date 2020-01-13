@@ -110,7 +110,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 path_to_problem += f + "/"
             f_count+=1
         
-        with open(path_to_problem) as json_file:
+        with open(path_to_problem[7:]) as json_file:
              task_types=json.load(json_file)['about']['taskKeywords']
         
         TASK = ""
