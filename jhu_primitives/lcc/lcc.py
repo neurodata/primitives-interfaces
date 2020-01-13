@@ -96,6 +96,19 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         temp_json = inputs.to_json_structure()
         location_uri = temp_json['location_uris'][0]
         path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
+        
+        path_to_problem= ""
+        folders = location_uri.split("/")
+        f_count=0
+        found=False
+        while not found:
+            if f in ['TRAIN', 'TEST', 'SCORE']:
+                path_to_problem += folders[f_count-1] + "_problem/problemDoc.json"
+                found=True
+            path_to_problem += f + "/"
+            f_count+=1
+        
+
         path_to_problem = location_uri.replace('dataset', 'problem')
         
         with open(path_to_problem) as json_file:
