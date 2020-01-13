@@ -97,8 +97,9 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         location_uri = temp_json['location_uris'][0]
         path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
         path_to_problem = location_uri.replace('dataset', 'problem')
-
-        task_types=json.load(path_to_problem)['about']['taskKeywords']
+        
+        with open(path_to_problem) as json_file:
+             task_types=json.load(json_file)['about']['taskKeywords']
         
         TASK = ""
         for task in task_types:
