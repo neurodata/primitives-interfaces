@@ -96,6 +96,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         location_uri = temp_json['location_uris'][0]
         path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
 
+        print(temp_json, file=sys.stderr)
         try:
             G = inputs['0']
         except:
