@@ -156,7 +156,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         for header in csv.columns:
             if "nodeID" in header:
                 NODEID = header
-        csv['components'] = components[np.array(csv[NODEID])]
+        csv['components'] = components[np.array(csv[NODEID], dtype=int)]
         G_connected = [[0]]
         for i in subgraphs:
             if len(i) > len(G_connected[0]):
