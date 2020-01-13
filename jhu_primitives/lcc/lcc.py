@@ -146,13 +146,17 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
         
+        
+        # TODO: use metadata
         components = np.zeros(len(G), dtype=int)
         for i, connected_component in enumerate(nx.connected_components(G)):
             components[np.array(list(connected_component), dtype=int)] = i+1
 
-        print(csv, file=sys.stderr)
-        print(csv.shape, len(components), file=sys.stderr)
-        csv['components'] = components
+        NODEID = ""
+        for header in csv.columns:
+            if "nodeID" in header:
+                NODEID = header
+        csv['components'] = components[np.array(csv[NODEID])]
         G_connected = [[0]]
         for i in subgraphs:
             if len(i) > len(G_connected[0]):
