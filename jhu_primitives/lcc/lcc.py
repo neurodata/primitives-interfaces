@@ -117,8 +117,8 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         for task in task_types:
             if task in ["communityDetection", "linkPrediction", "vertexClassification"]:
                 TASK = task
-        print(task_types, file=sys.stderr)
-        print(TASK, file=sys.stderr)
+        # print(task_types, file=sys.stderr)
+        # print(TASK, file=sys.stderr)
         try:
             G = inputs['0']
         except:

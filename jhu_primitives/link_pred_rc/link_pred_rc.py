@@ -92,7 +92,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         csv = inputs[1]
         
 
-        print(csv, file=sys.stderr)
+        # print(csv, file=sys.stderr)
         csv_headers = csv.columns
         for header in csv_headers:
             if header[:6] == "source":
@@ -167,7 +167,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         except:
             csv['linkType'] = np.zeros(n_info)
 
-        print(csv, file=sys.stderr)
+        # print(csv, file=sys.stderr)
         csv_headers = csv.columns
         for header in csv_headers:
             if header[:6] == "source":
