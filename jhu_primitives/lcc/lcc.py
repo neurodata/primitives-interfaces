@@ -3,6 +3,7 @@ import networkx as nx
 import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
 import os
+import json
 import sys
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
@@ -95,8 +96,15 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         temp_json = inputs.to_json_structure()
         location_uri = temp_json['location_uris'][0]
         path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
+        path_to_problem = location_uri.replace('dataset', 'problem')
 
-        print(temp_json, file=sys.stderr)
+        task_types=json.load(path_to_problem)['about']['taskKeywords']
+        
+        TASK = ""
+        for task in task_types:
+            if task in ["communityDetection", "linkPrediction", "vertexClassification"]:
+                TASK = task
+
         try:
             G = inputs['0']
         except:
@@ -157,7 +165,11 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         for header in csv.columns:
             if "nodeID" in header:
                 NODEID = header
-        csv['components'] = components[np.array(csv[NODEID], dtype=int)]
+        if TASK is "vertexClassification":
+            csv['components'] = components[np.array(csv[NODEID], dtype=int)]
+        elif TASK is "communityDetection":
+            csv['components'] = components        
+
         G_connected = [[0]]
         for i in subgraphs:
             if len(i) > len(G_connected[0]):
