@@ -265,6 +265,7 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
 
     for dataset in datasets:
         for path in unique_paths:
+            print(dataset, file=sys.stderr)
             dataset_path = dataset + "/"
             cmd = "python3 -m d3m runtime fit-score -p " + path + ".json -r "
             cmd += dataset_path + "TRAIN/problem_TRAIN/problemDoc.json -i "
