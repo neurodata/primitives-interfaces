@@ -28,7 +28,7 @@ For reference, the pipelines that are functional are the following:
 """
 
 PROBLEM_TYPES = [
-    # "graphMatching",
+    "graphMatching",
     "vertexNomination_class",
     # "vertexNomination_clust",
     "linkPrediction",
@@ -36,8 +36,8 @@ PROBLEM_TYPES = [
     ]
 
 DATASETS = {
-             # "graphMatching": [
-                # "datasets/training_datasets/seed_datasets_archive/49_facebook",
+             "graphMatching": [
+                "datasets/training_datasets/seed_datasets_archive/49_facebook",
                 # "datasets/training_datasets/LL1/LL1_Blogosphere_net",
                 # "LL1_DIC28_net",
                 # "datasets/training_datasets/LL1/LL1_ERDOS972_net",
@@ -46,7 +46,7 @@ DATASETS = {
                 # "datasets/training_datasets/LL1/LL1_SAMPSON_net",
                 # "datasets/training_datasets/LL1/LL1_USAIR97_net",
                 # "datasets/training_datasets/LL1/LL1_imports_net"
-                # ],
+                ],
              "vertexNomination_class": [
                  "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
                 # "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
@@ -70,8 +70,8 @@ DATASETS = {
             }
 
 PIPELINES = {
-            # "graphMatching": [
-                # "sgm_pipeline",
+            "graphMatching": [
+                "sgm_pipeline",
                 # "sgm_pipeline_10"
                 # ],
               "vertexNomination_class": [
