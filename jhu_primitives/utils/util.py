@@ -166,14 +166,9 @@ def write_meta(dataset_name, dataset_new, path):
     meta = {}
     meta['problem'] = dataset_name + '_problem'
     meta['full_inputs'] = [dataset_new]
-    if dataset_name in TRAIN_AND_TEST_SCHEMA_DATASETS:
-        meta['train_inputs'] = [dataset_new + "_TRAIN"]
-        meta['test_inputs'] = [dataset_new + "_TEST"]
-        meta['score_inputs'] = [dataset_new + "_SCORE"]
-    else:
-        meta['train_inputs'] = [dataset_new]
-        meta['test_inputs'] = [dataset_new]
-        meta['score_inputs'] = [dataset_new]
+    meta['train_inputs'] = [dataset_new + "_TRAIN"]
+    meta['test_inputs'] = [dataset_new + "_TEST"]
+    meta['score_inputs'] = [dataset_new + "_SCORE"]
     with open(path + '.meta', 'w') as file:
         json.dump(meta, file)
 
