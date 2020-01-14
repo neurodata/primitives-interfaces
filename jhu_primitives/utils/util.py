@@ -30,42 +30,26 @@ For reference, the pipelines that are functional are the following:
 PROBLEM_TYPES = [
     "graphMatching",
     "vertexNomination_class",
-    # "vertexNomination_clust",
     "linkPrediction",
     "communityDetection"
     ]
 
 DATASETS = {
             "graphMatching": [
-                "datasets/training_datasets/seed_datasets_archive/49_facebook",
-                # "datasets/training_datasets/LL1/LL1_Blogosphere_net",
-                # "LL1_DIC28_net",
-                # "datasets/training_datasets/LL1/LL1_ERDOS972_net",
-                # "datasets/training_datasets/LL1/LL1_IzmenjavaBratSestra_net",
-                # "datasets/training_datasets/LL1/LL1_REVIJE_net",
-                # "datasets/training_datasets/LL1/LL1_SAMPSON_net",
-                # "datasets/training_datasets/LL1/LL1_USAIR97_net",
-                # "datasets/training_datasets/LL1/LL1_imports_net"
+                "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
                 ],
             "vertexNomination_class": [
-                "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
-                # "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
-                "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1343_cora",
-                "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1369_synthetic",
+                #"datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
+                #"datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
+                #"datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
                 ],
-            # "vertexNomination_clust": [
-            #     "DS01876"
-            #     ],
             "communityDetection": [
-            #     "6_70_com_amazon",
-            #     "6_86_com_DBLP",
-            #     "LL1_Bio_dmela_net",
-                "datasets-public/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net",
-            #     "LL1_eco_florida_net"
+                "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
                 ],
             "linkPrediction": [
-            #     "datasets/training_datasets/seed_datasets_archive/59_umls",
-                "datasets-public/seed_datasets_current/59_LP_karate"
+                "datasets/seed_datasets_current/59_umls_MIN_METADATA",
+                "datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
                 ]
             }
 
@@ -81,17 +65,12 @@ PIPELINES = {
                 # "gclass_ooslse_pipeline",
                 # "sgc_pipeline"
                 ],
-             # "vertexNomination_clust": [
-                # "gmm_ase_pipeline",
-                # "gmm_lse_pipeline",
-                # "gmm_oosase_pipeline",
-                # "gmm_ooslse_pipeline",
-                # "sgc_pipeline"
-                # ],
             "communityDetection": [
                 "gmm_ase_pipeline",
-            #    "gmm_oosase_pipeline",
-            #    "gmm_ooslse_pipeline"
+                "gmm_lse_pipeline",
+                #"gmm_oosase_pipeline",
+                #"gmm_ooslse_pipeline"
+                # "sgc_pipeline"
                 ],
               "linkPrediction": [
                   "link_pred_pipeline",
@@ -280,12 +259,6 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += dataset_path + "SCORE/" + SCORE + "datasetDoc.json -O "
             cmd += path + "_run.yaml"
 
-            #if dataset_path.split("/")[1] == "training_datasets":
-            #    cmd += dataset_path + "SCORE/dataset_TEST/datasetDoc.json -O "
-            #    cmd += path + "_run.yaml"
-            #else:
-            #    cmd += dataset_path + "SCORE/dataset_SCORE/datasetDoc.json -O "
-            #    cmd += path + "_run.yaml"
             os.system(cmd)
 
 if __name__ == '__main__':
