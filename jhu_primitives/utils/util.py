@@ -14,8 +14,8 @@ import re
 
 PROBLEM_TYPES = [
     #"graphMatching",
-    #"vertexNomination_class",
-    "linkPrediction",
+    "vertexNomination_class",
+    #"linkPrediction",
     #"communityDetection"
     ]
 
