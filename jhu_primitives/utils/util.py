@@ -30,7 +30,7 @@ DATASETS = {
                 #"datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
                 #],
             "communityDetection": [
-                "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
+                "datasets-private/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
                 ],
             #"linkPrediction": [
                 #"datasets/seed_datasets_current/59_umls_MIN_METADATA",
