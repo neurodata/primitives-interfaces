@@ -12,45 +12,30 @@ import json
 import shutil
 import re
 
-"""
-For reference, the pipelines that are functional are the following:
-    gclass_ase_pipeline
-    Xgclass_oosase_pipeline
-    gclass_lse_pipeline
-    Xgclass_ooslse_pipeline
-    gmm_ase_pipeline
-    Xgmm_oosase_pipeline
-    gmm_lse_pipeline
-    Xgmm_ooslse_pipeline
-    link_pred_pipeline
-    sgc_pipeline
-    sgm_pipeline
-"""
-
 PROBLEM_TYPES = [
     "graphMatching",
-    "vertexNomination_class",
-    "linkPrediction",
-    "communityDetection"
+    #"vertexNomination_class",
+    #"linkPrediction",
+    #"communityDetection"
     ]
 
 DATASETS = {
             "graphMatching": [
                 "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
                 ],
-            "vertexNomination_class": [
+            #"vertexNomination_class": [
                 #"datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
                 #"datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
                 #"datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
-                "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
-                ],
-            "communityDetection": [
-                "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
-                ],
-            "linkPrediction": [
-                "datasets/seed_datasets_current/59_umls_MIN_METADATA",
-                "datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
-                ]
+                #"datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
+                #],
+            #"communityDetection": [
+                #"datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
+                #],
+            #"linkPrediction": [
+                #"datasets/seed_datasets_current/59_umls_MIN_METADATA",
+                #"datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
+                #]
             }
 
 PIPELINES = {
@@ -58,58 +43,24 @@ PIPELINES = {
                 "sgm_pipeline",
                 # "sgm_pipeline_10"
                 ],
-            "vertexNomination_class": [
-                "gclass_ase_pipeline",
+            #"vertexNomination_class": [
+                #"gclass_ase_pipeline",
                 # "gclass_lse_pipeline",
                 # "gclass_oosase_pipeline",
                 # "gclass_ooslse_pipeline",
                 # "sgc_pipeline"
-                ],
-            "communityDetection": [
-                "gmm_ase_pipeline",
-                "gmm_lse_pipeline",
+                #],
+            #"communityDetection": [
+                #"gmm_ase_pipeline",
+                #"gmm_lse_pipeline",
                 #"gmm_oosase_pipeline",
                 #"gmm_ooslse_pipeline"
                 # "sgc_pipeline"
-                ],
-              "linkPrediction": [
-                  "link_pred_pipeline",
-                 ],
+                #],
+              #"linkPrediction": [
+                #"link_pred_pipeline",
+                #],
              }
-
-DATASETS_THAT_MATCH_PROBLEM = [ "LL1_net_nomination_seed",
-                                "49_facebook",
-                                "DS01876",
-                                "59_umls",
-                                "LL1_EDGELIST_net_nomination_seed",
-                                # "LL1_Blogosphere_net",
-                                "LL1_DIC28_net",
-                                # "LL1_ERDOS972_net",
-                                "LL1_IzmenjavaBratSestra_net",
-                                # "LL1_REVIJE_net",
-                                # "LL1_SAMPSON_net",
-                                # "LL1_USAIR97_net",
-                                # "LL1_imports_net",
-                                # "6_70_com_amazon",
-                                # "6_86_com_DBLP",
-                                # "LL1_Bio_dmela_net",
-                                "LL1_bn_fly_drosophila_medulla_net",
-                                # "LL1_eco_florida_net",
-                                "LL1_VTXC_1343_cora",
-                                "LL1_VTXC_1369_synthetic",
-                                "59_LP_karate"
-                                ]
-
-
-TRAIN_AND_TEST_SCHEMA_DATASETS = ["49_facebook",
-                                "59_umls",
-                                "DS01876",
-                                "LL1_net_nomination_seed",
-                                "6_70_com_amazon",
-                                "6_86_com_DBLP",
-                                "LL1_EDGELIST_net_nomination_seed",
-                                ]
-
 
 def convert(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
