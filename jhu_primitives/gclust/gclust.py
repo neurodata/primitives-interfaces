@@ -131,6 +131,8 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         model = gclust_object.model_
         
 
+        print(inputs, file=sys.stderr)
+        print(inputs[2], file=sys.stderr)
         testing = inputs[2]
 
         # am sure whats going on here..
