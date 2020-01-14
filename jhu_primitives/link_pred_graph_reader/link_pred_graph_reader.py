@@ -105,8 +105,8 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         n = len(graph)
 
         # grab link types (values) and edge list (keys)
-        values = np.array(list(nx.get_edge_attributes(graph, 'linkType').values()))
-        keys = np.array(list(nx.get_edge_attributes(graph, 'linkType').keys()))
+        values = np.array(list(nx.get_edge_attributes(graph, 'linkType').values()), dtype=int)
+        keys = np.array(list(nx.get_edge_attributes(graph, 'linkType').keys()), dtype=int)
 
         # grab the unique link types
         uniq_linktypes = np.unique(values)
