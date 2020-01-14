@@ -114,7 +114,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             - The number of clusters in which to assign the data
         """
 
-        # print('gclust, baby!!', file=sys.stderr)
+        print('gclust, baby!!', file=sys.stderr)
         if self._embedding is None:
             self._embedding = inputs[0]
 
