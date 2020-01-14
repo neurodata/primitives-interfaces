@@ -33,7 +33,7 @@ DATASETS = {
                 #"datasets-private/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
                 #],
             "linkPrediction": [
-                "datasets/seed_datasets_current/59_umls_MIN_METADATA",
+                #"datasets/seed_datasets_current/59_umls_MIN_METADATA",
                 "datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
                 ]
             }
