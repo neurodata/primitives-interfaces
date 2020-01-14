@@ -24,10 +24,10 @@ DATASETS = {
                 #"datasets-private/seed_datasets_current/49_facebook_MIN_METADATA",
                 #],
             "vertexNomination_class": [
-                "datasets-private/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
-                #"datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
-                #"datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
-                #"datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
+                #"datasets-private/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
                 ],
             #"communityDetection": [
                 #"datasets-private/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
@@ -185,6 +185,8 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
         if pipeline_id not in unique_ids:
             unique_paths.append(path)
             unique_ids.append(pipeline_id)
+    print(unique_paths, file=sys.stderr)
+    print(unique_ids, file=sys.stderr)
 
     # TODO data set path
 
