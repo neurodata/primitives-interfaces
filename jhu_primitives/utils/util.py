@@ -36,7 +36,7 @@ PROBLEM_TYPES = [
     ]
 
 DATASETS = {
-             "graphMatching": [
+            "graphMatching": [
                 "datasets/training_datasets/seed_datasets_archive/49_facebook",
                 # "datasets/training_datasets/LL1/LL1_Blogosphere_net",
                 # "LL1_DIC28_net",
@@ -47,11 +47,11 @@ DATASETS = {
                 # "datasets/training_datasets/LL1/LL1_USAIR97_net",
                 # "datasets/training_datasets/LL1/LL1_imports_net"
                 ],
-             "vertexNomination_class": [
-                 "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
+            "vertexNomination_class": [
+                "datasets/training_datasets/seed_datasets_archive/LL1_net_nomination_seed",
                 # "datasets/training_datasets/seed_datasets_archive/LL1_EDGELIST_net_nomination_seed",
-                 "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1343_cora",
-                 "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1369_synthetic",
+                "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1343_cora",
+                "datasets/training_datasets/seed_datasets_archive/LL1_VTXC_1369_synthetic",
                 ],
             # "vertexNomination_clust": [
             #     "DS01876"
@@ -63,24 +63,24 @@ DATASETS = {
                 "datasets-public/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net",
             #     "LL1_eco_florida_net"
                 ],
-             "linkPrediction": [
+            "linkPrediction": [
             #     "datasets/training_datasets/seed_datasets_archive/59_umls",
-                 "datasets-public/seed_datasets_current/59_LP_karate"
-                 ]
+                "datasets-public/seed_datasets_current/59_LP_karate"
+                ]
             }
 
 PIPELINES = {
             "graphMatching": [
                 "sgm_pipeline",
                 # "sgm_pipeline_10"
-                # ],
-              "vertexNomination_class": [
-                 "gclass_ase_pipeline",
+                ],
+            "vertexNomination_class": [
+                "gclass_ase_pipeline",
                 # "gclass_lse_pipeline",
                 # "gclass_oosase_pipeline",
                 # "gclass_ooslse_pipeline",
                 # "sgc_pipeline"
-                 ],
+                ],
              # "vertexNomination_clust": [
                 # "gmm_ase_pipeline",
                 # "gmm_lse_pipeline",
