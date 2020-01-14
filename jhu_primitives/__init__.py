@@ -5,6 +5,7 @@ __all__ = [
            "LaplacianSpectralEmbedding",
            "GaussianClassification",
            "GaussianClustering",
+           "GraphReader",
            "LargestConnectedComponent",
            "LinkPredictionGraphReader",
            "LinkPredictionRankClassifier",
@@ -19,6 +20,7 @@ from .ase import AdjacencySpectralEmbedding
 from .lse import LaplacianSpectralEmbedding
 from .gclass import GaussianClassification
 from .gclust import GaussianClustering
+from .graph_reader import GraphReader
 from .lcc import LargestConnectedComponent
 from .link_pred_graph_reader import LinkPredictionGraphReader
 from .link_pred_rc import LinkPredictionRankClassifier
