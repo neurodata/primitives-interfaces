@@ -83,7 +83,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         data_resources_keys = list(inputs.keys())
 
         temp_json = inputs.to_json_structure()
-        datasetDoc_uri = temp_json['location_uris'][0]
+        datasetDoc_uri = temp_json['location_uris'][0][7:]
         location_base_uri = '/'.join(datasetDoc_uri.split('/')[:-1])
 
         with open(datasetDoc_uri) as json_file:
