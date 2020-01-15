@@ -100,13 +100,13 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         # load the graphs and convert to a networkx object
         graphs = []
         for i in dataResources:
-            print(i['resType'], file=sys.stderr)
             if i['resType'] == "table":
                 df = inputs['learningData']
             elif i['resType'] == 'graph':
                 graphs.append(nx.read_gml(location_base_uri + "/" + i['resPath']))
             elif i['resType'] == "edgeList":
                 temp_graph = self._read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
+                print(len(temp_graph), file=sys.stderr)
                 graphs.append(temp_graph)
         print(graphs, file=sys.stderr)
 
@@ -138,6 +138,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
 
         # print((edgeList[columns[1]['colName'], columns[2]['colName']]), file=sys.stderr)
         edge_new = edgeList[[columns[1]['colName'], columns[2]['colName']]]
+        print(edge_new, file=sys.stderr)
         G = nx.read_edgelist(edge_new)
 
         return G
