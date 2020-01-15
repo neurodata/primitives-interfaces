@@ -134,7 +134,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         unique_labels = np.unique(self._labels)
         K = len(unique_labels)
 
-        testing = inputs[2]
+        testing = inputs[0]
 
         try:
             testing_nodeIDs = np.asarray(testing['G1.nodeID'])
@@ -175,23 +175,23 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         if self._fitted:
             return base.CallResult(None)
 
-        self._embedding = self._training_inputs[0]
+        self._embedding = self._training_inputs[1][0]
 
-        self._nodeIDs = np.array(self._training_inputs[1])
+        self._nodeIDs = np.array(self._training_inputs[2])
 
         try:
-            self._seeds = self._training_inputs[2]['G1.nodeID']
+            self._seeds = self._training_inputs[0]['G1.nodeID']
         except:
-            self._seeds = self._training_inputs[2]['nodeID'].astype(float).astype(int)
+            self._seeds = self._training_inputs[0]['nodeID'].astype(float).astype(int)
 
         self._seeds = np.array([int(i) for i in self._seeds])
 
         try:
-            self._labels = self._training_inputs[2]['classLabel']
+            self._labels = self._training_inputs[0]['classLabel']
             self._problem = 'VN'
 
         except:
-            self._labels = self._training_inputs[2]['community']
+            self._labels = self._training_inputs[0]['community']
             self._problem = 'CD'
 
         self._labels = np.array([int(i) for i in self._labels])

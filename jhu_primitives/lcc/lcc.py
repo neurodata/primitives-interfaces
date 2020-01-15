@@ -114,4 +114,4 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values()) # used to be G_connected[0]
         nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
-        return base.CallResult(container.List([G_connected[0].copy(), nodeIDs, csv]))
+        return base.CallResult(container.List([csv, [G_connected[0].copy()], nodeIDs]))

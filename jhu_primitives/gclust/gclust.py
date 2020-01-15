@@ -116,9 +116,9 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
         print('gclust, baby!!', file=sys.stderr)
         if self._embedding is None:
-            self._embedding = inputs[0]
+            self._embedding = inputs[1][[0]
 
-        nodeIDs = inputs[1]
+        nodeIDs = inputs[2]
         nodeIDS = np.array([int(i) for i in nodeIDs])
 
         max_clusters = self.hyperparams['max_clusters']
@@ -132,8 +132,8 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         
 
         print(inputs, file=sys.stderr)
-        print(inputs[2], file=sys.stderr)
-        testing = inputs[2]
+        print(inputs[0], file=sys.stderr)
+        testing = inputs[0]
 
         # am sure whats going on here..
         try:

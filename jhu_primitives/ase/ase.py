@@ -127,7 +127,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(1234)
         print('ase, baby!', file=sys.stderr)
-        G = inputs[0][0].copy()
+        G = inputs[1][0].copy()
         # print(type(G), file=sys.stderr)
 
         try:
@@ -173,13 +173,13 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
                 embedding = X_hat.copy()
 
-                inputs[0] = container.ndarray(embedding)
+                inputs[1][0] = container.ndarray(embedding)
 
                 return base.CallResult(inputs)
 
         ase_object = graspyASE(n_components=max_dimension, n_elbows = n_elbows)
         X_hat = ase_object.fit_transform(g)
 
-        inputs[0] = container.ndarray(X_hat)
+        inputs[1][0] = container.ndarray(X_hat)
 
         return base.CallResult(inputs)
