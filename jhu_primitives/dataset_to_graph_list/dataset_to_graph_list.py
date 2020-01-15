@@ -102,7 +102,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                 temp_graph = _read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
                 graphs.append(temp_graph)
 
-        return base.CallResult(base.Container.List([df, graphs]))
+        return base.CallResult(container.List([df, graphs]))
 
 
     def _read_edgelist(path, columns):
