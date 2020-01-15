@@ -1,5 +1,6 @@
 import os
 import typing
+import sys
 
 from d3m import container, utils as d3m_utils
 from d3m.base import utils as base_utils
@@ -79,7 +80,18 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         },
     )
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
-        print(inputs.keys(), sys.stderr)
+        print('dataset to graph list, baby!!', file=sys.stderr)
+        print(dir(inputs), file=sys.stderr)
+        print(inputs.keys(), file=sys.stderr)
+        print(inputs.to_json_structure(), file=sys.stderr)
+
+        data_resources_keys = list(inputs.keys())
+
+        for resource_id in data_resources_keys:
+            if resource_id == 'learningData':
+                learningData=inputs[resource_id]
+            elif 
+
 
         # dataframe_resource_id, dataframe = base_utils.get_tabular_resource(inputs, self.hyperparams['dataframe_resource'])
 
