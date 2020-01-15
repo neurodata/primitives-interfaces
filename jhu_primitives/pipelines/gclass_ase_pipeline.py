@@ -30,7 +30,7 @@ class gclass_ase_pipeline(BasePipeline):
         step_0.add_output('produce')
         pipeline.add_step(step_0)
 
-        step_r = meta_pipeline.PrimitiveStep(primitive_description=LargestConnectedComponent.metadata.query())
+        step_1 = meta_pipeline.PrimitiveStep(primitive_description=LargestConnectedComponent.metadata.query())
         step_1.add_argument(
             name='inputs',
             argument_type=ArgumentType.CONTAINER,
