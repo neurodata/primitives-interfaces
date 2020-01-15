@@ -90,7 +90,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         for resource_id in data_resources_keys:
             if resource_id == 'learningData':
                 learningData=inputs[resource_id]
-            elif:
+            else:
                 pass
 
 
