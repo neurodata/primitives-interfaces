@@ -90,6 +90,8 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         """
         np.random.seed(self.random_seed)
         print('lcc, baby!', file=sys.stderr)        
+        print(inputs[0], file=sys.stderr)
+        print(inputs[1], file=sys.stderr)
         graph_dataframe = inputs['0']
         csv = inputs['learningData']
 
