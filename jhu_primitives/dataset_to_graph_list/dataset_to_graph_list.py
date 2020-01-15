@@ -5,6 +5,7 @@ import json
 import networkx as nx
 
 from d3m import container, utils as d3m_utils
+from d3m import exceptions
 from d3m.base import utils as base_utils
 from d3m.metadata import base as metadata_base, hyperparams
 from d3m.primitive_interfaces import base, transformer
@@ -93,18 +94,6 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             datasetDoc_json = json.load(json_file)
             dataResources = datasetDoc_json['dataResources']
 
-        # get the task type from the task docs
-        temp_path = location_base_uri.split('/')
-        problemDoc_uri = temp_path[:-2] + temp_path[-2:].replace('dataset', 'problem')
-        
-        with open(problemDoc_uri) as json_file:
-             task_types = json.load(json_file)['about']['taskKeywords']
-        
-        TASK = "" # TODO
-        for task in task_types:
-            if task in ["communityDetection", "linkPrediction", "vertexClassification"]:
-                TASK = task
-
         # load the graphs and convert to a networkx object
         graphs = []
         for i in dataResources:
@@ -115,11 +104,23 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             elif i['resType'] == "edgeList":
                 temp_graph = _read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
                 graphs.append(temp_graph)
-            
-        for G in graphs:
-            subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
 
-        return base.CallResult(container.List([df, graphs]))
+        # get the task type from the task docs
+        temp_path = location_base_uri.split('/')
+        problemDoc_uri = temp_path[:-2] + temp_path[-2:].replace('dataset', 'problem')
+        
+        with open(problemDoc_uri) as json_file:
+             task_types = json.load(json_file)['about']['taskKeywords']
+        
+        # TODO consider avoiding explicit use of problem type throughout pipeline
+        TASK = "" 
+        for task in task_types:
+            if task in ["communityDetection", "linkPrediction", "vertexClassification", "graphMatching"]:
+                TASK = task
+        if TASK == "":
+            raise exceptions.NotSupportedError("only graph tasks are supported")
+
+        return base.CallResult(container.List([df, graphs, TASK]))
 
 
     def _read_edgelist(path, columns):

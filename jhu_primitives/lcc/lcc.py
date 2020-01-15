@@ -81,96 +81,13 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        """
-        Input
-            G: an n x n matrix or a networkx Graph
-        Return
-            The largest connected component of g
-
-        """
         np.random.seed(self.random_seed)
         print('lcc, baby!', file=sys.stderr)        
-        print(inputs[0], file=sys.stderr)
-        print(inputs[1], file=sys.stderr)
-        # graph_dataframe = inputs['0']
-        # csv = inputs['learningData']
 
-        # temp_json = inputs.to_json_structure()
-        # location_uri = temp_json['location_uris'][0]
-        # path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
-        
-        # path_to_problem= ""
-        # folders = location_uri.split("/")
-        # f_count=0
-        # found=False
-        # while not found:
-        #     f = folders[f_count]
-        #     if f in ['TRAIN', 'TEST', 'SCORE']:
-        #         path_to_problem += folders[f_count-1] + "_problem/problemDoc.json"
-        #         found=True
-        #     else: 
-        #         path_to_problem += f + "/"
-        #     f_count+=1
-        
-        # with open(path_to_problem[7:]) as json_file:
-        #      task_types=json.load(json_file)['about']['taskKeywords']
-        
-        # TASK = ""
-        # for task in task_types:
-        #     if task in ["communityDetection", "linkPrediction", "vertexClassification"]:
-        #         TASK = task
-        # print(task_types, file=sys.stderr)
-        # print(TASK, file=sys.stderr)
-        # try:
-        #     G = inputs['0']
-        # except:
-        #     edge_list = inputs['1'] # for edge lists
-        #     try:
-        #         V1_nodeIDs = np.array(edge_list.V1_nodeID.values).astype(int)
-        #         V2_nodeIDs = np.array(edge_list.V2_nodeID.values).astype(int)
-        #         edge_weights = np.array(edge_list.edge_weight.values).astype(float).astype(int)
-        #     except:
-        #         V1_nodeIDs = np.array(edge_list.node1.values).astype(int)
-        #         V2_nodeIDs = np.array(edge_list.node2.values).astype(int)
-        #         edge_weights = np.ones(len(V1_nodeIDs))
-        #     n_edges = len(V1_nodeIDs)
-
-        #     unique_V1_nodeIDs = np.unique(V1_nodeIDs)
-        #     unique_V2_nodeIDs = np.unique(V2_nodeIDs)
-
-        #     concatenated_unique_IDs = np.concatenate((unique_V1_nodeIDs, unique_V2_nodeIDs))
-
-        #     unique_all = np.unique(concatenated_unique_IDs)
-
-        #     n_nodes = len(unique_all)
-
-        #     G = nx.Graph()
-        #     G.add_nodes_from(unique_all)
-
-        #     for i in range(n_edges):
-        #         G.add_edge(V1_nodeIDs[i], V2_nodeIDs[i], weight = edge_weights[i])
-
-        # G = nx.read_gml(path=path_to_graph[7:])
-        # if len(csv) != 0:
-        #   if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-        #        nx.set_node_attributes(G,'nodeID',-1)
-        #        for i in range(len(G)):
-        #            G.node[i]['nodeID'] = i
-
-        #    nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values())
-        #    nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
-
-        #    return base.CallResult(container.List([G.copy(), nodeIDs,csv]))
-
-        # if type(G) == np.ndarray:
-        #     if G.ndim == 2:
-        #         if G.shape[0] == G.shape[1]: # n x n matrix
-        #             G = Graph(G)
-        #         else:
-        #             raise TypeError("Networkx graphs or n x n numpy arrays only")
+        G = inputs[1][0]
+        TASK = inputs[2]
 
         subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
-        
         
         components = np.zeros(len(G), dtype=int)
         for i, connected_component in enumerate(nx.connected_components(G)):
@@ -180,9 +97,12 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         for header in csv.columns:
             if "nodeID" in header:
                 NODEID = header
-        if TASK == "vertexClassification":
-            csv['components'] = components[np.array(csv[NODEID], dtype=int)]
-        elif TASK == "communityDetection":
+        
+        # if TASK == "vertexClassification":
+        #     csv['components'] = components[np.array(csv[NODEID], dtype=int)]
+        # elif TASK == "communityDetection":
+        #     csv['components'] = components        
+        if TASK == "communityDetection":
             csv['components'] = components        
 
         G_connected = [[0]]
