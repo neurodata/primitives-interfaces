@@ -107,7 +107,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
 
         # get the task type from the task docs
         temp_path = location_base_uri.split('/')
-        problemDoc_uri = '/'.join(temp_path[:-2]) + '/'.join(temp_path[-2:]).replace('dataset', 'problem')
+        problemDoc_uri = '/'.join(temp_path[:-2]) + '/' + '/'.join(temp_path[-2:]).replace('dataset', 'problem')
         
         with open(problemDoc_uri) as json_file:
              task_types = json.load(json_file)['about']['taskKeywords']
