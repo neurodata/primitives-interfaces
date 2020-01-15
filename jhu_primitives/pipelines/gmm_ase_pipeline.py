@@ -37,7 +37,7 @@ class gmm_ase_pipeline(BasePipeline):
         step_1.add_argument(
             name = 'inputs',
             argument_type=ArgumentType.CONTAINER,
-            data_reference='steps.0.produce'
+            data_reference='inputs.1'
         )
 
         step_1.add_output('produce')
@@ -47,7 +47,7 @@ class gmm_ase_pipeline(BasePipeline):
         step_2.add_argument(
             name = 'inputs',
             argument_type=ArgumentType.CONTAINER,
-            data_reference='steps.1.produce'
+            data_reference=['steps.0.produce','steps.1.produce']
         )
 
         step_2.add_output('produce')
