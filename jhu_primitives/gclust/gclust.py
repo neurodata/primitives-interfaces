@@ -116,7 +116,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
         print('gclust, baby!!', file=sys.stderr)
         if self._embedding is None:
-            self._embedding = inputs[1][[0]
+            self._embedding = inputs[1][0]
 
         nodeIDs = inputs[2]
         nodeIDS = np.array([int(i) for i in nodeIDs])
