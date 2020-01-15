@@ -143,9 +143,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             testing_nodeIDs = np.asarray(testing['nodeID'])
         final_labels = np.zeros(len(testing))
         string_nodeIDs = [str(i) for i in self._nodeIDs]
-        print(string_nodeIDs, file=sys.stderr)
-        print(testing_nodeIDs, file=sys.stderr)
-
+        for i, node in enumerate(string_nodeIDs):
+            print(node == str(testing_nodeIDs[i]), file=sys.stderr)
         if self._PD and self._ENOUGH_SEEDS:
             for i in range(len(testing_nodeIDs)):
                 temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
@@ -231,11 +230,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         # gather the means
         x_sums = np.zeros(shape = (K, d))
 
-        print('start', file=sys.stderr)
-        print(self._nodeIDs, file=sys.stderr)
-        print(self._seeds, file=sys.stderr)
-        print('stop', file=sys.stderr)
-        
         estimated_means = np.zeros((K, d))
         for i in range(K):
             temp_seeds = self._seeds[np.where(self._labels == i)[0]]
