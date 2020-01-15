@@ -235,7 +235,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         
         estimated_means = np.zeros((K, d))
         for i in range(K):
-            temp_seeds = self._seeds[np.where(self._labels == k)[0]]
+            temp_seeds = self._seeds[np.where(self._labels == i)[0]]
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
         #for i in range(len(self._seeds)):
         #    nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
