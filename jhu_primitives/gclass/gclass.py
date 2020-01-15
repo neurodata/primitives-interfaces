@@ -230,7 +230,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         print('start', file=sys.stderr)
         print(self._nodeIDs, file=sys.stderr)
-        print(self._seeds[0], file=sys.stderr)
+        print(self._seeds, file=sys.stderr)
+        print(np.where(self._nodeIDs == self._seeds[0]))
         print('stop', file=sys.stderr)
         for i in range(len(self._seeds)):
             nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
