@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 __all__ = [
            "AdjacencySpectralEmbedding",
+           "DatasetToGraphList",
            "LaplacianSpectralEmbedding",
            "GaussianClassification",
            "GaussianClustering",
@@ -17,6 +18,7 @@ __all__ = [
            ]
 
 from .ase import AdjacencySpectralEmbedding
+from .dataset_to_graph_list import DatasetToGraphList
 from .lse import LaplacianSpectralEmbedding
 from .gclass import GaussianClassification
 from .gclust import GaussianClustering
