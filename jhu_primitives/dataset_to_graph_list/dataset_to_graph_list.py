@@ -90,7 +90,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         for resource_id in data_resources_keys:
             if resource_id == 'learningData':
                 learningData=inputs[resource_id]
-            elif 
+            elif:
+                pass
 
 
         # dataframe_resource_id, dataframe = base_utils.get_tabular_resource(inputs, self.hyperparams['dataframe_resource'])
