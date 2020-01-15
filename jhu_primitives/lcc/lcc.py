@@ -112,6 +112,8 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             if len(i) > len(G_connected):
                 G_connected = i
                 print("hey, we got here", file=sys.stderr)
+            else:
+                print("but we got here", file=sys.stderr)
 
         nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values()) # used to be G_connected[0]
         nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
