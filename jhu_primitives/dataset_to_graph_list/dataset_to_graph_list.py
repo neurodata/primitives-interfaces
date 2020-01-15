@@ -133,13 +133,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         # and a reciever in the second col.
         # TODO make this function handle time series (Ground Truth)
         edgeList=pd.read_csv(path)
-
-        # print(edgeList, file =sys.stderr)
-
-        # print((edgeList[columns[1]['colName'], columns[2]['colName']]), file=sys.stderr)
-        edge_new = edgeList[[columns[1]['colName'], columns[2]['colName']]]
-        print(edge_new, file=sys.stderr)
-        G = nx.read_edgelist(edge_new)
+        G = nx.from_pandas_dataframe(edgeList, columns[1]['colName'], columns[2]['colName'])
 
         return G
 
