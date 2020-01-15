@@ -136,9 +136,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         K = len(unique_labels)
 
         testing = inputs[0]
-        print(inputs, file=sys.stderr)
-        print([type(i) for i in inputs], file=sys.stderr)
-        print(np.where(self._nodeIDs == int(testing_nodeIDSs[0])), file = sys.stderr)
 
         try:
             testing_nodeIDs = np.asarray(testing['G1.nodeID'])
@@ -179,8 +176,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         if self._fitted:
             return base.CallResult(None)
 
-        print(self._training_inputs, file=sys.stderr)
-        print([type(i) for i in self._training_inputs], file=sys.stderr)
+        print(self._training_inputs[2], file=sys.stderr)
         self._embedding = self._training_inputs[1][0]
 
         self._nodeIDs = np.array(self._training_inputs[2])
