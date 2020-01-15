@@ -92,6 +92,21 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             datasetDoc_json = json.load(json_file)
             dataResources = datasetDoc_json['dataResources']
 
+        temp_path = location_base_uri.split('/')
+        problemDoc_uri = temp_path[:-2] + temp_path[-2:].replace('dataset', 'problem')
+        
+        with open(problemDoc_uri) as json_file:
+             task_types = json.load(json_file)['about']['taskKeywords']
+        
+        TASK = "" # TODO
+        for task in task_types:
+            if task in ["communityDetection", "linkPrediction", "vertexClassification"]:
+                TASK = task
+
+
+
+
+
         graphs = []
         for i in dataResources:
             if i['resType'] == "table":
