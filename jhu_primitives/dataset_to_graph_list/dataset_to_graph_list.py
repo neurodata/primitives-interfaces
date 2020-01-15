@@ -84,6 +84,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
         data_resources_keys = list(inputs.keys())
 
+        # obtain the path to dataset
         temp_json = inputs.to_json_structure()
         datasetDoc_uri = temp_json['location_uris'][0][7:]
         location_base_uri = '/'.join(datasetDoc_uri.split('/')[:-1])
@@ -92,6 +93,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             datasetDoc_json = json.load(json_file)
             dataResources = datasetDoc_json['dataResources']
 
+        # get the task type from the task docs
         temp_path = location_base_uri.split('/')
         problemDoc_uri = temp_path[:-2] + temp_path[-2:].replace('dataset', 'problem')
         
@@ -103,10 +105,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             if task in ["communityDetection", "linkPrediction", "vertexClassification"]:
                 TASK = task
 
-
-
-
-
+        # load the graphs and convert to a networkx object
         graphs = []
         for i in dataResources:
             if i['resType'] == "table":
@@ -116,6 +115,9 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             elif i['resType'] == "edgeList":
                 temp_graph = _read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
                 graphs.append(temp_graph)
+            
+        for G in graphs:
+            subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
 
         return base.CallResult(container.List([df, graphs]))
 
