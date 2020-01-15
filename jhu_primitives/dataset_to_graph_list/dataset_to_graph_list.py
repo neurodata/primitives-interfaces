@@ -86,9 +86,6 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         datasetDoc_uri = temp_json['location_uris'][0]
         location_base_uri = '/'.join(datasetDoc_uri.split('/')[:-1])
 
-        path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
-        graph = nx.read_gml(path=path_to_graph[7:]) 
-
         with open(datasetDoc_uri) as json_file:
             datasetDoc_json = json.load(json_file)
             dataResources = datasetDoc_json['dataResources']
