@@ -14,7 +14,7 @@ import re
 
 PROBLEM_TYPES = [
     #"graphMatching",
-    "vertexNomination_class",
+    "vertexClassification",
     #"linkPrediction",
     #"communityDetection"
     ]
@@ -23,7 +23,7 @@ DATASETS = {
             #"graphMatching": [
                 #"datasets-private/seed_datasets_current/49_facebook_MIN_METADATA",
                 #],
-            "vertexNomination_class": [
+            "vertexClassification": [
                 #"datasets-private/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
                 "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
                 #"datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
@@ -43,7 +43,7 @@ PIPELINES = {
                 #"sgm_pipeline",
                 # "sgm_pipeline_10"
                 #],
-            "vertexNomination_class": [
+            "vertexClassification": [
                 "gclass_ase_pipeline",
                 # "gclass_lse_pipeline",
                 # "gclass_oosase_pipeline",
