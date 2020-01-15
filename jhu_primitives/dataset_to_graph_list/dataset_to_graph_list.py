@@ -130,6 +130,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         edgeList=pd.read_csv(path)
 
         G = nx.Graph()
+
+        print(columns, file=sys.stderr)
         for col in columns:
             if "edgeSource" in col['role']:
                 sourceColumn = col['colName']
