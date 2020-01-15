@@ -231,15 +231,19 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         print('start', file=sys.stderr)
         print(self._nodeIDs, file=sys.stderr)
         print(self._seeds, file=sys.stderr)
-        print(np.where(self._nodeIDs == self._seeds[0]))
         print('stop', file=sys.stderr)
-        for i in range(len(self._seeds)):
-            nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
-            temp_feature_vector = self._embedding[nodeID, :]
-            temp_label = self._labels[i]
-            x_sums[temp_label, :] += temp_feature_vector
+        
+        estimated_means = np.zeros((K, d))
+        for i in range(K):
+            temp_seeds = self._seeds[np.where(self._labels == k)[0]]
+            estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
+        #for i in range(len(self._seeds)):
+        #    nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
+        #    temp_feature_vector = self._embedding[nodeID, :]
+        #    temp_label = self._labels[i]
+        #    x_sums[temp_label, :] += temp_feature_vector
 
-        estimated_means = [x_sums[i,:]/label_counts[i] for i in range(K)]
+        #estimated_means = [x_sums[i,:]/label_counts[i] for i in range(K)]
 
         mean_centered_sums = np.zeros(shape = (K, d, d))
 
