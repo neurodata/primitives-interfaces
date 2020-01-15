@@ -179,6 +179,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         if self._fitted:
             return base.CallResult(None)
 
+        print(self._training_inputs, file=sys.stderr)
+        print([type(i) for i in self._training_inputs], file=sys.stderr)
         self._embedding = self._training_inputs[1][0]
 
         self._nodeIDs = np.array(self._training_inputs[2])
