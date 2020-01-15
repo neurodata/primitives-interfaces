@@ -80,27 +80,45 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         },
     )
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
-        print('dataset to graph list, baby!!', file=sys.stderr)
-        print(dir(inputs), file=sys.stderr)
-        print(inputs.keys(), file=sys.stderr)
-        print(inputs.to_json_structure(), file=sys.stderr)
-
         data_resources_keys = list(inputs.keys())
 
-        for resource_id in data_resources_keys:
-            if resource_id == 'learningData':
-                learningData=inputs[resource_id]
-            else:
-                pass
+        temp_json = inputs.to_json_structure()
+        datasetDoc_uri = temp_json['location_uris'][0]
+        location_base_uri = '/'.join(datasetDoc_uri.split('/')[:-1])
+
+        path_to_graph = location_uri[:-15] + "graphs/" + graph_dataframe.at[0,'filename'] 
+        graph = nx.read_gml(path=path_to_graph[7:]) 
+
+        with open(datasetDoc_uri) as json_file:
+            datasetDoc_json = json.load(json_file)
+            dataResources = datasetDoc_json['dataResources']
+
+        graphs = []
+        for i in dataResources:
+            if i['resType'] == "table":
+                df = inputs['learningData']
+            elif i['resType'] == 'graph':
+                graphs.append(nx.read_gml(location_base_uri + "/" + i['resPath']))
+            elif i['resType'] == "edgeList":
+                temp_graph = _read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
+                graphs.append(temp_graph)
+
+        return base.CallResult(base.Container.List([df, graphs]))
 
 
-        # dataframe_resource_id, dataframe = base_utils.get_tabular_resource(inputs, self.hyperparams['dataframe_resource'])
+    def _read_edgelist(path, columns):
+        edgeList=pd.read_csv(path)
 
-        # dataframe.metadata = self._update_metadata(inputs.metadata, dataframe_resource_id)
+        G = nx.Graph()
+        for col in columns:
+            if "edgeSource" in col['role']:
+                sourceColumn = col['colName']
+            elif "edgeTarget" in col['role']:
+                targetColumn = col['colName']
 
-        # assert isinstance(dataframe, container.DataFrame), type(dataframe)
+        G = nx.read_edgelist(edgeList[['sourceColumn', 'targetColumn']])
 
-        return base.CallResult(dataframe)
+        return G
 
 
     # TODO: not sure what this does or if its relevant to graph problems.
