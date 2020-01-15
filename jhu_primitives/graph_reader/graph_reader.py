@@ -27,7 +27,7 @@ import numpy as np
 # Outputs = container.List
 
 
-class GraphReader(base.FileReaderPrimtiveBase):
+class GraphReader(base.FileReaderPrimitiveBase):
     """
     A primitive for reading in a graph or multi-graph.
     """
