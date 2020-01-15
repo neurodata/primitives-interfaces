@@ -175,6 +175,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         return base.CallResult(outputs)
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
+        print(inputs, file=sys.stderr)
+        print([type(i) for i in inputs], file=sys.stderr)
+        print(np.where(self._nodeIDs == int(testing_nodeIDSs[0])), file = sys.stderr)
         if self._fitted:
             return base.CallResult(None)
 
