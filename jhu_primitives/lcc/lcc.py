@@ -106,12 +106,13 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         if TASK == "communityDetection":
             csv['components'] = components        
 
-        G_connected = [[0]]
+            
+        G_connected = [0]
         for i in subgraphs:
-            if len(i) > len(G_connected[0]):
-                G_connected = [i]
+            if len(i) > len(G_connected):
+                G_connected = i
 
         nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values()) # used to be G_connected[0]
         nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
-        return base.CallResult(container.List([csv, [G_connected[0].copy()], nodeIDs]))
+        return base.CallResult(container.List([csv, [G_connected.copy()], nodeIDs]))
