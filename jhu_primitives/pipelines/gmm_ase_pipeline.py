@@ -1,7 +1,7 @@
 from d3m.metadata import pipeline as meta_pipeline
 from d3m.metadata.base import Context, ArgumentType
 import common_primitives
-from common_primitives import DatasetToDataFramePrimitive
+from common_primitives.dataset_to_dataframe import DatasetToDataFramePrimitive
 
 from jhu_primitives.pipelines.base import BasePipeline
 from jhu_primitives.ase import AdjacencySpectralEmbedding
