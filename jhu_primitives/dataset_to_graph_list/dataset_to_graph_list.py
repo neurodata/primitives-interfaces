@@ -82,6 +82,21 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             'primitive_family': metadata_base.PrimitiveFamily.DATA_TRANSFORMATION,
         },
     )
+
+    def _read_edgelist(path, columns):
+        edgeList=pd.read_csv(path)
+
+        G = nx.Graph()
+        for col in columns:
+            if "edgeSource" in col['role']:
+                sourceColumn = col['colName']
+            elif "edgeTarget" in col['role']:
+                targetColumn = col['colName']
+
+        G = nx.read_edgelist(edgeList[['sourceColumn', 'targetColumn']])
+
+        return G
+
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
         data_resources_keys = list(inputs.keys())
 
@@ -122,20 +137,6 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
 
         return base.CallResult(container.List([df, graphs, TASK]))
 
-
-    def _read_edgelist(path, columns):
-        edgeList=pd.read_csv(path)
-
-        G = nx.Graph()
-        for col in columns:
-            if "edgeSource" in col['role']:
-                sourceColumn = col['colName']
-            elif "edgeTarget" in col['role']:
-                targetColumn = col['colName']
-
-        G = nx.read_edgelist(edgeList[['sourceColumn', 'targetColumn']])
-
-        return G
 
 
     # TODO: not sure what this does or if its relevant to graph problems.
