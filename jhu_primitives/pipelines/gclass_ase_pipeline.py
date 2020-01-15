@@ -5,7 +5,7 @@ from jhu_primitives.pipelines.base import BasePipeline
 from jhu_primitives.ase import AdjacencySpectralEmbedding
 from jhu_primitives.gclass import GaussianClassification
 from jhu_primitives.lcc import LargestConnectedComponent
-from jhu_primites.dataset_to_graph_list import DatasetToGraphList
+from jhu_primitives.dataset_to_graph_list import DatasetToGraphList
 
 DATASETS = {
     'LL1_net_nomination_seed'
