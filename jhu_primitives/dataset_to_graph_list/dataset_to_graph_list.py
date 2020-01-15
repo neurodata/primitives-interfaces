@@ -100,6 +100,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         # load the graphs and convert to a networkx object
         graphs = []
         for i in dataResources:
+            print(i['resType'], file=sys.stderr)
             if i['resType'] == "table":
                 df = inputs['learningData']
             elif i['resType'] == 'graph':
@@ -107,6 +108,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             elif i['resType'] == "edgeList":
                 temp_graph = self._read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
                 graphs.append(temp_graph)
+        print(graphs, file=sys.stderr)
 
         # get the task type from the task docs
         temp_path = datasetDoc_uri.split('/')
