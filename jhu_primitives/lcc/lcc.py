@@ -88,6 +88,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         G = inputs[1][0]
         TASK = inputs[2]
 
+        print(len(G), file=sys.stderr)
         subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
         
         components = np.zeros(len(G), dtype=int)
