@@ -136,7 +136,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             elif "edgeTarget" in col['role']:
                 targetColumn = col['colName']
 
-        G = nx.read_edgelist(edgeList[['sourceColumn', 'targetColumn']])
+        G = nx.read_edgelist(edgeList[[sourceColumn, targetColumn]])
 
         return G
 
