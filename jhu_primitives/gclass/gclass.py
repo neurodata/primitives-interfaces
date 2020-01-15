@@ -143,6 +143,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             testing_nodeIDs = np.asarray(testing['nodeID'])
         final_labels = np.zeros(len(testing))
         string_nodeIDs = [str(i) for i in self._nodeIDs]
+        print(string_nodeIDs, file=sys.stderr)
+        print(testing_nodeIDs, file=sys.stderr)
 
         if self._PD and self._ENOUGH_SEEDS:
             for i in range(len(testing_nodeIDs)):
