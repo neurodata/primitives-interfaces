@@ -128,7 +128,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         np.random.seed(1234)
         print('ase, baby!', file=sys.stderr)
         G = inputs[1][0].copy()
-        # print(type(G), file=sys.stderr)
+        print(type(G), file=sys.stderr)
 
         try:
             link_predicton = inputs[3]
