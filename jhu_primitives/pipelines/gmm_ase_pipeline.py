@@ -6,7 +6,7 @@ from jhu_primitives.ase import AdjacencySpectralEmbedding
 from jhu_primitives.gclust import GaussianClustering
 from jhu_primitives.lcc import LargestConnectedComponent
 from jhu_primitives.graph_reader import GraphReader
-from jhu_primites.dataset_to_graph_list import DatasetToGraphList
+from jhu_primitives.dataset_to_graph_list import DatasetToGraphList
 
 
 DATASETS = {
