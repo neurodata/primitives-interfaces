@@ -1,13 +1,12 @@
 from d3m.metadata import pipeline as meta_pipeline
 from d3m.metadata.base import Context, ArgumentType
-import common_primitives
-from common_primitives.dataset_to_dataframe import DatasetToDataFramePrimitive
 
 from jhu_primitives.pipelines.base import BasePipeline
 from jhu_primitives.ase import AdjacencySpectralEmbedding
 from jhu_primitives.gclust import GaussianClustering
 from jhu_primitives.lcc import LargestConnectedComponent
 from jhu_primitives.graph_reader import GraphReader
+from jhu_primitives.dataset_to_graph_list import DatasetToGraphList
 
 
 DATASETS = {
@@ -23,7 +22,7 @@ class gmm_ase_pipeline(BasePipeline):
         pipeline = meta_pipeline.Pipeline()
         pipeline.add_input(name = 'inputs')
 
-        step_0 = meta_pipeline.PrimitiveStep(primitive_description=DatasetToDataFramePrimitive.metadata.query())
+        step_0 = meta_pipeline.PrimitiveStep(primitive_description=DatasetToGraphList.metadata.query())
         step_0.add_argument(
             name = 'inputs',
             argument_type=ArgumentType.CONTAINER,
