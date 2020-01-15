@@ -2,6 +2,7 @@ import os
 import typing
 import sys
 import json
+import networkx as nx
 
 from d3m import container, utils as d3m_utils
 from d3m.base import utils as base_utils
