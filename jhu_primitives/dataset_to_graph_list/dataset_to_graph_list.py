@@ -106,7 +106,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                 graphs.append(temp_graph)
 
         # get the task type from the task docs
-        temp_path = location_base_uri.split('/')
+        temp_path = datasetDoc_uri.split('/')
         problemDoc_uri = '/'.join(temp_path[:-2]) + '/' + '/'.join(temp_path[-2:]).replace('dataset', 'problem')
         
         with open(problemDoc_uri) as json_file:
