@@ -135,6 +135,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         K = len(unique_labels)
 
         testing = inputs[0]
+        print(inputs, file=sys.stderr)
+        print([type(i) for i in inputs], file=sys.stderr)
+        print(np.where(self._nodeIDs == int(testing_nodeIDSs[0])), file = sys.stderr)
 
         try:
             testing_nodeIDs = np.asarray(testing['G1.nodeID'])
