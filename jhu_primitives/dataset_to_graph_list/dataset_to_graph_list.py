@@ -6,7 +6,8 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 
-from d3m import container, utils as d3m_utils
+from d3m import utils
+from d3m import container
 from d3m import exceptions
 from d3m.base import utils as base_utils
 from d3m.metadata import base as metadata_base, hyperparams
@@ -15,18 +16,12 @@ from d3m.primitive_interfaces import base, transformer
 import common_primitives
 
 # from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-# from d3m import container
-from d3m import utils
 # from d3m.metadata import hyperparams, base as metadata_module, params
 # from d3m.primitive_interfaces import base
 # from d3m.primitive_interfaces.base import CallResult
 
 Inputs = container.Dataset
 Outputs = container.List
-
-# Inputs = container.Dataset
-# Outputs = container.DataFrame
-
 
 class Hyperparams(hyperparams.Hyperparams):
     dataframe_resource = hyperparams.Hyperparameter[typing.Union[str, None]](
