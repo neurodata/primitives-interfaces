@@ -190,10 +190,13 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         for col in headers:
             if "node" in col:
                 self._seeds = csv[col]
+                self._lcc_seeds = np.array([s for s in self._seeds if s in self._nodeIDs])
             if "label" in col:
                 self._labels = csv[col]
+                self._lcc_labels = np.array([s for s in self._labels if s in self._nodeIDs])
         # TODO: assumes labels are int-like
         self._labels = np.array([int(i) for i in self._labels])
+        self._lcc_labels = np.array([int(i) for i in self._lcc_labels])
 
         unique_labels, label_counts = np.unique(self._labels, return_counts = True)
         K = len(unique_labels)
@@ -226,15 +229,16 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         x_sums = np.zeros(shape = (K, d))
 
         estimated_means = np.zeros((K, d))
+        seed_idx = np.array([np.where(self._nodeIDs == s)[0][0] for i in self._lcc_seeds])
         for i in range(K):
-            temp_seeds = self._seeds[np.where(self._labels == i)[0]]
+            temp_seeds = seed_idx[self._lcc_labels == i]
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
 
         mean_centered_sums = np.zeros(shape = (K, d, d))
 
         covs = np.zeros(shape = (K, d, d))
-        for i in range(K):
-            feature_vectors = self._embedding[self._seeds[self._labels == i], :]
+        for i in range(K): 
+            feature_vectors = self._embedding[seed_idx[self._labels == i], :]
             covs[i] = np.cov(feature_vectors, rowvar = False)
 
         if self._ENOUGH_SEEDS:
