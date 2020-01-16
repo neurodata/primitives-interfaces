@@ -129,17 +129,17 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         print('ase, baby!', file=sys.stderr)
         G = inputs[1][0].copy()
 
-        try:
-            link_predicton = inputs[3]
-            if type(link_predicton) is not bool:
-                link_predicton = False
-        except:
-            link_predicton = False
+        headers=csv.columns
 
-        if link_predicton:
-            g = np.array(G.copy())
-        else:
-            g = graspyPTR(G)
+        if "linkExists" in headers:
+            g=np.array(G.copy())
+        except:
+            g=graspyPTR(G)
+
+        # if link_predicton:
+        #     g = np.array(G.copy())
+        # else:
+        #    g = graspyPTR(G)
 
         n = g.shape[0]
 
@@ -177,8 +177,10 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 return base.CallResult(inputs)
 
         ase_object = graspyASE(n_components=max_dimension, n_elbows = n_elbows)
-        X_hat = ase_object.fit_transform(g)
+        if isinstance(ase_object, tuple):
+            X_hat = np.concatenate(ase_object.fit_transform(g), axis=1)
 
+        print(X_hat.shape, file=sys.stderr)
         inputs[1][0] = container.ndarray(X_hat)
 
         return base.CallResult(inputs)
