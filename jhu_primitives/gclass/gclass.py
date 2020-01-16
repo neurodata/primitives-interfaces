@@ -156,9 +156,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                     weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                     print(weighted_pdfs, file=sys.stderr)
                     label = np.argmax(weighted_pdfs)
-                    final_labels[i] = int(label)
+                    final_labels[i] = self._unique_label[int(label)]
                 except:
-                    final_labels[i] = np.argmax(self._pis)
+                    final_labels[i] = self._unique_labels[np.argmax(self._pis)]
         else:
 
             for i in range(len(testing_nodeIDs)):
@@ -169,10 +169,10 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                     except:
                         self._covariances += self._covariances + np.ones(self._covariances.shape)*0.00001
                         weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
-                        label = np.argmax(weighted_pdfs)
-                        final_labels[i] = int(label)
+                    label = np.argmax(weighted_pdfs)
+                    final_labels[i] = self._unique_label[int(label)]
                 except:
-                    final_labels[i] = np.argmax(self._pis)
+                    final_labels[i] = self._unique_labels[np.argmax(self._pis)]
 
         csv[LABEL] = final_labels
         outputs = container.DataFrame(csv[['d3mIndex',LABEL]])
@@ -202,8 +202,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 self._labels = csv[col]
                 self._lcc_labels = np.array([s for s in self._labels if s in self._nodeIDs])
         # TODO: assumes labels are int-like
-        self._labels = np.array([int(i) for i in self._labels])
-        self._lcc_labels = np.array([int(i) for i in self._lcc_labels])
+        self._labels = np.array([i for i in self._labels])
+        self._lcc_labels = np.array([i for i in self._lcc_labels])
 
         unique_labels, label_counts = np.unique(self._labels, return_counts = True)
         K = len(unique_labels)
@@ -217,7 +217,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._ENOUGH_SEEDS = True # For full estimation
 
         # get unique labels
-        unique_labels, label_counts = np.unique(self._labels, return_counts = True)
+        self._unique_labels, label_counts = np.unique(self._labels, return_counts = True)
         for i in range(K):
             if label_counts[i] < d*(d + 1)/2:
                 self._ENOUGH_SEEDS = False
