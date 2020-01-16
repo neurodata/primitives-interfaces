@@ -116,5 +116,10 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         print(len(G_largest), file=sys.stderr)
         print(len(nodeIDs), file=sys.stderr)
+        print(len(new_nodeIDs), file=sys.stderr)
+        print("also print first 20 entries")
+        print(G_largest[:20], file=sys.stderr)
+        print(nodeID[:20]s, file=sys.stderr)
+        print(new_nodeIDs[:20], file=sys.stderr)
         
         return base.CallResult(container.List([csv, [G_largest.copy()], new_nodeIDs]))
