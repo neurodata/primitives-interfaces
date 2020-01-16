@@ -186,26 +186,25 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             unique_paths.append(path)
             unique_ids.append(pipeline_id)
     print(unique_paths, file=sys.stderr)
-    print(unique_ids, file=sys.stderr)
 
     # TODO data set path
 
     for dataset in datasets:
         for path in unique_paths:
             print(dataset, file=sys.stderr)
+            #SCORE = ""
+            #for f in os.listdir(dataset_path + "SCORE/"):
+            #    if str(f)[:7] == "dataset":
+            #        SCORE = str(f) + "/"
+            #cmd += dataset_path + "SCORE/" + SCORE + "datasetDoc.json -O "
             dataset_path = dataset + "/"
-            cmd = "python3 -m d3m runtime fit-score -p " + path + ".json -r "
-            cmd += dataset_path + "TRAIN/problem_TRAIN/problemDoc.json -i "
-            cmd += dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json -t "
-            cmd += dataset_path + "TEST/dataset_TEST/datasetDoc.json -a "
-            
-            SCORE = ""
-            for f in os.listdir(dataset_path + "SCORE/"):
-                if str(f)[:7] == "dataset":
-                    SCORE = str(f) + "/"
-
-            cmd += dataset_path + "SCORE/" + SCORE + "datasetDoc.json -O "
-            cmd += path + "_run.yaml"
+            cmd = "python3 -m d3m runtime fit-score -p " + path + ".json"
+            cmd += " -r " + dataset_path + "TRAIN/problem_TRAIN/problemDoc.json"
+            cmd += " -i " + dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json"
+            cmd += " -t " + dataset_path + "TEST/dataset_TEST/datasetDoc.json"
+            cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
+            cmd += " -O " + path + "_run.yaml"
+            cmd += " -o " + "/predictions.csv"
 
             os.system(cmd)
 
