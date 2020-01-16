@@ -127,6 +127,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(1234)
         print('ase, baby!', file=sys.stderr)
+        csv = inputs[0]
         G = inputs[1][0].copy()
 
         headers=csv.columns
