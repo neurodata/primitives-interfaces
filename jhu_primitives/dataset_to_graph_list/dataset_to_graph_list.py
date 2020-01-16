@@ -139,6 +139,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         G = nx.convert_matrix.from_pandas_edgelist(edgeList, columns[1]['colName'], columns[2]['colName'])
 
         print(G.nodes(data=True), file=sys.stderr)
+        print(set(np.array([list(G.node[n].keys()) for n in G.nodes()]).flatten()), file=sys.stderr)
         return G
 
 
