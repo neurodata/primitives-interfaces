@@ -121,8 +121,11 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         'preconditions': ['NO_MISSING_VALUES']
     })
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
-        super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0,
+                 docker_containers: Dict[str, base.DockerContainer] = None) -> None:
+        super().__init__(hyperparams=hyperparams,
+                         random_seed=random_seed,
+                         docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(1234)
@@ -180,6 +183,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         ase_object = graspyASE(n_components=max_dimension, n_elbows = n_elbows)
         if isinstance(ase_object, tuple):
             X_hat = np.concatenate(ase_object.fit_transform(g), axis=1)
+        else:
+            X_hat = ase_object.fit_transform(g)
 
         print(X_hat.shape, file=sys.stderr)
         inputs[1][0] = container.ndarray(X_hat)
