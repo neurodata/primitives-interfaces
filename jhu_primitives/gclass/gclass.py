@@ -132,8 +132,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         n = self._embedding.shape[0]
 
-        unique_labels = np.unique(self._labels)
-        K = len(unique_labels)
+        K = len(self._unique_labels)
 
         csv = inputs[0]
 
@@ -213,8 +212,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._labels = np.array([i for i in self._labels])
         self._lcc_labels = np.array([i for i in self._lcc_labels])
 
-        unique_labels, label_counts = np.unique(self._labels, return_counts = True)
-        K = len(unique_labels)
+        # get unique labels
+        self._unique_labels, label_counts = np.unique(self._labels, return_counts = True)
+        K = len(self._unique_labels)
 
         n, d = self._embedding.shape
 
@@ -224,8 +224,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         self._ENOUGH_SEEDS = True # For full estimation
 
-        # get unique labels
-        self._unique_labels, label_counts = np.unique(self._labels, return_counts = True)
         for i in range(K):
             if label_counts[i] < d*(d + 1)/2:
                 self._ENOUGH_SEEDS = False
@@ -236,7 +234,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         # reindex labels if necessary
         for i in range(len(self._labels)): # reset labels to [0,.., K-1]
-            itemindex = np.where(unique_labels==self._labels[i])[0][0]
+            itemindex = np.where(self._unique_labels==self._labels[i])[0][0]
             self._labels[i] = int(itemindex)
 
 
@@ -245,16 +243,16 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         estimated_means = np.zeros((K, d))
         seed_idx = np.array([np.where(self._nodeIDs == s)[0][0] for i in self._lcc_seeds], dtype=int)
-        for i in range(K):
-            temp_seeds = seed_idx[self._lcc_labels == i]
+        for i, lab in enumerate(self._unique_labels):
+            temp_seeds = seed_idx[self._lcc_labels == lab]
             print(temp_seeds, file=sys.stderr)
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
 
         mean_centered_sums = np.zeros(shape = (K, d, d))
 
         covs = np.zeros(shape = (K, d, d))
-        for i in range(K): 
-            feature_vectors = self._embedding[seed_idx[self._lcc_labels == i], :]
+        for i, lab in enumerate(self._unique_labels): 
+            feature_vectors = self._embedding[seed_idx[self._lcc_labels == lab], :]
             covs[i] = np.cov(feature_vectors, rowvar = False)
 
         if self._ENOUGH_SEEDS:
