@@ -189,4 +189,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # print(X_hat.shape, file=sys.stderr)
         inputs[1][0] = container.ndarray(X_hat)
 
+
+        print("end of ase pring", file=sys.stderr)
+        print(inputs[2][:20], file=sys.stderr)
         return base.CallResult(inputs)
