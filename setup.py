@@ -55,7 +55,7 @@ setup(
     entry_points = {
         'd3m.primitives': [
             'data_transformation.adjacency_spectral_embedding.JHU=jhu_primitives.ase:AdjacencySpectralEmbedding',
-            'data_transformation.dataset_to_graph_list.JHU=jhu_primitives.dataset_to_graph_list:DatasetToGraphList',
+            'data_transformation.load_graphs.JHU=jhu_primitives.dataset_to_graph_list:DatasetToGraphList',
             'data_preprocessing.largest_connected_component.JHU=jhu_primitives.lcc:LargestConnectedComponent',
             'classification.gaussian_classification.JHU=jhu_primitives.gclass:GaussianClassification',
             'graph_clustering.gaussian_clustering.JHU=jhu_primitives.gclust:GaussianClustering',
