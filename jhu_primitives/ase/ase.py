@@ -133,7 +133,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         if "linkExists" in headers:
             g=np.array(G.copy())
-        except:
+        else:
             g=graspyPTR(G)
 
         # if link_predicton:
