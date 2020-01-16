@@ -21,11 +21,11 @@ from d3m import utils
 # from d3m.primitive_interfaces import base
 # from d3m.primitive_interfaces.base import CallResult
 
-# Inputs = container.Dataset
-# Outputs = container.List
-
 Inputs = container.Dataset
-Outputs = container.DataFrame
+Outputs = container.List
+
+# Inputs = container.Dataset
+# Outputs = container.DataFrame
 
 
 class Hyperparams(hyperparams.Hyperparams):
