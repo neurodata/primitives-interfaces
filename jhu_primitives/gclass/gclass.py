@@ -178,7 +178,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         outputs = container.DataFrame(csv[['d3mIndex',LABEL]])
         outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
 
-        print(outputs, file=sys.stderr)
+        print(outputs.values, file=sys.stderr)
 
         return base.CallResult(outputs)
 
