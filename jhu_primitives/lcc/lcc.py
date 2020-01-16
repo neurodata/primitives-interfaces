@@ -89,19 +89,12 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         nodeIDs = inputs[2]
         TASK = inputs[3]
 
-        # print(len(G), file=sys.stderr)
         subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
         
         components = np.zeros(len(G), dtype=int)
         for i, connected_component in enumerate(nx.connected_components(G)):
             print(np.array(list(connected_component), dtype=int), file=sys.stderr)
             components[np.array(list(connected_component), dtype=int)] = i+1
-
-        # NODEID = ""
-        # for header in csv.columns:
-        #     if "nodeID" in header:
-        #         NODEID = header
-        # nodeIDs = list(csv[NODEID].values)
         
         # if TASK == "vertexClassification":
         #     csv['components'] = components[np.array(csv[NODEID], dtype=int)]

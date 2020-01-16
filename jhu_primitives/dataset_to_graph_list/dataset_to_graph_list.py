@@ -112,7 +112,6 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             if i['resType'] == "table":
                 df = inputs['learningData']
             elif i['resType'] == 'graph':
-                print("we read a graph for some reasoon", file=sys.stderr)
                 graphs.append(nx.read_gml(location_base_uri + "/" + i['resPath']))
                 if TASK in ["communityDetection", "vertexClassification"]:
                     nodeIDs = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
@@ -125,10 +124,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                     nodeIDs = list(temp_graph.nodes)
         # todo: read data=True stuff
         id_to_idx = {nodeIDs[i]: i for i in range(len(nodeIDs))}
-
-        print("this is an id to idx print", file = sys.stderr)
-        print(id_to_idx, file=sys.stderr)
-        # nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+        nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
@@ -137,14 +133,10 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         # assumed that any edgelist passed has a source in the first col
         # and a reciever in the second col.
         # TODO make this function handle time series (Ground Truth)
-        #G = nx.read_edgelist(path, columns[1]['colName'], columns[2]['colName'])
         edgeList=pd.read_csv(path)
         G = nx.convert_matrix.from_pandas_edgelist(edgeList,
                                                    columns[1]['colName'],
                                                    columns[2]['colName'])
-
-        print("we read an edgelist", file=sys.stderr)
-        print(list(G.nodes), file=sys.stderr)
         return G
 
 
