@@ -109,7 +109,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 G_largest = connected_component
                 # and change the nodeIDs
                 new_nodeIDs = nodeIDs[temp_indices]
-        assert 1 == 0
 
         # for some problems the component needs to be specified in the dataframe
         # if TASK == "vertexClassification":
