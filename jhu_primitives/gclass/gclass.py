@@ -147,8 +147,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         final_labels = np.zeros(len(csv))
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
-        print(string_nodeIDs, file=sys.stderr)
-        print(testing_nodeIDs, file=sys.stderr)
+        # print(string_nodeIDs, file=sys.stderr)
+        # print(testing_nodeIDs, file=sys.stderr)
         if self._PD and self._ENOUGH_SEEDS:
             for i in range(len(testing_nodeIDs)):
                 try:
@@ -177,6 +177,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         csv[LABEL] = final_labels
         outputs = container.DataFrame(csv[['d3mIndex',LABEL]])
         outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
+
+        print(outputs, file=sys.stderr)
 
         return base.CallResult(outputs)
 
