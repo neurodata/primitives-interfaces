@@ -149,11 +149,16 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
         # print(string_nodeIDs, file=sys.stderr)
         # print(testing_nodeIDs, file=sys.stderr)
-        if self._PD and self._ENOUGH_SEEDS and False:
+        if self._PD and self._ENOUGH_SEEDS:
             print('enough seeds and PD', file=sys.stderr)
             for i in range(len(testing_nodeIDs)):
                 try:
                     temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
+                    print(temp, file=sys.stderr)
+                    print(self._pis, file=sys.stderr)
+                    print(self._means, file=sys.stderr)
+                    print(self._covariances[0], file=sys.stderr)
+
                     weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                     print("we got inside a try", file=sys.stderr)
                     print(weighted_pdfs, file=sys.stderr)
