@@ -97,14 +97,16 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         G_largest = [0]
         components = np.zeros(len(G), dtype=int)
         for i, connected_component in enumerate(subgraphs):
-            # check if the component is largest
-            if len(connected_component) > len(G_largest):
-                # if it is largest - flag as such
-                G_largest = connected_component
             # obtain indices associated with the node_ids in this component
             temp_indices = [i for i, x in enumerate(nodeIDs)
                             if x in list(connected_component)]
             components[temp_indices] = i+1
+            # check if the component is largest
+            if len(connected_component) > len(G_largest):
+                # if it is largest - flag as such
+                G_largest = connected_component
+                # and change the nodeIDs
+                new_nodeIDs = nodeIDs[temp_indices]
 
         # for some problems the component needs to be specified in the dataframe
         # if TASK == "vertexClassification":
@@ -112,9 +114,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         if TASK == "communityDetection":
             csv['components'] = components
 
-        print(G_largest)
         print(len(G_largest), file=sys.stderr)
-        print(G_largest.nodes, file=sys.stderr)
         print(len(nodeIDs), file=sys.stderr)
         
-        return base.CallResult(container.List([csv, [G_largest.copy()], nodeIDs]))
+        return base.CallResult(container.List([csv, [G_largest.copy()], new_nodeIDs]))
