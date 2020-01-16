@@ -144,8 +144,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                                                    columns[2]['colName'])
 
         print("we read an edgelist", file=sys.stderr)
-        print(G.nodes(data=True), file=sys.stderr)
-        print(set(np.array([list(G.node[n].keys()) for n in G.nodes()]).flatten()), file=sys.stderr)
+        print(list(G.nodes), file=sys.stderr)
         return G
 
 
