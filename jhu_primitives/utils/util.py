@@ -25,7 +25,7 @@ DATASETS = {
                 #],
             "vertexClassification": [
                 "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
-                #"datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
                 #"datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
                 #"datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
                 ],
@@ -185,7 +185,6 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             unique_ids.append(pipeline_id)
 
     for dataset in datasets:
-        #print(dataset, file=sys.stderr)
         for path in unique_paths:
             dataset_path = dataset + "/"
             cmd = "python3 -m d3m runtime fit-score -p " + path + ".json"
@@ -195,7 +194,7 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
             run_path = '/'.join(path.split('/')[:-2]) + "/pipeline_runs/" + path.split('/')[-1] 
             cmd += " -O " + run_path + "_pipeline_run.yml"
-            print(cmd, file=sys.stderr)
+            #print(cmd, file=sys.stderr)
             os.system(cmd)
 
 
@@ -220,7 +219,7 @@ def pipeline_run_all(paths_to_pipelines):
                 cmd += " -t " + dataset_path + "TEST/dataset_TEST/datasetDoc.json"
                 cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
                 cmd += " -O " + problem_path + "_pipeline_run.yml" # pipeline_runs/id.yml
-                print(cmd, file=sys.stderr)
+                #print(cmd, file=sys.stderr)
                 os.system(cmd)
 
 
