@@ -201,7 +201,7 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += " -i " + dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json"
             cmd += " -t " + dataset_path + "TEST/dataset_TEST/datasetDoc.json"
             cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
-            run_path = '/'.join(path.split('/')[:-2]) + "pipeline_runs/" + path.split('/')[-1] 
+            run_path = '/'.join(path.split('/')[:-2]) + "/pipeline_runs/" + path.split('/')[-1] 
             cmd += " -O " + run_path + "_pipeline_run.yml"
 
             os.system(cmd)
