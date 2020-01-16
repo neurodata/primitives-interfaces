@@ -150,17 +150,19 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         # print(string_nodeIDs, file=sys.stderr)
         # print(testing_nodeIDs, file=sys.stderr)
         if self._PD and self._ENOUGH_SEEDS:
+            print('enough seeds and PD', file=sys.stderr)
             for i in range(len(testing_nodeIDs)):
                 try:
                     temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
                     weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
+                    print("we got inside a try", file=sys.stderr)
                     print(weighted_pdfs, file=sys.stderr)
                     label = np.argmax(weighted_pdfs)
                     final_labels[i] = self._unique_label[int(label)]
                 except:
                     final_labels[i] = self._unique_labels[np.argmax(self._pis)]
         else:
-
+            print('not enough seeds or not PD', file=sys.stderr)
             for i in range(len(testing_nodeIDs)):
                 try:
                     temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
