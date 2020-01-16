@@ -238,7 +238,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         covs = np.zeros(shape = (K, d, d))
         for i in range(K): 
-            feature_vectors = self._embedding[seed_idx[self._labels == i], :]
+            feature_vectors = self._embedding[seed_idx[self._lcc_labels == i], :]
             covs[i] = np.cov(feature_vectors, rowvar = False)
 
         if self._ENOUGH_SEEDS:
