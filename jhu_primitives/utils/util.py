@@ -16,7 +16,7 @@ PROBLEM_TYPES = [
     #"graphMatching",
     "vertexClassification",
     #"linkPrediction",
-    #"communityDetection"
+    "communityDetection"
     ]
 
 DATASETS = {
@@ -24,14 +24,14 @@ DATASETS = {
                 #"datasets-private/seed_datasets_current/49_facebook_MIN_METADATA",
                 #],
             "vertexClassification": [
-                #"datasets-private/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
+                "datasets-private/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
                 "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
-                #"datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
-                #"datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
                 ],
-            #"communityDetection": [
-                #"datasets-private/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
-                #],
+            "communityDetection": [
+                "datasets-private/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
+                ],
             #"linkPrediction": [
                 #"datasets/seed_datasets_current/59_umls_MIN_METADATA",
                 #"datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
@@ -50,13 +50,13 @@ PIPELINES = {
                 # "gclass_ooslse_pipeline",
                 # "sgc_pipeline"
                 ],
-            #"communityDetection": [
-                #"gmm_ase_pipeline",
+            "communityDetection": [
+                "gmm_ase_pipeline",
                 #"gmm_lse_pipeline",
                 #"gmm_oosase_pipeline",
                 #"gmm_ooslse_pipeline"
                 # "sgc_pipeline"
-                #],
+                ],
             #"linkPrediction": [
                 #"link_pred_pipeline",
                 #],
@@ -184,9 +184,6 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
         if pipeline_id not in unique_ids:
             unique_paths.append(path)
             unique_ids.append(pipeline_id)
-    print(unique_paths, file=sys.stderr)
-
-    # TODO data set path
 
     for dataset in datasets:
         for path in unique_paths:
