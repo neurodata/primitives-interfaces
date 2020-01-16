@@ -185,7 +185,7 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             unique_paths.append(path)
             unique_ids.append(pipeline_id)
 
-    print(datsets, file=sys.stderr)
+    print(datasets, file=sys.stderr)
     print(unique_paths, file=sys.stderr)
     for dataset in datasets:
         print(dataset, file=sys.stderr)
