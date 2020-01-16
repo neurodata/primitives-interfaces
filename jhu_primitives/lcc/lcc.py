@@ -105,7 +105,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         for i, connected_component in enumerate(nx.connected_components(G)):
             print(np.array(list(connected_component), dtype=int), file=sys.stderr)
             # maybe this is done better by passing a dict instead of array
-            print([i for i, x in enumerate(nodeIDs)], file=sys.stderr)
+            print([i for i, x in enumerate(nodeIDs) if x in list(connected_component)], file=sys.stderr)
             # components[np.array(list(connected_component), dtype=int)] = i+1
         # END OF TODO
 
