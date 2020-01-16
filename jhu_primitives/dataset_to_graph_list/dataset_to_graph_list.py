@@ -124,7 +124,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                     nodeIDs = list(temp_graph.nodes)
         # todo: read data=True stuff
         id_to_idx = {nodeIDs[i]: i for i in range(len(nodeIDs))}
-        print(id_to_idx, file=sys.stderr)
+        #print(id_to_idx, file=sys.stderr)
         # nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
@@ -138,7 +138,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         edgeList=pd.read_csv(path)
         G = nx.convert_matrix.from_pandas_edgelist(edgeList, columns[1]['colName'], columns[2]['colName'])
 
-        print(G.nodes(data=True), file=sys.stderr)
+        #print(G.nodes(data=True), file=sys.stderr)
         return G
 
 
