@@ -100,7 +100,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             # check if the component is largest
             if len(connected_component) > len(G_largest):
                 # if it is largest - flag as such
-                G_largest = i
+                G_largest = connected_component
             # obtain indices associated with the node_ids in this component
             temp_indices = [i for i, x in enumerate(nodeIDs)
                             if x in list(connected_component)]
