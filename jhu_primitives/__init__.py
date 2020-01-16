@@ -21,7 +21,7 @@ from .dataset_to_graph_list import DatasetToGraphList
 from .lse import LaplacianSpectralEmbedding
 from .gclass import GaussianClassification
 from .gclust import GaussianClustering
-from .graph_reader import GraphReader
+# from .graph_reader import GraphReader
 from .lcc import LargestConnectedComponent
 from .link_pred_graph_reader import LinkPredictionGraphReader
 from .link_pred_rc import LinkPredictionRankClassifier
