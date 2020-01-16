@@ -24,10 +24,10 @@ DATASETS = {
                 #"datasets-private/seed_datasets_current/49_facebook_MIN_METADATA",
                 #],
             "vertexClassification": [
-                #"datasets-private/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
+                "datasets-private/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
                 #"datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
                 #"datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
-                "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
+                #"datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
                 ],
             "communityDetection": [
                 "datasets-private/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
@@ -201,8 +201,8 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += " -i " + dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json"
             cmd += " -t " + dataset_path + "TEST/dataset_TEST/datasetDoc.json"
             cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
-            cmd += " -O " + path + "_run.yaml"
-            cmd += " -o " + "/predictions.csv"
+            run_path = '/'.join(path.split('/')[:-1]) + "pipeline_runs/" + path.split('/')[-1] 
+            cmd += " -O " + run_path + "_pipeline_run.yml"
 
             os.system(cmd)
 
