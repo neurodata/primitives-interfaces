@@ -116,7 +116,9 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                 if TASK in ["communityDetection", "vertexClassification"]:
                     nodeIDs = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
             elif i['resType'] == "edgeList":
-                temp_graph = self._read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
+                temp_graph = self._read_edgelist(
+                    location_base_uri + "/" + i['resPath'],
+                    i["columns"], )
                 graphs.append(temp_graph)
                 if TASK in ["communityDetection", "vertexClassification"]:
                     nodeIDs = list(temp_graph.nodes)
@@ -136,6 +138,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         edgeList=pd.read_csv(path)
         G = nx.convert_matrix.from_pandas_edgelist(edgeList, columns[1]['colName'], columns[2]['colName'])
 
+        print(G.nodes(data=True), file=sys.stderr)
         return G
 
 
