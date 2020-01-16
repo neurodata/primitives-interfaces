@@ -96,7 +96,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # pick the largest connected component
         G_largest = [0]
         components = np.zeros(len(G), dtype=int)
-        for i, connected_component in enumerate(nx.connected_components(G)):
+        for i, connected_component in enumerate(*nx.connected_components(G)):
             # check if the component is largest
             if len(connected_component) > len(G_largest):
                 # if it is largest - flag as such
