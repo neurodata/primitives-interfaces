@@ -96,7 +96,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # pick the largest connected component
         G_largest = [0]
         components = np.zeros(len(G), dtype=int)
-        for i, connected_component in enumerate(*nx.connected_components(G)):
+        for i, connected_component in enumerate(subgraphs):
             # check if the component is largest
             if len(connected_component) > len(G_largest):
                 # if it is largest - flag as such
@@ -112,6 +112,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         if TASK == "communityDetection":
             csv['components'] = components
 
+        print(G_largest)
         print(len(G_largest), file=sys.stderr)
         print(G_largest.nodes, file=sys.stderr)
         print(len(nodeIDs), file=sys.stderr)
