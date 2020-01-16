@@ -124,7 +124,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                     nodeIDs = list(temp_graph.nodes)
         # todo: read data=True stuff
         id_to_idx = {nodeIDs[i]: i for i in range(len(nodeIDs))}
-        nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+        # nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+        nodeIDs = container.ndarray(np.array([i for i in nodeIDs]))
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
