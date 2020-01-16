@@ -141,7 +141,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         for col in headers:
             if "node" in col:
-                self._seeds = csv[col]
+                testing_nodeIDs = csv[col]
             if "Label" in col or "class" in col:
                 LABEL = col
 
