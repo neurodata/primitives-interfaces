@@ -101,12 +101,15 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         # for some problems the component needs to be specified in the dataframe
         # TODO THIS MUST HANDLES NODE IDS NOT BEING ORDER!!!
-        # components = np.zeros(len(G), dtype=int)
-        # for i, connected_component in enumerate(nx.connected_components(G)):
-        #     print(np.array(list(connected_component), dtype=int), file=sys.stderr)
-        #     components[np.array(list(connected_component), dtype=int)] = i+1
+        components = np.zeros(len(G), dtype=int)
+        for i, connected_component in enumerate(nx.connected_components(G)):
+            print(np.array(list(connected_component), dtype=int), file=sys.stderr)
+            # maybe this is done better by passing a dict instead of array
+            print([i for i, x in enumerate(nodeIDs)], file=sys.stderr)
+            # components[np.array(list(connected_component), dtype=int)] = i+1
         # END OF TODO
 
+        assert 1 == 2
         # if TASK == "vertexClassification":
         #     csv['components'] = components[np.array(csv[NODEID], dtype=int)]
         if TASK == "communityDetection":
