@@ -1,7 +1,7 @@
 import os
-import typing
 import sys
 import json
+import typing
 import numpy as np
 import pandas as pd
 import networkx as nx
@@ -16,9 +16,7 @@ from d3m.primitive_interfaces.base import CallResult
 
 import common_primitives
 
-# from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 # from d3m.metadata import hyperparams, base as metadata_module, params
-# from d3m.primitive_interfaces import base
 
 Inputs = container.Dataset
 Outputs = container.List
