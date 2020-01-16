@@ -6,7 +6,6 @@ __all__ = [
            "LaplacianSpectralEmbedding",
            "GaussianClassification",
            "GaussianClustering",
-           "GraphReader",
            "LargestConnectedComponent",
            "LinkPredictionGraphReader",
            "LinkPredictionRankClassifier",
