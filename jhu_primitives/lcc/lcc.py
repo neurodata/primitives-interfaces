@@ -82,28 +82,35 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(self.random_seed)
-        print('lcc, baby!', file=sys.stderr)        
+        print('lcc, baby!', file=sys.stderr)
 
+        # unpack the data from the graph to list reader
         csv = inputs[0]
         G = inputs[1][0]
         nodeIDs = inputs[2]
         TASK = inputs[3]
 
+        # split the data into connected components
         subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
-        
-        components = np.zeros(len(G), dtype=int)
-        for i, connected_component in enumerate(nx.connected_components(G)):
-            print(np.array(list(connected_component), dtype=int), file=sys.stderr)
-            components[np.array(list(connected_component), dtype=int)] = i+1
-        
-        # if TASK == "vertexClassification":
-        #     csv['components'] = components[np.array(csv[NODEID], dtype=int)]
-        if TASK == "communityDetection":
-            csv['components'] = components        
-            
+
+        # pick the largest connected component
         G_connected = [0]
         for i in subgraphs:
             if len(i) > len(G_connected):
                 G_connected = i
 
+        # for some problems the component needs to be specified in the dataframe
+        components = np.zeros(len(G), dtype=int)
+        for i, connected_component in enumerate(nx.connected_components(G)):
+            print(np.array(list(connected_component), dtype=int), file=sys.stderr)
+            components[np.array(list(connected_component), dtype=int)] = i+1
+        # if TASK == "vertexClassification":
+        #     csv['components'] = components[np.array(csv[NODEID], dtype=int)]
+        if TASK == "communityDetection":
+            csv['components'] = components
+
+        print(len(G_connected), file=sys.stderr)
+        print(G_connected.nodes, file=sys.stderr)
+        print(len(nodeIDs), file=sys.stderr)
+        
         return base.CallResult(container.List([csv, [G_connected.copy()], nodeIDs]))
