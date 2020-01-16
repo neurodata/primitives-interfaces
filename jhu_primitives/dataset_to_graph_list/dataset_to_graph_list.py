@@ -91,22 +91,6 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             datasetDoc_json = json.load(json_file)
             dataResources = datasetDoc_json['dataResources']
 
-        # load the graphs and convert to a networkx object
-        graphs = []
-        for i in dataResources:
-            if i['resType'] == "table":
-                df = inputs['learningData']
-            elif i['resType'] == 'graph':
-                graphs.append(nx.read_gml(location_base_uri + "/" + i['resPath']))
-            elif i['resType'] == "edgeList":
-                temp_graph = self._read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
-                print(len(temp_graph), file=sys.stderr)
-                print(list(temp_graph.nodes(data=True)), file=sys.stderr)
-                print(list(nx.get_node_attributes('nodeID')), file=sys.stderr)
-                graphs.append(temp_graph)
-        print(graphs, file=sys.stderr)
-
-
         # get the task type from the task docs
         temp_path = datasetDoc_uri.split('/')
         problemDoc_uri = '/'.join(temp_path[:-2]) + '/' + '/'.join(temp_path[-2:]).replace('dataset', 'problem')
@@ -122,9 +106,22 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         if TASK == "":
             raise exceptions.NotSupportedError("only graph tasks are supported")
 
-        if TASK in ["communityDetection", "vertexClassification"]:
-            nodeIDs = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
-            nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+        # load the graphs and convert to a networkx object
+        graphs = []
+        for i in dataResources:
+            if i['resType'] == "table":
+                df = inputs['learningData']
+            elif i['resType'] == 'graph':
+                graphs.append(nx.read_gml(location_base_uri + "/" + i['resPath']))
+                if TASK in ["communityDetection", "vertexClassification"]:
+                    nodeIDs = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
+            elif i['resType'] == "edgeList":
+                temp_graph = self._read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
+                graphs.append(temp_graph)
+                if TASK in ["communityDetection", "vertexClassification"]:
+                    nodeIDs = list(temp_graph.nodes)
+        # todo: read data=True stuff
+        nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
