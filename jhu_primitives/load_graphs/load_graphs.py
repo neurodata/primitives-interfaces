@@ -29,7 +29,7 @@ class Hyperparams(hyperparams.Hyperparams):
     )
 
 
-class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     """
     A primitive which extracts a DataFrame out of a Dataset.
     """
@@ -39,13 +39,13 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             'id': 'cb192a83-63e2-4075-bab9-e6ba1a8365b6',
             'version': '0.1.0',
             'name': "Extract a list of Graphs from a Dataset",
-            'python_path': 'd3m.primitives.data_transformation.dataset_to_graph_list.JHU',
+            'python_path': 'd3m.primitives.data_transformation.load_graphs.JHU',
             'keywords': ['graph'],
             'source': {
                 'name': "JHU",
                 'uris': [
                     # Unstructured URIs. Link to file and link to repo in this case.
-                    'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/dataset_to_graph_list/dataset_to_graph_list.py',
+                    'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/load_graphs/load_graphs.py',
                     'https://github.com/neurodata/primitives-interfaces.git',
                 ],
                 'contact': 'mailto:hhelm2@jhu.edu'

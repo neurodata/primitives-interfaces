@@ -1,2 +1,0 @@
-from __future__ import absolute_import
-from .dataset_to_graph_list import DatasetToGraphList
