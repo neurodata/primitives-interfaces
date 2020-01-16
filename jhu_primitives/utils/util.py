@@ -117,6 +117,9 @@ def generate_json(target_repo, type_):
 
             for file in temp_dir:
                 os.remove(temp_path + file)
+            temp_path = os.path.join(jhu_path, python_path, versions[python_path.split('.')[-2]], 'pipeline_runs', "")
+            for file in os.listdir(temp_path):
+                os.remove(temp_path + file)
 
         paths_to_pipelines = {}
         for problem_type in PROBLEM_TYPES:
@@ -157,6 +160,7 @@ def generate_json(target_repo, type_):
                         shutil.copy(os.path.join(path, 'temp.json'),
                                     full_path + '.json')       # creates the pipeline json
                         #write_meta(dataset_name, dataset_new, temp_path + pipeline_id)
+                        write_pipeline_run(dataset, full_path)
                         paths_to_pipelines[problem_type].append(full_path)
         os.remove('temp.json')
         return paths_to_pipelines
@@ -197,6 +201,17 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             #print(cmd, file=sys.stderr)
             os.system(cmd)
 
+def write_pipeline_run(dataset, path):
+    dataset_path = dataset + "/"
+    cmd = "python3 -m d3m runtime fit-score -p " + path + ".json"
+    cmd += " -r " + dataset_path + dataset.split('/')[-1] + "_problem/problemDoc.json"
+    cmd += " -i " + dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json"
+    cmd += " -t " + dataset_path + "TEST/dataset_TEST/datasetDoc.json"
+    cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
+    run_path = '/'.join(path.split('/')[:-2]) + "/pipeline_runs/"
+    cmd += " -O " + run_path + path.split('/')[-1] + "-" + dataset.split('/')[-1] + "_pipeline_run.yml"
+    os.system(cmd)
+
 
 def pipeline_run_all(paths_to_pipelines):
     for problem_type in PROBLEM_TYPES:
@@ -207,10 +222,12 @@ def pipeline_run_all(paths_to_pipelines):
                 os.remove(run_path + file)
     for problem_type in PROBLEM_TYPES:
         paths_to_pipelines_problem_type = paths_to_pipelines[problem_type]
+        print(paths_to_pipelines_problem_type, file=sys.stderr)
         datasets = DATASETS[problem_type]
         for dataset in datasets:
             for path in paths_to_pipelines_problem_type:
                 dataset_path = dataset + "/"
+                pipeline_dataset = path.split('/')[-1] + '-' + dataset.split('/')[2]
                 problem_path = '/'.join(path.split('/')[:-2]) + "/pipeline_runs/" + path.split('/')[-1]
                 cmd = "python3 -m d3m runtime fit-score"
                 cmd += " -p " + path + ".json" # pipelines/id.json
@@ -229,10 +246,11 @@ if __name__ == '__main__':
     paths_to_pipelines = generate_json(target_repo, "pipelines")
     # target_repo, type_ = load_args()
     # generate_json(target_repo, type_)
-    if problem_type == 'all':
-        pipeline_run_all(paths_to_pipelines)
-    else:
-        pipeline_run(problem_type, target_repo, paths_to_pipelines)
+
+    #if problem_type == 'all':
+    #    pipeline_run_all(paths_to_pipelines)
+    #else:
+    #    pipeline_run(problem_type, target_repo, paths_to_pipelines)
 
 def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_type = ""):
     if abs_file_path == "":
