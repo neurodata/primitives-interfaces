@@ -219,7 +219,7 @@ def pipeline_run_all(paths_to_pipelines):
                 cmd += " -t " + dataset_path + "TEST/dataset_TEST/datasetDoc.json"
                 cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
                 cmd += " -O " + problem_path + "_pipeline_run.yml" # pipeline_runs/id.yml
-                #print(cmd, file=sys.stderr)
+                print(cmd, file=sys.stderr)
                 os.system(cmd)
 
 

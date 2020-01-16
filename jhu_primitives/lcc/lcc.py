@@ -82,7 +82,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(self.random_seed)
-        print('lcc, baby!', file=sys.stderr)        
+        #print('lcc, baby!', file=sys.stderr)        
 
         csv = inputs[0]
         G = inputs[1][0]
