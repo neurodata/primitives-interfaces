@@ -24,9 +24,9 @@ DATASETS = {
                 #"datasets-private/seed_datasets_current/49_facebook_MIN_METADATA",
                 #],
             "vertexClassification": [
-                "datasets-private/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
-                "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
-                "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
+                #"datasets-private/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
+                #"datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
+                #"datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
                 "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
                 ],
             "communityDetection": [
@@ -185,7 +185,10 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             unique_paths.append(path)
             unique_ids.append(pipeline_id)
 
+    print(datsets, file=sys.stderr)
+    print(unique_paths, file=sys.stderr)
     for dataset in datasets:
+        print(dataset, file=sys.stderr)
         for path in unique_paths:
             #SCORE = ""
             #for f in os.listdir(dataset_path + "SCORE/"):
