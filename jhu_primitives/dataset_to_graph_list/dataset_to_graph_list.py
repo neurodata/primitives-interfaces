@@ -127,6 +127,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         # nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
         nodeIDs = container.ndarray(np.array([str(i) for i in nodeIDs]))
 
+        print(nodeIDs[:20], file=sys.stderr)
+        print("input stage over", file=sys.stderr)
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
 
