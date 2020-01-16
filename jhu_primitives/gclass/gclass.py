@@ -151,10 +151,14 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         print(testing_nodeIDs, file=sys.stderr)
         if self._PD and self._ENOUGH_SEEDS:
             for i in range(len(testing_nodeIDs)):
-                temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
-                weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
-                label = np.argmax(weighted_pdfs)
-                final_labels[i] = int(label)
+                try:
+                    temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
+                    weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
+                    print(weighted_pdfs, file=sys.stderr)
+                    label = np.argmax(weighted_pdfs)
+                    final_labels[i] = int(label)
+                except:
+                    final_labels[i] = np.argmax(self._pis)
         else:
 
             for i in range(len(testing_nodeIDs)):
