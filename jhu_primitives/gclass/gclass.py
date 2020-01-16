@@ -154,10 +154,10 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             for i in range(len(testing_nodeIDs)):
                 try:
                     temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
-                    print(temp, file=sys.stderr)
-                    print(self._pis, file=sys.stderr)
-                    print(self._means, file=sys.stderr)
-                    print(self._covariances[0], file=sys.stderr)
+                    # print(temp, file=sys.stderr)
+                    # print(self._pis, file=sys.stderr)
+                    # print(self._means, file=sys.stderr)
+                    # print(self._covariances[0], file=sys.stderr)
 
                     weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                     print("we got inside a try", file=sys.stderr)
@@ -247,6 +247,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         seed_idx = np.array([np.where(self._nodeIDs == s)[0][0] for i in self._lcc_seeds], dtype=int)
         for i in range(K):
             temp_seeds = seed_idx[self._lcc_labels == i]
+            print(temp_seeds, file=sys.stderr)
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
 
         mean_centered_sums = np.zeros(shape = (K, d, d))
