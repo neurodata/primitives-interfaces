@@ -110,6 +110,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                 graphs.append(temp_graph)
         print(graphs, file=sys.stderr)
 
+
         # get the task type from the task docs
         temp_path = datasetDoc_uri.split('/')
         problemDoc_uri = '/'.join(temp_path[:-2]) + '/' + '/'.join(temp_path[-2:]).replace('dataset', 'problem')
@@ -125,7 +126,11 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         if TASK == "":
             raise exceptions.NotSupportedError("only graph tasks are supported")
 
-        return base.CallResult(container.List([df, graphs, TASK]))
+        if TASK in ["communityDetection", "vertexClassification"]:
+            nodeIDs = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
+            nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+
+        return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
 
     def _read_edgelist(self, path, columns):
