@@ -119,7 +119,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         print(len(new_nodeIDs), file=sys.stderr)
         print("also print first 20 entries")
         print(list(G_largest.nodes)[:20], file=sys.stderr)
-        print(nodeID[:20], file=sys.stderr)
+        print(nodeIDs[:20], file=sys.stderr)
         print(new_nodeIDs[:20], file=sys.stderr)
 
         
