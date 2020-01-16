@@ -137,7 +137,6 @@ def generate_json(target_repo, type_):
                 pipeline_dir = dir(module)
                 p_dir = [convert(p) for p in pipeline_dir]
                 primitives = [prim for prim in primitive_names if prim in p_dir]
-                print(primitives)
 
                 for dataset in datasets:
                     dataset_name = dataset.split("/")[-1]
@@ -191,7 +190,6 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
 
     for dataset in datasets:
         for path in unique_paths:
-            print(dataset, file=sys.stderr)
             #SCORE = ""
             #for f in os.listdir(dataset_path + "SCORE/"):
             #    if str(f)[:7] == "dataset":
