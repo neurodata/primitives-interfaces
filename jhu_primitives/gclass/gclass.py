@@ -149,7 +149,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
         # print(string_nodeIDs, file=sys.stderr)
         # print(testing_nodeIDs, file=sys.stderr)
-        if self._PD and self._ENOUGH_SEEDS:
+        if self._PD and self._ENOUGH_SEEDS and False:
             print('enough seeds and PD', file=sys.stderr)
             for i in range(len(testing_nodeIDs)):
                 try:
