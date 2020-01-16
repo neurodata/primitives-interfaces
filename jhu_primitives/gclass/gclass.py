@@ -159,7 +159,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                     print(weighted_pdfs, file=sys.stderr)
                     label = np.argmax(weighted_pdfs)
                     final_labels[i] = self._unique_label[int(label)]
-                except:
+                except Exception as e:
+                    print(e, file=sys.stderr)
                     final_labels[i] = self._unique_labels[np.argmax(self._pis)]
         else:
             print('not enough seeds or not PD', file=sys.stderr)
