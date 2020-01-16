@@ -114,13 +114,13 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         if TASK == "communityDetection":
             csv['components'] = components
 
-        print(len(G_largest), file=sys.stderr)
-        print(len(nodeIDs), file=sys.stderr)
-        print(len(new_nodeIDs), file=sys.stderr)
-        print("also print first 20 entries")
-        print(list(G_largest.nodes)[:20], file=sys.stderr)
-        print(nodeIDs[:20], file=sys.stderr)
-        print(new_nodeIDs[:20], file=sys.stderr)
+        # print(len(G_largest), file=sys.stderr)
+        # print(len(nodeIDs), file=sys.stderr)
+        # print(len(new_nodeIDs), file=sys.stderr)
+        # print("also print first 20 entries")
+        # print(list(G_largest.nodes)[:20], file=sys.stderr)
+        # print(nodeIDs[:20], file=sys.stderr)
+        # print(new_nodeIDs[:20], file=sys.stderr)
 
         
         return base.CallResult(container.List([csv, [G_largest.copy()], new_nodeIDs]))

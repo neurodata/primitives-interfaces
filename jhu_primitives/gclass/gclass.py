@@ -209,9 +209,11 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             if "label" in col:
                 self._labels = np.array(list(csv[col]))
                 self._lcc_labels = np.array([s for s in self._labels if s in self._nodeIDs])
+        print(self._seeds, file=sys.stderr)
+        print(self._lcc_seeds, file=sys.stderr)
         # TODO: assumes labels are int-like
-        self._labels = np.array([i for i in self._labels])
-        self._lcc_labels = np.array([i for i in self._lcc_labels])
+        # self._labels = np.array([i for i in self._labels])
+        # self._lcc_labels = np.array([i for i in self._lcc_labels])
 
         # get unique labels
         self._unique_labels, label_counts = np.unique(self._labels, return_counts = True)
