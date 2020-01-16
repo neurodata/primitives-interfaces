@@ -101,7 +101,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             elif i['resType'] == "edgeList":
                 temp_graph = self._read_edgelist(location_base_uri + "/" + i['resPath'], i["columns"])
                 print(len(temp_graph), file=sys.stderr)
-                print(list(temp_graph.nodes), file=sys.stderr)
+                print(list(temp_graph.nodes(data=True)), file=sys.stderr)
                 print(list(nx.get_node_attributes('nodeID')), file=sys.stderr)
                 graphs.append(temp_graph)
         print(graphs, file=sys.stderr)
