@@ -121,7 +121,9 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                 if TASK in ["communityDetection", "vertexClassification"]:
                     nodeIDs = list(temp_graph.nodes)
         # todo: read data=True stuff
-        nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+        id_to_idx = {nodeIDs[i]: i for i in range(len(nodeIDs))}
+        print(id_to_idx, file=sys.stderr)
+        # nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
