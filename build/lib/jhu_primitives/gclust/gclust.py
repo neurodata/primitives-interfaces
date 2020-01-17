@@ -7,13 +7,15 @@ from typing import Sequence, TypeVar, Union, Dict
 import os
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 import numpy as np
+import sys as sys
 
 from d3m import container
 from d3m import utils
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
-from sklearn.mixture import GaussianMixture
+
+from graspy.cluster.gclust import GaussianCluster as graspyGCLUST
 
 Inputs = container.List
 Outputs = container.DataFrame
@@ -49,7 +51,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/gclust/gclust.py',
+                'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/gclust/gclust.py',
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
@@ -112,10 +114,11 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             - The number of clusters in which to assign the data
         """
 
+        #print('gclust, baby!!', file=sys.stderr)
         if self._embedding is None:
-            self._embedding = inputs[0]
+            self._embedding = inputs[1][0]
 
-        nodeIDs = inputs[1]
+        nodeIDs = inputs[2]
         nodeIDS = np.array([int(i) for i in nodeIDs])
 
         max_clusters = self.hyperparams['max_clusters']
@@ -123,50 +126,35 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         if max_clusters < self._embedding.shape[1]:
             self._embedding = self._embedding[:, :max_clusters].copy()
 
-        cov_types = ['full', 'tied', 'diag', 'spherical']
+        gclust_object = graspyGCLUST(min_components=max_clusters, covariance_type="all")
+        gclust_object.fit(self._embedding)
+        model = gclust_object.model_
+        
 
-        clf = GaussianMixture(n_components = 1, covariance_type = 'spherical')
-        clf.fit(self._embedding)
-        BIC_max = -clf.bic(self._embedding)
-        cluster_likelihood_max = 1
-        cov_type_likelihood_max = "spherical"
+        testing = inputs[0]
 
-        for i in range(1, max_clusters):
-            for k in cov_types:
-                clf = GaussianMixture(n_components=i,
-                                    covariance_type=k)
+        # am sure whats going on here..
+        try:
+            testing_nodeIDs = np.asarray(testing['nodeID']).astype(int)
+        except:
+            return base.CallResult(testing)
 
-                clf.fit(self._embedding)
+        final_labels = np.zeros(len(testing_nodeIDs))
+        
+        predictions = np.zeros(len(testing))
+        g_indices = np.where(testing['components'] == 1)[0].astype(int)
 
-                current_bic = -clf.bic(self._embedding)
-
-                if current_bic > BIC_max:
-                    BIC_max = current_bic
-                    cluster_likelihood_max = i
-                    cov_type_likelihood_max = k
-
-        clf = GaussianMixture(n_components = cluster_likelihood_max,
-                        covariance_type = cov_type_likelihood_max)
-        clf.fit(self._embedding)
-
-        predictions = clf.predict(self._embedding)
-
-        testing = inputs[2]
-
-        testing_nodeIDs = np.asarray(testing['G1.nodeID'])
-        testing_nodeIDs = np.array([int(i) for i in testing_nodeIDs])
-        final_labels = np.zeros(len(testing))
-
-        for i in range(len(testing_nodeIDs)):
-            #temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
-            label = predictions[i]
-            #print(label)
-            final_labels[i] = int(label) + 1
-
-        testing['classLabel'] = final_labels
-        outputs = container.DataFrame(testing[['d3mIndex', 'classLabel']])
-        outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'classLabel']].astype(int)
-        #outputs = container.DataFrame(testing['classLabel'])
+        predictions[g_indices] = model.predict(self._embedding)
+        for i in range(len(testing)):
+            if i in g_indices:
+                label = predictions[i]
+                final_labels[i] = int(label) + 1
+            else:
+                final_labels[i] = int(max(predictions)) + int(testing['components'][i])
+    
+        testing['community'] = final_labels
+        outputs = container.DataFrame(testing[['d3mIndex', 'community']])
+        outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
         return base.CallResult(outputs)
 
 
@@ -181,3 +169,27 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> None:
         return base.CallResult(None)
+
+
+        # clf.fit(self._embedding)
+        # BIC_max = -clf.bic(self._embedding)
+        # cluster_likelihood_max = 1
+        # cov_type_likelihood_max = "spherical"
+
+        # for i in range(1, max_clusters):
+        #     for k in cov_types:
+        #         clf = GaussianMixture(n_components=i,
+        #                             covariance_type=k)
+
+        #         clf.fit(self._embedding)
+
+        #         current_bic = -clf.bic(self._embedding)
+
+        #         if current_bic > BIC_max:
+        #             BIC_max = current_bic
+        #             cluster_likelihood_max = i
+        #             cov_type_likelihood_max = k
+
+        # clf = GaussianMixture(n_components = cluster_likelihood_max,
+        #                 covariance_type = cov_type_likelihood_max)
+        # clf.fit(self._embedding)

@@ -1,17 +1,19 @@
-from networkx import Graph
-import networkx as nx
-import numpy as np
-from typing import Sequence, TypeVar, Union, Dict
 import os
+import sys
+import json
+from typing import Sequence, TypeVar, Union, Dict
+import numpy as np
+import networkx as nx
+from networkx import Graph
 
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-from d3m import container
 from d3m import utils
+from d3m import container
+from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 
-Inputs = container.Dataset
+Inputs = container.List
 Outputs = container.List
 
 class Params(params.Params):
@@ -39,7 +41,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/lcc/lcc.py',
+                'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/lcc/lcc.py',
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
@@ -79,47 +81,36 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        """
-        Input
-            G: an n x n matrix or a networkx Graph
-        Return
-            The largest connected component of g
+        np.random.seed(self.random_seed)
+        #print('lcc, baby!', file=sys.stderr)        
 
-        """
-        G = inputs['0']
-        csv = inputs['learningData']
+        csv = inputs[0]
+        G = inputs[1][0]
+        nodeIDs = inputs[2]
+        TASK = inputs[3]
 
-        #if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-        #    nx.set_node_attributes(G,'nodeID',-1)
-        #    for i in range(len(G)):
-        #        G.node[i]['nodeID'] = i
-
-        if len(csv) != 0:
-            if len(list(nx.get_node_attributes(G, 'nodeID').values())) == 0:
-                nx.set_node_attributes(G,'nodeID',-1)
-                for i in range(len(G)):
-                    G.node[i]['nodeID'] = i
-
-            nodeIDs = list(nx.get_node_attributes(G, 'nodeID').values())
-            nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
-
-            return base.CallResult(container.List([G.copy(), nodeIDs,csv]))
-
-        if type(G) == np.ndarray:
-            if G.ndim == 2:
-                if G.shape[0] == G.shape[1]: # n x n matrix
-                    G = Graph(G)
-                else:
-                    raise TypeError("Networkx graphs or n x n numpy arrays only")
-
+        # print(len(G), file=sys.stderr)
         subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
+        
+        components = np.zeros(len(G), dtype=int)
+        for i, connected_component in enumerate(nx.connected_components(G)):
+            #print(np.array(list(connected_component), dtype=int), file=sys.stderr)
+            components[np.array(list(connected_component), dtype=int)] = i+1
 
-        G_connected = [[0]]
+        # NODEID = ""
+        # for header in csv.columns:
+        #     if "nodeID" in header:
+        #         NODEID = header
+        # nodeIDs = list(csv[NODEID].values)
+        
+        # if TASK == "vertexClassification":
+        #     csv['components'] = components[np.array(csv[NODEID], dtype=int)]
+        if TASK == "communityDetection":
+            csv['components'] = components        
+            
+        G_connected = [0]
         for i in subgraphs:
-            if len(i) > len(G_connected[0]):
-                G_connected = [i]
+            if len(i) > len(G_connected):
+                G_connected = i
 
-        nodeIDs = list(nx.get_node_attributes(G_connected[0], 'nodeID').values())
-        nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
-
-        return base.CallResult(container.List([G_connected[0].copy(), nodeIDs, csv]))
+        return base.CallResult(container.List([csv, [G_connected.copy()], nodeIDs]))

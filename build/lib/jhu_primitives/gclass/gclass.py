@@ -5,6 +5,7 @@
 
 from typing import Sequence, TypeVar, Union, Dict
 import os
+import sys
 
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m import container
@@ -57,7 +58,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/jhu_primitives/gclass/glass.py',
+                'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/gclass/gclass.py',
 #                'https://github.com/youngser/primitives-interfaces/blob/jp-devM1/jhu_primitives/ase/ase.py',
                 'https://github.com/neurodata/primitives-interfaces.git',
             ],
@@ -134,24 +135,31 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         unique_labels = np.unique(self._labels)
         K = len(unique_labels)
 
-        testing = inputs[2]
-        testing_nodeIDs = np.asarray(testing['G1.nodeID'])
-        final_labels = np.zeros(len(testing))
+        testing = inputs[0]
 
+        try:
+            testing_nodeIDs = np.asarray(testing['G1.nodeID'])
+        except:
+            testing_nodeIDs = np.asarray(testing['nodeID'])
+        final_labels = np.zeros(len(testing))
+        string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
+        #print(string_nodeIDs, file=sys.stderr)
+        #print(testing_nodeIDs, file=sys.stderr)
         if self._PD and self._ENOUGH_SEEDS:
             for i in range(len(testing_nodeIDs)):
-            #for i in range(len(self._nodeIDs)):
-                temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
-                #temp = i
+                temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = int(label)
         else:
+
             for i in range(len(testing_nodeIDs)):
-            #for i in range(len(self._nodeIDs)):
-                temp = np.where(self._nodeIDs == int(testing_nodeIDs[i]))[0][0]
-                #temp = i
-                weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
+                temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
+                try:
+                    weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
+                except:
+                    self._covariances += self._covariances + np.ones(self._covariances.shape)*0.00001
+                    weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = int(label)
 
@@ -170,19 +178,23 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         if self._fitted:
             return base.CallResult(None)
 
-        self._embedding = self._training_inputs[0]
+        self._embedding = self._training_inputs[1][0]
 
-        self._nodeIDs = np.array(self._training_inputs[1])
+        self._nodeIDs = np.array(self._training_inputs[2])
 
-        self._seeds = self._training_inputs[2]['G1.nodeID']
+        try:
+            self._seeds = self._training_inputs[0]['G1.nodeID']
+        except:
+            self._seeds = self._training_inputs[0]['nodeID'].astype(float).astype(int)
+
         self._seeds = np.array([int(i) for i in self._seeds])
 
         try:
-            self._labels = self._training_inputs[2]['classLabel']
+            self._labels = self._training_inputs[0]['classLabel']
             self._problem = 'VN'
 
         except:
-            self._labels = self._training_inputs[2]['community']
+            self._labels = self._training_inputs[0]['community']
             self._problem = 'CD'
 
         self._labels = np.array([int(i) for i in self._labels])
@@ -198,7 +210,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         self._ENOUGH_SEEDS = True # For full estimation
 
-        #get unique labels
+        # get unique labels
         unique_labels, label_counts = np.unique(self._labels, return_counts = True)
         for i in range(K):
             if label_counts[i] < d*(d + 1)/2:
@@ -208,56 +220,43 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._pis = label_counts/len(self._seeds)
 
 
-        #reindex labels if necessary
+        # reindex labels if necessary
         for i in range(len(self._labels)): # reset labels to [0,.., K-1]
             itemindex = np.where(unique_labels==self._labels[i])[0][0]
             self._labels[i] = int(itemindex)
 
 
-        #gather the meanss
+        # gather the means
         x_sums = np.zeros(shape = (K, d))
 
-        for i in range(len(self._seeds)):
-            nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
-            temp_feature_vector = self._embedding[nodeID, :]
-            temp_label = self._labels[i]
-            x_sums[temp_label, :] += temp_feature_vector
+        estimated_means = np.zeros((K, d))
+        for i in range(K):
+            temp_seeds = self._seeds[np.where(self._labels == i)[0]]
+            estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
+        #for i in range(len(self._seeds)):
+        #    nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
+        #    temp_feature_vector = self._embedding[nodeID, :]
+        #    temp_label = self._labels[i]
+        #    x_sums[temp_label, :] += temp_feature_vector
 
-        estimated_means = [x_sums[i,:]/label_counts[i] for i in range(K)]
+        #estimated_means = [x_sums[i,:]/label_counts[i] for i in range(K)]
 
         mean_centered_sums = np.zeros(shape = (K, d, d))
 
-        for i in range(len(self._seeds)):
-            nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
-            temp_feature_vector = self._embedding[nodeID, :].copy()
-            temp_label = self._labels[i]
-            mean_centered_feature_vector = temp_feature_vector - estimated_means[self._labels[i]]
-            temp_feature_vector = np.reshape(temp_feature_vector, (len(temp_feature_vector), 1))
-            mcfv_squared = temp_feature_vector.dot(temp_feature_vector.T)
-            mean_centered_sums[temp_label, :, :] += mcfv_squared
+        covs = np.zeros(shape = (K, d, d))
+        for i in range(K):
+            feature_vectors = self._embedding[self._seeds[self._labels == i], :]
+            covs[i] = np.cov(feature_vectors, rowvar = False)
 
         if self._ENOUGH_SEEDS:
-            estimated_cov = np.zeros(shape = (K, d, d))
-            for i in range(K):
-                estimated_cov[i] = mean_centered_sums[i,:]/(label_counts[i] - 1)
+            estimated_cov = covs
         else:
             estimated_cov = np.zeros(shape = (d,d))
             for i in range(K):
-                estimated_cov += mean_centered_sums[i, :]*(label_counts[i] - 1)
-            estimated_cov = estimated_cov / (n - d)
+                estimated_cov += covs[i]*(label_counts[i] - 1)
+            estimated_cov = estimated_cov / (n - K)
 
         self._PD = True
-        eps = 0.001
-        if self._ENOUGH_SEEDS:
-            for i in range(K):
-                try:
-                    eig_values = np.linalg.svd(estimated_cov[i, :, :])[1]
-                    if len(eig_values) > len(eig_values[eig_values > -eps]):
-                        self._PD = False
-                        break
-                except:
-                    self._PD = False
-                    break
 
         self._means = container.ndarray(estimated_means)
         self._covariances = container.ndarray(estimated_cov)

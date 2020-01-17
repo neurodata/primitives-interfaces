@@ -1,0 +1,2 @@
+from __future__ import absolute_import
+from .link_pred_graph_reader import LinkPredictionGraphReader
