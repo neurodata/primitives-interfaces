@@ -209,9 +209,10 @@ def write_pipeline_run(dataset, path):
     cmd += " -t " + dataset_path + "TEST/dataset_TEST/datasetDoc.json"
     cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
     run_path = '/'.join(path.split('/')[:-2]) + "/pipeline_runs/"
-    cmd += " -O " + run_path + path.split('/')[-1] + "-" + dataset.split('/')[-1] + "_pipeline_run.yml"
+    run_path += path.split('/')[-1] + "-" + dataset.split('/')[-1] + "_pipeline_run.yml"
+    cmd += " -O " + run_path
     os.system(cmd)
-
+    os.system("gzip " + run_path)
 
 def pipeline_run_all(paths_to_pipelines):
     for problem_type in PROBLEM_TYPES:
