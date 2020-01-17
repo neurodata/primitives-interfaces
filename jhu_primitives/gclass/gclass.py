@@ -146,7 +146,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         final_labels = np.zeros(len(csv))
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
-        print(string_nodeIDs, file=sys.stderr)
+        #print(string_nodeIDs, file=sys.stderr)
         # print(testing_nodeIDs, file=sys.stderr)
         if self._PD and self._ENOUGH_SEEDS:
             print('enough seeds and PD', file=sys.stderr)
@@ -197,7 +197,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._embedding = self._training_inputs[1][0]
 
         self._nodeIDs = np.array(self._training_inputs[2])
-        print(self._nodeIDs, file=sys.stderr)
+        # print(self._nodeIDs, file=sys.stderr)
 
         csv = self._training_inputs[0]
         headers=csv.columns
@@ -209,8 +209,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             if "label" in col:
                 self._labels = np.array(list(csv[col]))
                 self._lcc_labels = np.array([s for s in self._labels if s in self._nodeIDs])
-        print(len(self._seeds), file=sys.stderr)
-        print(len(self._lcc_seeds), file=sys.stderr)
+        # print(len(self._seeds), file=sys.stderr)
+        # print(len(self._lcc_seeds), file=sys.stderr)
         # TODO: assumes labels are int-like
         # self._labels = np.array([i for i in self._labels])
         # self._lcc_labels = np.array([i for i in self._lcc_labels])
@@ -243,7 +243,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         # gather the means
         x_sums = np.zeros(shape = (K, d))
-
+        print(np.where(self._labels == self._unique_labels[-1])[0], file=sys.stderr)
+        print(self)
+        print(self._unique_labels, np.unique(self._lcc_labels), file = sys.stderr)
         estimated_means = np.zeros((K, d))
         # seed_idx = np.array([np.where(self._nodeIDs == s)[0][0] for s in self._lcc_seeds], dtype=int)
         for i, lab in enumerate(self._unique_labels):
