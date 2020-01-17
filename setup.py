@@ -60,7 +60,7 @@ setup(
             'classification.gaussian_classification.JHU=jhu_primitives.gclass:GaussianClassification',
             'graph_clustering.gaussian_clustering.JHU=jhu_primitives.gclust:GaussianClustering',
             #'data_transformation.laplacian_spectral_embedding.JHU=jhu_primitives.lse:LaplacianSpectralEmbedding',
-            'link_prediction.data_conversion.JHU=jhu_primitives.link_pred_graph_reader:LinkPredictionGraphReader',
+            #'link_prediction.data_conversion.JHU=jhu_primitives.link_pred_graph_reader:LinkPredictionGraphReader',
             #'link_prediction.rank_classification.JHU=jhu_primitives.link_pred_rc:LinkPredictionRankClassifier',
             # 'data_transformation.out_of_sample_adjacency_spectral_embedding.JHU=jhu_primitives.oosase:OutOfSampleAdjacencySpectralEmbedding',
             # 'data_transformation.out_of_sample_laplacian_spectral_embedding.JHU=jhu_primitives.ooslse:OutOfSampleLaplacianSpectralEmbedding',
