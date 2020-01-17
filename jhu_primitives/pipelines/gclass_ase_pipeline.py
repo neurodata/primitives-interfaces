@@ -5,7 +5,7 @@ from jhu_primitives.pipelines.base import BasePipeline
 from jhu_primitives.ase import AdjacencySpectralEmbedding
 from jhu_primitives.gclass import GaussianClassification
 from jhu_primitives.lcc import LargestConnectedComponent
-from jhu_primitives.dataset_to_graph_list import DatasetToGraphList
+from jhu_primitives.load_graphs import LoadGraphs
 
 DATASETS = {
     'LL1_net_nomination_seed'
@@ -20,7 +20,7 @@ class gclass_ase_pipeline(BasePipeline):
         pipeline = meta_pipeline.Pipeline()
         pipeline.add_input(name='inputs')
 
-        step_0 = meta_pipeline.PrimitiveStep(primitive_description=DatasetToGraphList.metadata.query())
+        step_0 = meta_pipeline.PrimitiveStep(primitive_description=LoadGraphs.metadata.query())
         step_0.add_argument(
             name='inputs',
             argument_type=ArgumentType.CONTAINER,
