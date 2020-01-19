@@ -217,6 +217,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         # get unique labels
         self._unique_labels, label_counts = np.unique(self._labels, return_counts = True)
+        self._unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels)
         K = len(self._unique_labels)
 
         n, d = self._embedding.shape
@@ -243,13 +244,10 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         # gather the means
         x_sums = np.zeros(shape = (K, d))
-        print(np.where(self._labels == self._unique_labels[-1])[0], file=sys.stderr)
-        print(self._unique_labels, np.unique(self._lcc_labels), file = sys.stderr)
         estimated_means = np.zeros((K, d))
         # seed_idx = np.array([np.where(self._nodeIDs == s)[0][0] for s in self._lcc_seeds], dtype=int)
-        for i, lab in enumerate(self._unique_labels):
+        for i, lab in enumerate(self._unique_lcc_labels):
             temp_seeds = np.where(self._labels == lab)[0]
-            print(np.where(self._labels == lab)[0], file=sys.stderr)
             print(temp_seeds, file=sys.stderr)
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
 
