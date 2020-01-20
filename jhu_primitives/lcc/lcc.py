@@ -85,10 +85,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         print('lcc produce started', file=sys.stderr)
 
         # unpack the data from the graph to list reader
-        csv = inputs[0]
-        graphs_full_all = inputs[1]
-        nodeIDs_full_all = inputs[2]
-        TASK = inputs[3]
+        csv, graphs_full_all, nodeIDs_full_all, task_type = inputs
 
         # initialize lists for connected components and associated nodeids
         graphs_largest_all = []
@@ -108,15 +105,15 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             components = np.zeros(len(graph_full), dtype=int)
             for i, connected_component in enumerate(subgraphs):
                 # obtain indices associated with the node_ids in this component
-                temp_indices = [i for i, x in enumerate(nodeIDs)
+                temp_indices = [i for i, x in enumerate(nodeIDs_full)
                                 if x in [str(c) for c in list(connected_component)]]
                 components[temp_indices] = i
                 # check if the component is largest
                 if len(connected_component) > len(graph_largest):
                     # if it is largest - flag as such
                     graph_largest = [connected_component.copy()]
-                    # and change the nodeIDs
-                    nodeIDs_largest = [nodeIDs[temp_indices]]
+                    # and subselect the appropriate nodeIDs
+                    nodeIDs_largest = [nodeIDs_full[temp_indices]]
 
             # append the largest_connected component and nodeIDs
             graphs_largest_all.append(graph_largest)
@@ -126,7 +123,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             # the dataframe; in this problem there is always only one graph
             # TODO: condsider avoiding the specification of the problem
             #       likely can be achiebed by handling nodeIDs data smartly
-            if TASK == "communityDetection":
+            if task_type == "communityDetection":
                 csv['components'] = components
 
         assert 1 == 0
