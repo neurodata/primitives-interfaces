@@ -132,20 +132,20 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         debugging = True
         if debugging:
             # CSV STUFF
-            # print("first 20 lines of a dataframe", file=sys.stderr)
-            # print(df[:20], file=sys.stderr)
             print("label counts:", file=sys.stderr)
             for i in range(10):
                 print("label: {}, count: {}".format(
                     i, np.sum(learning_data['label'] == str(i))), file=sys.stderr)
             # GRAPH STUFF
-            print("length of the first graph: {}".format(len(list(graphs_largest_all[0].nodes()))),
-                file=sys.stderr)
+            print("length of the first graph: {}".format(
+                len(list(graphs_largest_all[0].nodes()))), file=sys.stderr)
             print("first 20 nodes of the first graph", file=sys.stderr)
             print(list(graphs_largest_all[0].nodes())[:20], file=sys.stderr)
             # NODE IDS STUFF
-            print("type of a nodeID: {}".format(type(nodeIDs_largest_all[0][0])), file=sys.stderr)
-            print("length of the nodeIds: {}".format(len(nodeIDs_largest_all)), file=sys.stderr)
+            print("type of a nodeID: {}".format(
+                type(nodeIDs_largest_all[0][0])), file=sys.stderr)
+            print("length of the nodeIds: {}".format(
+                len(nodeIDs_largest_all)), file=sys.stderr)
             print("first 20 nodesIDs", file=sys.stderr)
             print(nodeIDs_largest_all[0][:20], file=sys.stderr)
             # TASK STUFF
