@@ -128,7 +128,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                          docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        np.random.seed(1234)
+        np.random.seed(self.random_seed)
         print('ase, baby!', file=sys.stderr)
         assert 1 == 0
         csv = inputs[0]
