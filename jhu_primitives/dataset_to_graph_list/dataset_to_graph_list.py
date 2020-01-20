@@ -134,7 +134,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
 
 
         # TODO many debugging print statements.
-        debugging = False
+        debugging = True
         if debugging:
             # CSV STUFF
             # print("first 50 lines of a dataframe", file=sys.stderr)
@@ -150,7 +150,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             print(list(graphs[0].nodes())[:100], file=sys.stderr)
             # NODE IDS STUFF
             print("type of a nodeID: {}".format(type(nodeIDs[0][0])), file=sys.stderr)
-            print("length of the nodeIds: {}".format(len(nodeIDs)), file=sys.stderr)
+            print("length of the nodeIds: {}".format(len(nodeIDs[0])), file=sys.stderr)
             print("first 50 nodesIDs", file=sys.stderr)
             print(nodeIDs[0][:100], file=sys.stderr)
             # TASK STUFF

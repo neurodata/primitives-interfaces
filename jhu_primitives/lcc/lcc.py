@@ -145,7 +145,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             print("type of a nodeID: {}".format(
                 type(nodeIDs_largest_all[0][0])), file=sys.stderr)
             print("length of the nodeIds: {}".format(
-                len(nodeIDs_largest_all)), file=sys.stderr)
+                len(nodeIDs_largest_all[0])), file=sys.stderr)
             print("first 50 nodesIDs", file=sys.stderr)
             print(nodeIDs_largest_all[0][:100], file=sys.stderr)
             # TASK STUFF
