@@ -91,7 +91,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         graphs_largest_all = []
         nodeIDs_largest_all = []
 
-        for graph_index in range(len(inputs[1])):
+        for graph_index in range(len(graphs_full_all)):
             # select the graph and node ids for the current graph
             graph_full = graphs_full_all[graph_index]
             nodeIDs_full = nodeIDs_full_all[graph_index]
@@ -111,9 +111,9 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
                 # check if the component is largest
                 if len(connected_component) > len(graph_largest):
                     # if it is largest - flag as such
-                    graph_largest = [connected_component.copy()]
+                    graph_largest = connected_component.copy()
                     # and subselect the appropriate nodeIDs
-                    nodeIDs_largest = [nodeIDs_full[temp_indices]]
+                    nodeIDs_largest = nodeIDs_full[temp_indices]
 
             # append the largest_connected component and nodeIDs
             graphs_largest_all.append(graph_largest)
