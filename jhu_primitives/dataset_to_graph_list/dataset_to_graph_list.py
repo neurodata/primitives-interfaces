@@ -132,8 +132,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
 
 
         # TODO many debugging print statements.
-        print("first 20 lines of a dataframe", file=sys.stderr)
-        print(df[:20], file=sys.stderr)
+        # print("first 20 lines of a dataframe", file=sys.stderr)
+        # print(df[:20], file=sys.stderr)
         print("label counts:")
         for i in range(10):
             print("label: {}, count: {}".format(
@@ -148,8 +148,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         print("type of a nodeID: {}".format(type(nodeIDs[0][0])))
         print("task", file=sys.stderr)
         print(TASK, file=sys.stderr)
-        print("graph reader produce ended \n \n", file=sys.stderr) # TODO
-        assert 1 == 0
+        print("graph reader produce ended \n \n", file=sys.stderr)
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 

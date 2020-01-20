@@ -82,12 +82,13 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(self.random_seed)
-        print('lcc, baby!', file=sys.stderr)
+        print('lcc produce started', file=sys.stderr)
 
         # unpack the data from the graph to list reader
+        # note that this primitive only works with ONE graph!
         csv = inputs[0]
         G = inputs[1][0]
-        nodeIDs = inputs[2]
+        nodeIDs = inputs[2][0]
         TASK = inputs[3]
 
         # split the data into connected components
@@ -123,6 +124,9 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         # print(list(G_largest.nodes)[:20], file=sys.stderr)
         print(nodeIDs[:20], file=sys.stderr)
         print(new_nodeIDs[:20], file=sys.stderr)
+        print('lcc produce started \n \n', file=sys.stderr)
 
-        
+        assert 1 == 0
+
+
         return base.CallResult(container.List([csv, [G_largest.copy()], new_nodeIDs]))
