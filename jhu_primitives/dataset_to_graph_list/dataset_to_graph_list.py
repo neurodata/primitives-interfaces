@@ -109,32 +109,34 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
 
         # load the graphs and convert to a networkx object
         graphs = []
+        nodeIDs = []
         for i in dataResources:
             if i['resType'] == "table":
                 df = inputs['learningData']
             elif i['resType'] == 'graph':
-                graphs.append(nx.read_gml(location_base_uri + "/" + i['resPath']))
+                graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
+                graphs.append(graph_temp)
                 if TASK in ["communityDetection", "vertexClassification"]:
-                    nodeIDs = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
+                    nodeIDs_temp = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
+                    nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
+                    nodeIDs_temp = container.ndarray(nodeIDs_temp)
+                    nodeIds.append(nodeIDs_temp)
             elif i['resType'] == "edgeList":
                 temp_graph = self._read_edgelist(
                     location_base_uri + "/" + i['resPath'],
                     i["columns"], )
                 graphs.append(temp_graph)
                 if TASK in ["communityDetection", "vertexClassification"]:
-                    nodeIDs = list(temp_graph.nodes)
-        # todo: read data=True stuff
-        id_to_idx = {nodeIDs[i]: i for i in range(len(nodeIDs))}
-        # nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
-        nodeIDs = container.ndarray(np.array([str(i) for i in nodeIDs]))
+                    nodeIDs_temp = list(temp_graph.nodes)
+                    nodeIDs.append(nodeIDs_temp)
 
 
         print("first 20 lines of a dataframe", file=sys.stderr)
         print(df[:20], file=sys.stderr)
         print("first 20 nodes of the first graph", file=sys.stderr)
-        print(graphs[0].nodes[:20], file=sys.stderr)
+        print(graphs[0].nodes, file=sys.stderr)
         print("first 20 nodesIDs", file=sys.stderr)
-        print(graphs[0].nodes[:20], file=sys.stderr)
+        print(nodeIDs[0], file=sys.stderr)
         print("task", file=sys.stderr)
         print(TASK, file=sys.stderr)
         for i in range(8):
