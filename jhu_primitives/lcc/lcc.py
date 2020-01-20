@@ -89,12 +89,14 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         graphs_full_all = inputs[1]
         nodeIDs_full_all = inputs[2]
         TASK = inputs[3]
+
         # initialize lists for connected components and associated nodeids
         graphs_largest_all = []
         nodeIDs_largest_all = []
+
         for graph_index in range(len(inputs[1])):
             # select the graph and node ids for the current graph
-            graph_full = graph_full_all[graph_index]
+            graph_full = graphs_full_all[graph_index]
             nodeIDs_full = nodeIDs_full_all[graph_index]
 
             # split the current graph into connected components
