@@ -156,7 +156,12 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         # assumed that any edgelist passed has a source in the first col
         # and a reciever in the second col.
         # TODO make this function handle time series (Ground Truth)
-        edgeList=pd.read_csv(path)
+        # specify columns of edges
+        from_column = columns[1]['colName']
+        to_column = columns[2]['colName']
+        # specify types
+        dtypes_dict = {from_column: str, to_column: str}
+        edgeList=pd.read_csv(path, dtype=dtypes_dict)
         print(type(edgeList[columns[1]['colName']][5]), file=sys.stderr)
         assert 1 == 0
         G = nx.convert_matrix.from_pandas_edgelist(edgeList,
