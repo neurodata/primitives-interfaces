@@ -130,7 +130,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(self.random_seed)
         print('ase, baby!', file=sys.stderr)
-        assert 1 == 0
         csv = inputs[0]
         G = inputs[1][0].copy()
 
@@ -190,7 +189,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # print(X_hat.shape, file=sys.stderr)
         inputs[1][0] = container.ndarray(X_hat)
 
-
         print("end of ase pring", file=sys.stderr)
         print(inputs[2][:20], file=sys.stderr)
+
+        assert 1 == 0
         return base.CallResult(inputs)
