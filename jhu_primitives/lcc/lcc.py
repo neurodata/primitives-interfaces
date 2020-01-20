@@ -140,14 +140,14 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             print("length of the first graph: {}".format(
                 len(list(graphs_largest_all[0].nodes()))), file=sys.stderr)
             print("first 100 nodes of the first graph", file=sys.stderr)
-            print(list(graphs_largest_all[0].nodes())[:100], file=sys.stderr)
+            print(list(graphs_largest_all[0].nodes())[1000:1100], file=sys.stderr)
             # NODE IDS STUFF
             print("type of a nodeID: {}".format(
                 type(nodeIDs_largest_all[0][0])), file=sys.stderr)
             print("length of the nodeIds: {}".format(
                 len(nodeIDs_largest_all[0])), file=sys.stderr)
             print("first 50 nodesIDs", file=sys.stderr)
-            print(nodeIDs_largest_all[0][:100], file=sys.stderr)
+            print(nodeIDs_largest_all[0][1000:100], file=sys.stderr)
             # TASK STUFF
             print("task: {}". format(task_type), file=sys.stderr)
         print('lcc produce ended', file=sys.stderr)

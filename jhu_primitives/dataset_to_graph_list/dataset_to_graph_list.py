@@ -147,12 +147,12 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             print("length of the first graph: {}".format(len(list(graphs[0].nodes()))),
                 file=sys.stderr)
             print("first 50 nodes of the first graph", file=sys.stderr)
-            print(list(graphs[0].nodes())[:100], file=sys.stderr)
+            print(list(graphs[0].nodes())[1000:1100], file=sys.stderr)
             # NODE IDS STUFF
             print("type of a nodeID: {}".format(type(nodeIDs[0][0])), file=sys.stderr)
             print("length of the nodeIds: {}".format(len(nodeIDs[0])), file=sys.stderr)
             print("first 50 nodesIDs", file=sys.stderr)
-            print(nodeIDs[0][:100], file=sys.stderr)
+            print(nodeIDs[0][1000:1100], file=sys.stderr)
             # TASK STUFF
             print("task: {}". format(TASK), file=sys.stderr)
         print("graph reader produce ended", file=sys.stderr)
