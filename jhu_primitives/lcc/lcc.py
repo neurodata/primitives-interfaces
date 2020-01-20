@@ -85,7 +85,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         print('lcc produce started', file=sys.stderr)
 
         # unpack the data from the graph to list reader
-        csv, graphs_full_all, nodeIDs_full_all, task_type = inputs
+        learning_data, graphs_full_all, nodeIDs_full_all, task_type = inputs
 
         # initialize lists for connected components and associated nodeids
         graphs_largest_all = []
@@ -102,7 +102,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
             # pick the largest connected component of the current graph
             graph_largest = [0]
-            components = np.zeros(len(graph_full), dtype=int)
+            components = np.zeros(len(graph_full), dtype=int) # only for CD
             for i, connected_component in enumerate(subgraphs):
                 # obtain indices associated with the node_ids in this component
                 temp_indices = [i for i, x in enumerate(nodeIDs_full)
@@ -124,10 +124,22 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             # TODO: condsider avoiding the specification of the problem
             #       likely can be achiebed by handling nodeIDs data smartly
             if task_type == "communityDetection":
-                csv['components'] = components
+                learning_data['components'] = components
 
-        assert 1 == 0
+        # TODO many debugging print statements.
+        print("label counts:", file=sys.stderr)
+        for i in range(10):
+            print("label: {}, count: {}".format(
+                i, np.sum(learning_data['label'] == str(i))), file=sys.stderr)
+        print("first 20 nodes of the first graph", file=sys.stderr)
+        print(list(graphs_largest_all[0].nodes())[:20], file=sys.stderr)
+        print("first 20 nodesIDs", file=sys.stderr)
+        print(nodeIDs_largest_all[0][:20], file=sys.stderr)
+        print("type of a nodeID: {}".format(type(nodeIDs_largest_all[0][0])), file=sys.stderr)
+        print("graph reader produce ended", file=sys.stderr)
 
         print('lcc produce ended', file=sys.stderr)
-        outputs = container.List([csv, graphs_largest_all, nodeIDs_largest_all])
+        outputs = container.List([
+            learning_data, graphs_largest_all, nodeIDs_largest_all])
+        assert 1 == 0
         return base.CallResult(outputs)
