@@ -131,26 +131,25 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         debugging = True
         if debugging:
-            # CSV STUFF
+            # DATAFRAME STUFF
             print("label counts:", file=sys.stderr)
-            for i in range(10):
+            for i in range(9):
                 print("label: {}, count: {}".format(
                     i, np.sum(learning_data['label'] == str(i))), file=sys.stderr)
             # GRAPH STUFF
             print("length of the first graph: {}".format(
                 len(list(graphs_largest_all[0].nodes()))), file=sys.stderr)
-            print("first 100 nodes of the first graph", file=sys.stderr)
-            print(list(graphs_largest_all[0].nodes())[1000:1100], file=sys.stderr)
+            print("first 20 nodes of the first graph", file=sys.stderr)
+            print(list(graphs_largest_all[0].nodes())[:20], file=sys.stderr)
             # NODE IDS STUFF
             print("type of a nodeID: {}".format(
                 type(nodeIDs_largest_all[0][0])), file=sys.stderr)
             print("length of the nodeIds: {}".format(
                 len(nodeIDs_largest_all[0])), file=sys.stderr)
-            print("first 50 nodesIDs", file=sys.stderr)
-            print(nodeIDs_largest_all[0][1000:100], file=sys.stderr)
+            print("first 20 nodesIDs", file=sys.stderr)
+            print(nodeIDs_largest_all[0][:20], file=sys.stderr)
             # TASK STUFF
             print("task: {}". format(task_type), file=sys.stderr)
         print('lcc produce ended', file=sys.stderr)
 
-        assert 1 == 0
         return base.CallResult(outputs)
