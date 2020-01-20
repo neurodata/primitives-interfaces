@@ -162,8 +162,6 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         # specify types
         dtypes_dict = {from_column: str, to_column: str}
         edgeList=pd.read_csv(path, dtype=dtypes_dict)
-        print(type(edgeList[columns[1]['colName']][5]), file=sys.stderr)
-        assert 1 == 0
         G = nx.convert_matrix.from_pandas_edgelist(edgeList,
                                                    columns[1]['colName'],
                                                    columns[2]['colName'])
