@@ -134,18 +134,15 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         # TODO many debugging print statements.
         # print("first 20 lines of a dataframe", file=sys.stderr)
         # print(df[:20], file=sys.stderr)
-        print("label counts:")
+        print("label counts:", file=sys.stderr)
         for i in range(10):
             print("label: {}, count: {}".format(
-                i, np.sum(df['label'] == str(i)), file=sys.stderr))
+                i, np.sum(df['label'] == str(i))), file=sys.stderr)
         print("first 20 nodes of the first graph", file=sys.stderr)
-        try:
-            print(list(graphs[0].nodes())[:20], file=sys.stderr)
-        except:
-            pass
+        print(list(graphs[0].nodes())[:20], file=sys.stderr)
         print("first 20 nodesIDs", file=sys.stderr)
         print(nodeIDs[0][:20], file=sys.stderr)
-        print("type of a nodeID: {}".format(type(nodeIDs[0][0])))
+        print("type of a nodeID: {}".format(type(nodeIDs[0][0])), file=sys.stderr)
         print("task", file=sys.stderr)
         print(TASK, file=sys.stderr)
         print("graph reader produce ended \n \n", file=sys.stderr)
