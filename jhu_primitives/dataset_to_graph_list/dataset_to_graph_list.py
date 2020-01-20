@@ -135,15 +135,16 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         print(df[:20], file=sys.stderr)
         print("first 20 nodes of the first graph", file=sys.stderr)
         try:
-            print(graphs[0].nodes()[:20], file=sys.stderr)
+            print(list(graphs[0].nodes())[:20], file=sys.stderr)
         except:
             pass
         print("first 20 nodesIDs", file=sys.stderr)
         print(nodeIDs[0][:20], file=sys.stderr)
         print("task", file=sys.stderr)
         print(TASK, file=sys.stderr)
-        for i in range(8):
-            print(np.sum(df['label'] == str(i)), file=sys.stderr)
+        for i in range(10):
+            print("label: {}, count: {}".format(
+                i, np.sum(df['label'] == str(i)), file=sys.stderr))
         print("graph reader produce ended", file=sys.stderr) # TODO
         assert 1 == 0
 
