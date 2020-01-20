@@ -86,45 +86,49 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         # unpack the data from the graph to list reader
         csv = inputs[0]
-        G = inputs[1][0]
-        nodeIDs = inputs[2][0]
+        graphs_full_all = inputs[1]
+        nodeIDs_full_all = inputs[2]
         TASK = inputs[3]
+        # initialize lists for connected components and associated nodeids
+        graphs_largest_all = []
+        nodeIDs_largest_all = []
+        for graph_index in range(len(inputs[1])):
+            # select the graph and node ids for the current graph
+            graph_full = graph_full_all[graph_index]
+            nodeIDs_full = nodeIDs_full_all[graph_index]
 
-        # split the data into connected components
-        subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
+            # split the current graph into connected components
+            subgraphs = [graph_full.subgraph(i).copy()
+                        for i in nx.connected_components(graph_full)]
 
-        # pick the largest connected component
-        G_largest = [0]
-        components = np.zeros(len(G), dtype=int)
-        for i, connected_component in enumerate(subgraphs):
-            # obtain indices associated with the node_ids in this component
-            temp_indices = [i for i, x in enumerate(nodeIDs)
-                            if x in [str(c) for c in list(connected_component)]]
-            # print(list(connected_component), file=sys.stderr)
-            # print(list(connected_component.nodes), file=sys.stderr)
-            components[temp_indices] = i+1
-            # check if the component is largest
-            if len(connected_component) > len(G_largest):
-                # if it is largest - flag as such
-                G_largest = connected_component
-                # and change the nodeIDs
-                new_nodeIDs = nodeIDs[temp_indices]
+            # pick the largest connected component of the current graph
+            graph_largest = [0]
+            components = np.zeros(len(graph_full), dtype=int)
+            for i, connected_component in enumerate(subgraphs):
+                # obtain indices associated with the node_ids in this component
+                temp_indices = [i for i, x in enumerate(nodeIDs)
+                                if x in [str(c) for c in list(connected_component)]]
+                components[temp_indices] = i
+                # check if the component is largest
+                if len(connected_component) > len(graph_largest):
+                    # if it is largest - flag as such
+                    graph_largest = [connected_component.copy()]
+                    # and change the nodeIDs
+                    nodeIDs_largest = [nodeIDs[temp_indices]]
 
-        # for some problems the component needs to be specified in the dataframe
-        # if TASK == "vertexClassification":
-        #     csv['components'] = components[np.array(csv[NODEID], dtype=int)]
-        if TASK == "communityDetection":
-            csv['components'] = components
+            # append the largest_connected component and nodeIDs
+            graphs_largest_all.append(graph_largest)
+            nodeIDs_largest_all.append(nodeIDs_largest)
 
-        # print(len(G_largest), file=sys.stderr)
-        # print(len(nodeIDs), file=sys.stderr)
-        # print(len(new_nodeIDs), file=sys.stderr)
-        print("also print first 20 entries")
-        # print(list(G_largest.nodes)[:20], file=sys.stderr)
-        print(nodeIDs[:20], file=sys.stderr)
-        print(new_nodeIDs[:20], file=sys.stderr)
+            # for communityDetection the component needs to be specified in
+            # the dataframe; in this problem there is always only one graph
+            # TODO: condsider avoiding the specification of the problem
+            #       likely can be achiebed by handling nodeIDs data smartly
+            if TASK == "communityDetection":
+                csv['components'] = components
+
+        assert 1 == 0
 
         print('lcc produce ended', file=sys.stderr)
-        assert 1 == 0
-        
-        return base.CallResult(container.List([csv, [G_largest.copy()], new_nodeIDs]))
+        outputs = container.List([csv, graphs_largest_all, nodeIDs_largest_all])
+        return base.CallResult(outputs)

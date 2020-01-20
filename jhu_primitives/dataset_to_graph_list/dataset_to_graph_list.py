@@ -163,8 +163,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         dtypes_dict = {from_column: str, to_column: str}
         edgeList=pd.read_csv(path, dtype=dtypes_dict)
         G = nx.convert_matrix.from_pandas_edgelist(edgeList,
-                                                   columns[1]['colName'],
-                                                   columns[2]['colName'])
+                                                   from_column,
+                                                   to_column)
         return G
 
 
