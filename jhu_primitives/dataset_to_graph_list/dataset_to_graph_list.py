@@ -145,8 +145,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         print("first 20 nodesIDs", file=sys.stderr)
         print(nodeIDs[0][:20], file=sys.stderr)
         print("type of a nodeID: {}".format(type(nodeIDs[0][0])), file=sys.stderr)
-        print("task", file=sys.stderr)
-        print(TASK, file=sys.stderr)
+        print("task: {}". format(TASK), file=sys.stderr)
         print("graph reader produce ended", file=sys.stderr)
 
 
@@ -158,6 +157,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         # and a reciever in the second col.
         # TODO make this function handle time series (Ground Truth)
         edgeList=pd.read_csv(path)
+        print(type(edgeList[columns[1]['colName']][5]), file=sys.stderr)
+        assert 1 == 0
         G = nx.convert_matrix.from_pandas_edgelist(edgeList,
                                                    columns[1]['colName'],
                                                    columns[2]['colName'])
