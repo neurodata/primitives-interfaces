@@ -126,20 +126,33 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             if task_type == "communityDetection":
                 learning_data['components'] = components
 
-        # TODO many debugging print statements.
-        print("label counts:", file=sys.stderr)
-        for i in range(10):
-            print("label: {}, count: {}".format(
-                i, np.sum(learning_data['label'] == str(i))), file=sys.stderr)
-        print("first 20 nodes of the first graph", file=sys.stderr)
-        print(list(graphs_largest_all[0].nodes())[:20], file=sys.stderr)
-        print("first 20 nodesIDs", file=sys.stderr)
-        print(nodeIDs_largest_all[0][:20], file=sys.stderr)
-        print("type of a nodeID: {}".format(type(nodeIDs_largest_all[0][0])), file=sys.stderr)
-        print("graph reader produce ended", file=sys.stderr)
-
-        print('lcc produce ended', file=sys.stderr)
         outputs = container.List([
             learning_data, graphs_largest_all, nodeIDs_largest_all])
+
+        debugging = True
+        if debugging:
+            # CSV STUFF
+            # print("first 20 lines of a dataframe", file=sys.stderr)
+            # print(df[:20], file=sys.stderr)
+            print("label counts:", file=sys.stderr)
+            for i in range(10):
+                print("label: {}, count: {}".format(
+                    i, np.sum(learning_data['label'] == str(i))), file=sys.stderr)
+            # GRAPH STUFF
+            print("length of the first graph: {}".format(len(list(graphs_largest_all[0].nodes()))),
+                file=sys.stderr)
+            print("first 20 nodes of the first graph", file=sys.stderr)
+            print(list(graphs_largest_all[0].nodes())[:20], file=sys.stderr)
+            # NODE IDS STUFF
+            print("type of a nodeID: {}".format(type(nodeIDs_largest_all[0][0])), file=sys.stderr)
+            print("length of the nodeIds: {}".format(len(nodeIDs_largest_all)), file=sys.stderr)
+            print("first 20 nodesIDs", file=sys.stderr)
+            print(nodeIDs_largest_all[0][:20], file=sys.stderr)
+            # TASK STUFF
+            print("task: {}". format(task_type), file=sys.stderr)
+            print("graph reader produce ended", file=sys.stderr)
+
+        print('lcc produce ended', file=sys.stderr)
+
         assert 1 == 0
         return base.CallResult(outputs)
