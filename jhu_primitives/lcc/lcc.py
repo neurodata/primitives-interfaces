@@ -82,22 +82,20 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(self.random_seed)
-        print('lcc produce started', file=sys.stderr)
+        print('lcc, baby!', file=sys.stderr)
 
         # unpack the data from the graph to list reader
-        # note that this primitive only works with ONE graph!
-        # but we certainly can make it work with multiple graphs ??? TODO
         csv = inputs[0]
-        graph_full = inputs[1][0]
+        G = inputs[1][0]
         nodeIDs = inputs[2][0]
         TASK = inputs[3]
 
         # split the data into connected components
-        subgraphs = [graph_full.subgraph(i).copy() for i in nx.connected_components(graph_full)]
+        subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
 
         # pick the largest connected component
-        graph_largest = [0]
-        components = np.zeros(len(graph_full), dtype=int)
+        G_largest = [0]
+        components = np.zeros(len(G), dtype=int)
         for i, connected_component in enumerate(subgraphs):
             # obtain indices associated with the node_ids in this component
             temp_indices = [i for i, x in enumerate(nodeIDs)
@@ -106,9 +104,9 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             # print(list(connected_component.nodes), file=sys.stderr)
             components[temp_indices] = i+1
             # check if the component is largest
-            if len(connected_component) > len(graph_largest):
+            if len(connected_component) > len(G_largest):
                 # if it is largest - flag as such
-                graph_largest = connected_component
+                G_largest = connected_component
                 # and change the nodeIDs
                 new_nodeIDs = nodeIDs[temp_indices]
 
@@ -118,16 +116,13 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         if TASK == "communityDetection":
             csv['components'] = components
 
-        # print(len(graph_largest), file=sys.stderr)
+        # print(len(G_largest), file=sys.stderr)
         # print(len(nodeIDs), file=sys.stderr)
         # print(len(new_nodeIDs), file=sys.stderr)
         print("also print first 20 entries")
-        # print(list(graph_largest.nodes)[:20], file=sys.stderr)
+        # print(list(G_largest.nodes)[:20], file=sys.stderr)
         print(nodeIDs[:20], file=sys.stderr)
         print(new_nodeIDs[:20], file=sys.stderr)
-        print('lcc produce started \n \n', file=sys.stderr)
 
-        assert 1 == 0
-
-
-        return base.CallResult(container.List([csv, [graph_largest.copy()], new_nodeIDs]))
+        
+        return base.CallResult(container.List([csv, [G_largest.copy()], new_nodeIDs]))
