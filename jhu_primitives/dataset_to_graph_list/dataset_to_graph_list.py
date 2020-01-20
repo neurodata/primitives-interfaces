@@ -136,6 +136,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         print("first 20 nodes of the first graph", file=sys.stderr)
         try:
             print(graphs[0].nodes()[:20], file=sys.stderr)
+        except:
+            pass
         print("first 20 nodesIDs", file=sys.stderr)
         print(nodeIDs[0][:20], file=sys.stderr)
         print("task", file=sys.stderr)
