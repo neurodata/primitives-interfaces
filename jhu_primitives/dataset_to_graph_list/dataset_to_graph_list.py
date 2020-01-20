@@ -128,6 +128,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                 graphs.append(temp_graph)
                 if TASK in ["communityDetection", "vertexClassification"]:
                     nodeIDs_temp = list(temp_graph.nodes)
+                    nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
+                    nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
 
 
@@ -145,7 +147,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         print("type of a nodeID: {}".format(type(nodeIDs[0][0])), file=sys.stderr)
         print("task", file=sys.stderr)
         print(TASK, file=sys.stderr)
-        print("graph reader produce ended \n \n", file=sys.stderr)
+        print("graph reader produce ended", file=sys.stderr)
+
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
