@@ -137,8 +137,11 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
         print(graphs[0].nodes[:20], file=sys.stderr)
         print("task", file=sys.stderr)
         print(TASK, file=sys.stderr)
+        for i in range(8):
+            print(np.sum(df['label'] == i), file=sys.stderr)
         print("graph reader produce ended", file=sys.stderr) # TODO
         assert 1 == 0
+
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
 
