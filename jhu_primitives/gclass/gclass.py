@@ -151,8 +151,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
-                print(label, file=sys.stderr)
                 final_labels[i] = self._unique_label[int(label)]
+                print(label, file=sys.stderr)
                 print("fl", final_labels[i], file=sys.stderr)
             except Exception as e:
                 final_labels[i] = self._unique_labels[np.argmax(self._pis)]
