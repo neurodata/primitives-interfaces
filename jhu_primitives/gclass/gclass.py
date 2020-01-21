@@ -211,6 +211,15 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 self._labels = np.array(list(learning_data[col]))
                 self._lcc_labels = np.array([s for s in self._labels if s in self._nodeIDs])
 
+        for col in headers:
+            if "node" in col:
+                self._seeds = np.array(list(learning_data[col]))
+            if "label" in col:
+                self._labels = np.array(list(learning_data[col]))
+
+        
+        print(type(self._labels[0]), file=sys.stderr)
+
         # TODO: assumes labels are int-like
         self._labels = np.array([i for i in self._labels])
         self._lcc_labels = np.array([i for i in self._lcc_labels])
