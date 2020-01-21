@@ -2,6 +2,7 @@ from d3m.metadata import pipeline as meta_pipeline
 from d3m.metadata.base import Context, ArgumentType
 
 from jhu_primitives.pipelines.base import BasePipeline
+from jhu_primitives.dataset_to_graph_list import DatasetToGraphList
 from jhu_primitives.lse import LaplacianSpectralEmbedding
 from jhu_primitives.gclass import GaussianClassification
 from jhu_primitives.lcc import LargestConnectedComponent
