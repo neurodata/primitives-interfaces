@@ -134,13 +134,13 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
 
 
         # TODO many debugging print statements.
-        debugging = False
+        debugging = True
         if debugging:
             # DATAFRAME STUFF
-            print("label counts:", file=sys.stderr)
-            for i in range(9):
-                print("label: {}, count: {}".format(
-                    i, np.sum(df['label'] == str(i))), file=sys.stderr)
+            # print("label counts:", file=sys.stderr)
+            # for i in range(9):
+            #     print("label: {}, count: {}".format(
+            #         i, np.sum(df['label'] == str(i))), file=sys.stderr)
             # GRAPH STUFF
             print("length of the first graph: {}".format(len(list(graphs[0].nodes()))),
                 file=sys.stderr)
