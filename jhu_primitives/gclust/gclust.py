@@ -121,9 +121,6 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         nodeIDs = inputs[2][0]
         nodeIDS = np.array([int(i) for i in nodeIDs])
 
-        print(self._embedding.shape, file=sys.stderr)
-        # print(nodeIDs, file=sys.stderr)
-
         max_clusters = self.hyperparams['max_clusters']
 
         if max_clusters < self._embedding.shape[1]:
@@ -132,7 +129,6 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         gclust_object = graspyGCLUST(min_components=max_clusters, covariance_type="all")
         gclust_object.fit(self._embedding)
         model = gclust_object.model_
-        
 
         testing = inputs[0]
 
@@ -160,13 +156,16 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         outputs = container.DataFrame(testing[['d3mIndex', 'community']])
         outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
 
-        print(lcc_index, file=sys.stderr)
-        print(len(testing_nodeIDs), file=sys.stderr)
-        print(outputs, file=sys.stderr)
-        print(np.unique(testing['components'].values), file=sys.stderr)
-        print(np.unique(predictions), file=sys.stderr)
-        print(np.unique(final_labels), file=sys.stderr)
-
+        debugging = True
+        if debugging:
+            print("index of the lcc: {}".format(lcc_index), file=sys.stderr)
+            print("testing_nodeIDs length {}".format(
+                len(testing_nodeIDs)), file=sys.stderr)
+            print("lcc length {}".format(len(g_indices)), file=sys.stderr)
+            print("unique predictions (labels, counts): {}".format(
+                np.unique(predictions, return_counts=True)), file=sys.stderr)
+            print("unique final labels (labels, counts): {}".format(
+                np.unique(final_labels, return_counts=True)), file=sys.stderr)
 
         print('gclust produce ended', file=sys.stderr)
         return base.CallResult(outputs)
