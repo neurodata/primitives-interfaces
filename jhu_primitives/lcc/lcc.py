@@ -130,13 +130,8 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         outputs = container.List([
             learning_data, graphs_largest_all, nodeIDs_largest_all])
 
-        debugging = False
+        debugging = True
         if debugging:
-            # DATAFRAME STUFF
-            print("label counts:", file=sys.stderr)
-            for i in range(9):
-                print("label: {}, count: {}".format(
-                    i, np.sum(learning_data['label'] == str(i))), file=sys.stderr)
             # GRAPH STUFF
             print("length of the first graph: {}".format(
                 len(list(graphs_largest_all[0].nodes()))), file=sys.stderr)
