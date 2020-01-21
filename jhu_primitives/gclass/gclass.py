@@ -264,24 +264,31 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             self._embedding = self._embedding[:, :K].copy()
             d = int(K)
 
-        self._ENOUGH_SEEDS = True # For full estimation
+        # heuristically check if we have enough datapoints in all classes
+        # if we do - perform qda. else - lda.
+        self._ENOUGH_SEEDS = True
         for i in range(K):
             if label_counts[i] < d*(d + 1)/2:
                 self._ENOUGH_SEEDS = False
                 break
+
+        # prior probabilities estimation (note that they are global, not lcc)
         self._pis = label_counts/len(self._seeds)
         
-        debugging = True
+        debugging = False
         if debugging:
             print("prior probabilities: {}".format(self._pis),
                   file=sys.stderr)
             print("sum of prior probabilities: {}".format(np.sum(self._pis)),
                   file=sys.stderr)
 
+        
+        print("labels before: {}".format(self._labels), file=sys.stderr)
         # reindex labels if necessary
         for i in range(len(self._labels)): # reset labels to [0,.., K-1]
             itemindex = np.where(self._unique_labels==self._labels[i])[0][0]
             self._labels[i] = int(itemindex)
+        print("labels after: {}".format(self._labels), file=sys.stderr)
 
 
         assert 1 == 0
