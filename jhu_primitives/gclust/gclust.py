@@ -161,7 +161,8 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
 
         print(lcc_index, file=sys.stderr)
-        print(final_labels, file=sys.stderr)
+        print(len(testing_nodeIDs), file=sys.stderr)
+        print(outputs, file=sys.stderr)
         print(np.unique(testing['components'].values), file=sys.stderr)
         print(np.unique(predictions), file=sys.stderr)
         print(np.unique(final_labels), file=sys.stderr)
