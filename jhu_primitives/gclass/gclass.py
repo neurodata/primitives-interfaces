@@ -147,8 +147,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         final_labels = np.zeros(len(learning_data))
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
         for i in range(len(testing_nodeIDs)):
-            if testing_nodeIDs[i] in self.nodeIDs:
+            if testing_nodeIDs[i] in self._nodeIDs:
                 temp = np.where(self._nodeIDs == str(testing_nodeIDs[i]))[0][0]
+                weighted_pdfs = np.array([MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = self._unique_labels[int(label)]
