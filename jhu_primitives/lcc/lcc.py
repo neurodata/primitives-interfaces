@@ -106,7 +106,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             components = np.zeros(len(graph_full), dtype=int) # only for CD
             for i, connected_component in enumerate(subgraphs):
                 # obtain indices associated with the node_ids in this component
-                temp_indices = [i for i, x in enumerate(nodeIDs_full)
+                temp_indices = [j for j, x in enumerate(nodeIDs_full)
                                 if x in [str(c) for c in list(connected_component)]]
                 components[temp_indices] = i
                 # check if the component is largest
@@ -146,6 +146,8 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             print(nodeIDs_largest_all[0][:20], file=sys.stderr)
             # TASK STUFF
             print("task: {}". format(task_type), file=sys.stderr)
+
+            print(np.unique(components), file=sys.stderr)
         print('lcc produce ended', file=sys.stderr)
 
         return base.CallResult(outputs)
