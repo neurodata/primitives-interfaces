@@ -185,7 +185,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         for col in headers:
             if "node" in col:
                 self._seeds = np.array(list(learning_data[col]))
-            if "label" in col:
+            if "Label" in col:
                 self._labels = np.array(list(learning_data[col]))
 
         # subselect seeds and labels that are in the lcc
