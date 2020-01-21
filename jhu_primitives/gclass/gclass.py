@@ -222,9 +222,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._lcc_seeds = []
         self._lcc_labels = []
         for seed, label in zip(self.seeds, self._labels):
-        if seed in self._nodeIDs:
-            self._lcc_seeds.append(seed)
-            self._lcc_labels.append(label)
+            if seed in self._nodeIDs:
+                self._lcc_seeds.append(seed)
+                self._lcc_labels.append(label)
 
 
         
