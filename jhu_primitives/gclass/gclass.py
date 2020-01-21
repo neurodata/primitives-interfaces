@@ -152,8 +152,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
                 label = np.argmax(weighted_pdfs)
                 final_labels[i] = self._unique_labels[int(label)]
-                print(label, file=sys.stderr)
-                print("fl", final_labels[i], file=sys.stderr)
             except Exception as e:
                 final_labels[i] = self._unique_labels[np.argmax(self._pis)]
 
@@ -266,6 +264,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             if label_counts[i] < d*(d + 1)/2:
                 self._ENOUGH_SEEDS = False
                 break
+        self._ENOUGH_SEEDS = False
 
         # prior probabilities estimation (note that they are global, not lcc)
         self._pis = label_counts/len(self._seeds)
