@@ -145,6 +145,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             if "Label" in col or "label" in col or "class" in col:
                 LABEL = col
 
+        assert 1 == 0
+
         final_labels = np.zeros(len(learning_data))
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
         #print(string_nodeIDs, file=sys.stderr)
@@ -290,7 +292,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             estimated_covs[i] = np.cov(feature_vectors, rowvar = False)
         self._means = container.ndarray(estimated_means)
         # use 'pooled covariance' if we are using lda
-        if self._ENOUGH_SEEDS:
+        if not self._ENOUGH_SEEDS:
             pooled_cov = np.sum(
                 estimated_covs * (label_counts - 1).reshape(-1, 1, 1),
                 axis=0) / (n - K)
@@ -299,10 +301,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._PD = True
 
         self._fitted = True
-
-        print(pooled_cov, file=sys.stderr)
-        print(estimated_covs, file=sys.stderr)
-        assert 1 == 0
 
         print("gclass fit ended", file=sys.stderr)
 
