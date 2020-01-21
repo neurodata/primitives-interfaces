@@ -122,7 +122,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         nodeIDS = np.array([int(i) for i in nodeIDs])
 
         print(self._embedding.shape, file=sys.stderr)
-        print(nodeIDs, file=sys.stderr)
+        # print(nodeIDs, file=sys.stderr)
 
         max_clusters = self.hyperparams['max_clusters']
 
@@ -145,21 +145,24 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         final_labels = np.zeros(len(testing_nodeIDs))
         
         predictions = np.zeros(len(testing_nodeIDs))
-        lcc_index = testing['item'].value_counts().idxmax()
-        print(lcc_index, file=sys.stderr)
+        lcc_index = testing['components'].value_counts().idxmax()
         g_indices = np.where(testing['components'] == lcc_index)[0].astype(int)
 
         predictions[g_indices] = model.predict(self._embedding)
         for i in range(len(testing)):
             if i in g_indices:
                 label = predictions[i]
-                final_labels[i] = int(label) + 1
+                final_labels[i] = int(label)
             else:
                 final_labels[i] = int(max(predictions)) + int(testing['components'][i])
     
         testing['community'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'community']])
         outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
+
+        print(lcc_index, file=sys.stderr)
+        print(final_labels)
+
         return base.CallResult(outputs)
 
 
