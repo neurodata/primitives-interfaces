@@ -118,7 +118,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         if self._embedding is None:
             self._embedding = inputs[1][0]
 
-        nodeIDs = inputs[2]
+        nodeIDs = inputs[2][0]
         nodeIDS = np.array([int(i) for i in nodeIDs])
 
         max_clusters = self.hyperparams['max_clusters']
