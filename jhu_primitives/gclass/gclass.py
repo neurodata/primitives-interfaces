@@ -311,10 +311,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         debugging = True
         if debugging:
-        print(self._means, file=sys.stderr)
-        print(self._covariances, file=sys.stderr)
-
-        assert 1 == 0
+            print(self._means, file=sys.stderr)
+            print(self._covariances, file=sys.stderr)
+            assert 1 == 0
 
         return base.CallResult(None)
 
