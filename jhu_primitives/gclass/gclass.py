@@ -286,7 +286,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         estimated_means = np.zeros((K, d))
         # seed_idx = np.array([np.where(self._nodeIDs == s)[0][0] for s in self._lcc_seeds], dtype=int)
         for i, lab in enumerate(self._unique_lcc_labels):
-            temp_seeds = np.where(self._labels == lab)[0]
+            temp_seeds = np.where(self._lcc_labels == lab)[0]
             print(temp_seeds, file=sys.stderr)
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
         self._means = container.ndarray(estimated_means)
@@ -294,9 +294,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         # estimate the covariances
         covs = np.zeros(shape = (K, d, d))
         for i, lab in enumerate(self._unique_labels): 
-            feature_vectors = self._embedding[np.where(self._labels == lab)[0], :]
+            feature_vectors = self._embedding[np.where(self._lcc_labels == lab)[0], :]
             covs[i] = np.cov(feature_vectors, rowvar = False)
-
         if self._ENOUGH_SEEDS:
             estimated_cov = covs
         else:
