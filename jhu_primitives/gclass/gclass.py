@@ -287,9 +287,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         # for i in range(len(self._labels)): # reset labels to [0,.., K-1]
         #     itemindex = np.where(self._unique_labels==self._labels[i])[0][0]
         #     self._labels[i] = int(itemindex)
-        print("labels after: {}".format(self._labels), file=sys.stderr)
+        # print("labels after: {}".format(self._labels), file=sys.stderr)
 
-        assert 1 == 0
+        # assert 1 == 0
 
         # gather the means
         x_sums = np.zeros(shape = (K, d))
