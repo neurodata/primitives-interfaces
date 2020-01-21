@@ -129,7 +129,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         outputs = container.List([
             learning_data, graphs_largest_all, nodeIDs_largest_all])
 
-        debugging = True
+        debugging = False
         if debugging:
             # DATAFRAME STUFF
             print("label counts:", file=sys.stderr)
