@@ -134,7 +134,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
 
 
         # TODO many debugging print statements.
-        debugging = False
+        debugging = True
         if debugging:
             # DATAFRAME STUFF
             print("label counts:", file=sys.stderr)

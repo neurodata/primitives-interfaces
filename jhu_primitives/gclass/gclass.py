@@ -204,7 +204,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels,
                                                               return_counts = True)
 
-        debugging = False
+        debugging = True
         if debugging:
             print("shape of the embedding: {}".format(self._embedding.shape),
                   file=sys.stderr)
