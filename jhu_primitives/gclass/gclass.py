@@ -146,30 +146,40 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         final_labels = np.zeros(len(learning_data))
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
-        if self._PD and self._ENOUGH_SEEDS:
-            for i in range(len(testing_nodeIDs)):
-                try:
-                    temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
-                    weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
-                    # print("we got inside a try", file=sys.stderr)
-                    # print(weighted_pdfs, file=sys.stderr)
-                    label = np.argmax(weighted_pdfs)
-                    final_labels[i] = self._unique_label[int(label)]
-                except Exception as e:
-                    final_labels[i] = self._unique_labels[np.argmax(self._pis)]
-        else:
-            for i in range(len(testing_nodeIDs)):
-                try:
-                    temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
-                    try:
-                        weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
-                    except:
-                        self._covariances += self._covariances + np.ones(self._covariances.shape)*0.00001
-                        weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
-                    label = np.argmax(weighted_pdfs)
-                    final_labels[i] = self._unique_label[int(label)]
-                except:
-                    final_labels[i] = self._unique_labels[np.argmax(self._pis)]
+        for i in range(len(testing_nodeIDs)):
+            try:
+                temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
+                weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
+                label = np.argmax(weighted_pdfs)
+                print(label, file=sys.stderr)
+                final_labels[i] = self._unique_label[int(label)]
+            except Exception as e:
+                final_labels[i] = self._unique_labels[np.argmax(self._pis)]
+
+        # if self._PD and self._ENOUGH_SEEDS:
+        #     for i in range(len(testing_nodeIDs)):
+        #         try:
+        #             temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
+        #             weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
+        #             # print("we got inside a try", file=sys.stderr)
+        #             # print(weighted_pdfs, file=sys.stderr)
+        #             label = np.argmax(weighted_pdfs)
+        #             final_labels[i] = self._unique_label[int(label)]
+        #         except Exception as e:
+        #             final_labels[i] = self._unique_labels[np.argmax(self._pis)]
+        # else:
+        #     for i in range(len(testing_nodeIDs)):
+        #         try:
+        #             temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
+        #             try:
+        #                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
+        #             except:
+        #                 self._covariances += self._covariances + np.ones(self._covariances.shape)*0.00001
+        #                 weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
+        #             label = np.argmax(weighted_pdfs)
+        #             final_labels[i] = self._unique_label[int(label)]
+        #         except:
+        #             final_labels[i] = self._unique_labels[np.argmax(self._pis)]
 
         learning_data[LABEL] = final_labels
         outputs = container.DataFrame(learning_data[['d3mIndex',LABEL]])
