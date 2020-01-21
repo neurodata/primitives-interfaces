@@ -98,7 +98,8 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
             # split the current graph into connected components
             subgraphs = [graph_full.subgraph(i).copy()
-                        for i in nx.connected_components(graph_full)]
+                        for i in sorted(nx.connected_components(graph_full),
+                                        key=len, reverse=True)]
 
             # pick the largest connected component of the current graph
             graph_largest = [0]
