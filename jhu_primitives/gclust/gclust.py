@@ -123,12 +123,12 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         nodeIDS = np.array([int(i) for i in nodeIDs])
 
         max_clusters = self.hyperparams['max_clusters']
-        print(max_clusters, file=sys.stderr)
 
         if max_clusters < self._embedding.shape[1]:
             self._embedding = self._embedding[:, :max_clusters].copy()
 
-        gclust_object = graspyGCLUST(min_components=1, max_components=max_clusters, covariance_type="all")
+        gclust_object = graspyGCLUST(max_components=max_clusters,
+                                     covariance_type="all")
         gclust_object.fit(self._embedding)
         model = gclust_object.model_
 
