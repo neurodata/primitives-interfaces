@@ -282,17 +282,16 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             print("sum of prior probabilities: {}".format(np.sum(self._pis)),
                   file=sys.stderr)
 
-        print("labels before: {}".format(self._labels), file=sys.stderr)
+        # print("labels before: {}".format(self._labels), file=sys.stderr)
         # reindex labels if necessary
         # for i in range(len(self._labels)): # reset labels to [0,.., K-1]
         #     itemindex = np.where(self._unique_labels==self._labels[i])[0][0]
         #     self._labels[i] = int(itemindex)
-        print("labels after: {}".format(self._labels), file=sys.stderr)
-
+        # print("labels after: {}".format(self._labels), file=sys.stderr)
         # assert 1 == 0
 
         # gather the means
-        x_sums = np.zeros(shape = (K, d))
+        x_sums = np.zeros((K, d))
         estimated_means = np.zeros((K, d))
         # seed_idx = np.array([np.where(self._nodeIDs == s)[0][0] for s in self._lcc_seeds], dtype=int)
         for i, lab in enumerate(self._unique_lcc_labels):
@@ -321,6 +320,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._covariances = container.ndarray(estimated_cov)
 
         self._fitted = True
+        assert 1 == 0
 
         return base.CallResult(None)
 
