@@ -204,7 +204,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         learning_data = self._training_inputs[0]
         headers = learning_data.columns
 
-
         # take seeds and their labels from the learning data
         for col in headers:
             if "node" in col:
@@ -219,10 +218,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             if seed in self._nodeIDs:
                 self._lcc_seeds.append(seed)
                 self._lcc_labels.append(label)
-
-        # TODO: assumes labels are int-like
         self._labels = np.array([i for i in self._labels])
         self._lcc_labels = np.array([i for i in self._lcc_labels])
+
         # get unique labels
         self._unique_labels, label_counts = np.unique(self._labels,
                                                       return_counts = True)
@@ -302,11 +300,11 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         self._fitted = True
 
-        debugging = True
-        if debugging:
-            print(self._means, file=sys.stderr)
-            print(self._covariances, file=sys.stderr)
-            assert 1 == 0
+        print(pooled_cov.shape, file=sys.stderr)
+        print(estimated_covs.shape, file=sys.stderr)
+        assert 1 == 0
+
+        print("gclass fit ended", file=sys.stderr)
 
         return base.CallResult(None)
 
