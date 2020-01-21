@@ -294,7 +294,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             pooled_cov = np.sum(
                 estimated_covs * (label_counts - 1).reshape(-1, 1, 1),
                 axis=0) / (n - K)
-            estimated_covs = np.repeat(pooled_cov, K)
+            estimated_covs = np.repeat(pooled_cov.reshape(1, d, d), K, axis=0)
         self._covariances = container.ndarray(estimated_covs)
         self._PD = True
 
