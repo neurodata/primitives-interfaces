@@ -284,26 +284,27 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         # estimate the means
         estimated_means = np.zeros((K, d))
-        # seed_idx = np.array([np.where(self._nodeIDs == s)[0][0] for s in self._lcc_seeds], dtype=int)
         for i, lab in enumerate(self._unique_lcc_labels):
             temp_seeds = np.where(self._lcc_labels == lab)[0]
-            print(temp_seeds, file=sys.stderr)
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
         self._means = container.ndarray(estimated_means)
 
         # estimate the covariances
         covs = np.zeros(shape = (K, d, d))
         for i, lab in enumerate(self._unique_labels): 
-            feature_vectors = self._embedding[np.where(self._lcc_labels == lab)[0], :]
+            temp_seeds = np.where(self._lcc_labels == lab)[0]
+            feature_vectors = self._embedding[temp_seeds]
             covs[i] = np.cov(feature_vectors, rowvar = False)
-        if self._ENOUGH_SEEDS:
-            estimated_cov = covs
+        if not self._ENOUGH_SEEDS:
+            estimated_covs = covs
         else:
-            estimated_cov = np.zeros(shape = (d,d))
+            estimated_covs = np.zeros(shape = (d,d))
             for i in range(K):
-                estimated_cov += covs[i]*(label_counts[i] - 1)
-            estimated_cov = estimated_cov / (n - K)
-        self._covariances = container.ndarray(estimated_cov)
+                estimated_covs += covs[i]*(label_counts[i] - 1)
+            estimated_covs = estimated_covs / (n - K)
+            alternative_estimated_covs = covs * (label_counts - 1) / (n - K)
+            print(np.all(estimated_covs == alternative_estimated_covs), file=sys.stderr)
+        self._covariances = container.ndarray(estimated_covs)
         self._PD = True
 
         self._fitted = True
