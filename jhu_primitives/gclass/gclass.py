@@ -300,8 +300,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         self._fitted = True
 
-        print(pooled_cov.shape, file=sys.stderr)
-        print(estimated_covs.shape, file=sys.stderr)
+        print(pooled_cov, file=sys.stderr)
+        print(estimated_covs, file=sys.stderr)
         assert 1 == 0
 
         print("gclass fit ended", file=sys.stderr)
