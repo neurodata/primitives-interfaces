@@ -147,7 +147,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         predictions = np.zeros(len(testing))
         g_indices = np.where(testing['components'] == 1)[0].astype(int)
 
-        predictions[g_indices] = model.predict(self._embedding)
+        predictions[g_indices] = model.predict(self._embedding.T)
         for i in range(len(testing)):
             if i in g_indices:
                 label = predictions[i]
