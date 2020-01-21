@@ -120,7 +120,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                     nodeIDs_temp = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
                     nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
-                    nodeIds.append(nodeIDs_temp)
+                    nodeIDs.append(nodeIDs_temp)
             elif i['resType'] == "edgeList":
                 temp_graph = self._read_edgelist(
                     location_base_uri + "/" + i['resPath'],
