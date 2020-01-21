@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
 # gclass.py
-# Copyright (c) 2017. All rights reserved.
+# Copyright (c) 2020. All rights reserved.
 
 from typing import Sequence, TypeVar, Union, Dict
 import os
 import sys
 
-from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
-from d3m import container
 from d3m import utils
+from d3m import container
+from d3m import exceptions
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
@@ -195,21 +196,14 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             iterations: int = None) -> base.CallResult[None]:
         if self._fitted:
             return base.CallResult(None)
+        print("gclass fit started", file=sys.stderr)
 
-
+        # unpack training inputs
         self._embedding = self._training_inputs[1][0]
         self._nodeIDs = np.array(self._training_inputs[2][0])
-
         learning_data = self._training_inputs[0]
         headers = learning_data.columns
 
-        # for col in headers:
-        #     if "node" in col:
-        #         self._seeds = np.array(list(learning_data[col]))
-        #         self._lcc_seeds = np.array([s for s in self._seeds if s in self._nodeIDs])
-        #     if "label" in col:
-        #         self._labels = np.array(list(learning_data[col]))
-        #         self._lcc_labels = np.array([s for s in self._labels if s in self._nodeIDs])
 
         # take seeds and their labels from the learning data
         for col in headers:
@@ -226,10 +220,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 self._lcc_seeds.append(seed)
                 self._lcc_labels.append(label)
 
-
-        
-        print(type(self._labels[0]), file=sys.stderr)
-
         # TODO: assumes labels are int-like
         self._labels = np.array([i for i in self._labels])
         self._lcc_labels = np.array([i for i in self._lcc_labels])
@@ -237,37 +227,54 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._unique_labels, label_counts = np.unique(self._labels, return_counts = True)
         self._unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels, return_counts = True)
 
-        print("shape of the embedding: {}".format(self._embedding.shape),
-              file=sys.stderr)
-        print("length of the seeds: {}".format(len(self._seeds)),
-              file=sys.stderr)
-        print("lenth of the lcc_seeds: {}".format(len(self._lcc_seeds)),
-              file=sys.stderr)
-        print("length of the labels: {}".format(len(self._labels)),
-              file=sys.stderr)
-        print("lenth of the lcc_labels: {}".format(len(self._lcc_labels)),
-              file=sys.stderr)
-        print("unique labels: {}".format(self._unique_labels),
-              file=sys.stderr)
-        print("unique lcc labels: {}".format(self._unique_lcc_labels),
-              file=sys.stderr)
+        if label_counts != lcc_label_counts:
+            raise exceptions.NotSupportedError(
+                'nodes from some classes are not present in the lcc; ' + 
+                'the problem is ill-defined')
 
-        K = len(self._unique_labels)
+        debugging = False
+        if debugging:
+            print("shape of the embedding: {}".format(self._embedding.shape),
+                  file=sys.stderr)
+            print("length of the seeds: {}".format(len(self._seeds)),
+                  file=sys.stderr)
+            print("length of the labels: {}".format(len(self._labels)),
+                  file=sys.stderr)
+            print("unique labels: {}".format(self._unique_labels),
+                  file=sys.stderr)
+            print("label counts: {}".format(label_counts),
+                  file=sys.stderr)
+            print("lenth of the lcc_seeds: {}".format(len(self._lcc_seeds)),
+                  file=sys.stderr)
+            print("lenth of the lcc_labels: {}".format(len(self._lcc_labels)),
+                  file=sys.stderr)
+            print("unique lcc labels: {}".format(self._unique_lcc_labels),
+                  file=sys.stderr)
+            print("lcc label counts: {}".format(lcc_label_counts),
+                  file=sys.stderr)
+            print("label types: {}".format(type(self._labels[0])),
+                  file=sys.stderr)
 
         n, d = self._embedding.shape
+        K = len(self._unique_labels)
 
         if int(K) < d:
             self._embedding = self._embedding[:, :K].copy()
             d = int(K)
 
         self._ENOUGH_SEEDS = True # For full estimation
-
         for i in range(K):
             if label_counts[i] < d*(d + 1)/2:
                 self._ENOUGH_SEEDS = False
                 break
-
         self._pis = label_counts/len(self._seeds)
+        
+        debugging = False
+        if debugging:
+            print("prior probabilities: {}".format(self._pis),
+                  file=sys.stderr)
+            print("length of the seeds: {}".format(np.sum(self._pis)),
+                  file=sys.stderr)
 
 
         # reindex labels if necessary
