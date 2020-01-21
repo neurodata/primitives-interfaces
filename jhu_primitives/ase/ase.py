@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 
 # ase.py
-# Created by Disa Mhembere on 2017-09-12.
-# Email: disa@jhu.edu
-# Copyright (c) 2017. All rights reserved.
+# Copyright (c) 2020. All rights reserved.
 
-
-import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
-import networkx
 import os
 import sys
+import networkx
+import numpy as np
 
 from scipy.stats import norm
 from scipy.stats import rankdata
@@ -184,6 +181,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 embedding = X_hat.copy()
 
                 inputs[1][0] = container.ndarray(embedding)
+                print("ase produce ended (omni used)", file=sys.stderr)
 
                 return base.CallResult(inputs)
 
@@ -195,6 +193,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         inputs[1][0] = container.ndarray(X_hat)
 
-        print("ase produce ended", file=sys.stderr)
+        print("ase produce ended (omni not used)", file=sys.stderr)
 
         return base.CallResult(inputs)

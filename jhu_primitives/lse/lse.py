@@ -182,4 +182,6 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         inputs[1][0] = container.ndarray(X_hat)
 
+        print("lse produce ended (omni not used)", file=sys.stderr)
+
         return base.CallResult(inputs)
