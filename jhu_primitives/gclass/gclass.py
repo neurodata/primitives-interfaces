@@ -271,13 +271,14 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 break
         self._pis = label_counts/len(self._seeds)
         
-        debugging = False
+        debugging = True
         if debugging:
             print("prior probabilities: {}".format(self._pis),
                   file=sys.stderr)
-            print("length of the seeds: {}".format(np.sum(self._pis)),
+            print("sum of prior probabilities: {}".format(np.sum(self._pis)),
                   file=sys.stderr)
 
+        assert 1 == 0
 
         # reindex labels if necessary
         for i in range(len(self._labels)): # reset labels to [0,.., K-1]
