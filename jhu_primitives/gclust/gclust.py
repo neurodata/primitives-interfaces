@@ -128,7 +128,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         if max_clusters < self._embedding.shape[1]:
             self._embedding = self._embedding[:, :max_clusters].copy()
 
-        gclust_object = graspyGCLUST(min_components=max_clusters, covariance_type="all")
+        gclust_object = graspyGCLUST(min_components=1, max_components=max_clusters, covariance_type="all")
         gclust_object.fit(self._embedding)
         model = gclust_object.model_
 
