@@ -144,6 +144,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         lcc_index = testing['components'].value_counts().idxmax()
         g_indices = np.where(testing['components'] == lcc_index)[0].astype(int)
 
+        print(np.unique(model.predict(self._embedding)), file=sys.stderr)
         predictions[g_indices] = model.predict(self._embedding)
         for i in range(len(testing)):
             if i in g_indices:
