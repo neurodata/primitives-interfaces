@@ -159,7 +159,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         outputs = container.DataFrame(testing[['d3mIndex', 'community']])
         outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
 
-        debugging = True
+        debugging = False
         if debugging:
             print("index of the lcc: {}".format(lcc_index), file=sys.stderr)
             print("testing_nodeIDs length {}".format(
