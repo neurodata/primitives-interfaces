@@ -121,6 +121,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         nodeIDs = inputs[2][0]
         nodeIDS = np.array([int(i) for i in nodeIDs])
 
+        print(self._embedding.shape, file=sys.stderr)
         print(nodeIDs, file=sys.stderr)
 
         max_clusters = self.hyperparams['max_clusters']
