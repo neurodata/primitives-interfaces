@@ -292,7 +292,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             estimated_covs[i] = np.cov(feature_vectors, rowvar = False)
         self._means = container.ndarray(estimated_means)
         # use 'pooled covariance' if we are using lda
-        if not self._ENOUGH_SEEDS:
+        if self._ENOUGH_SEEDS:
             pooled_cov = np.sum(
                 estimated_covs * (label_counts - 1).reshape(-1, 1, 1),
                 axis=0) / (n - K)
