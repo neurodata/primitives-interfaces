@@ -189,14 +189,13 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         else:
             X_hat = ase_object.fit_transform(g)
 
-        # print(X_hat.shape, file=sys.stderr)
         # TODO rewrite into a nicer way to export outputs
+        # print(X_hat.shape, file=sys.stderr)
         inputs[1][0] = container.ndarray(X_hat)
 
-        print(X_hat, file=sys.stderr)
-        print(inputs[2][:20], file=sys.stderr)
+        # print(X_hat, file=sys.stderr)
+        # print(inputs[2][:20], file=sys.stderr)
 
         print("ase produce ended", file=sys.stderr)
 
-        assert 1 == 0
         return base.CallResult(inputs)
