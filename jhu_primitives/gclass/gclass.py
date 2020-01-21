@@ -204,7 +204,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels,
                                                               return_counts = True)
 
-        debugging = True
+        debugging = False
         if debugging:
             print("shape of the embedding: {}".format(self._embedding.shape),
                   file=sys.stderr)
@@ -246,6 +246,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             if label_counts[i] < d*(d + 1)/2:
                 self._ENOUGH_SEEDS = False
                 break
+        self._ENOUGH_SEEDS = False
 
         # prior probabilities estimation (note that they are global, not lcc)
         self._pis = label_counts/len(self._seeds)
