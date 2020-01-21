@@ -201,21 +201,31 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._nodeIDs = np.array(self._training_inputs[2][0])
 
         learning_data = self._training_inputs[0]
-        headers=learning_data.columns
+        headers = learning_data.columns
 
+        # for col in headers:
+        #     if "node" in col:
+        #         self._seeds = np.array(list(learning_data[col]))
+        #         self._lcc_seeds = np.array([s for s in self._seeds if s in self._nodeIDs])
+        #     if "label" in col:
+        #         self._labels = np.array(list(learning_data[col]))
+        #         self._lcc_labels = np.array([s for s in self._labels if s in self._nodeIDs])
+
+        # take seeds and their labels from the learning data
         for col in headers:
             if "node" in col:
                 self._seeds = np.array(list(learning_data[col]))
-                self._lcc_seeds = np.array([s for s in self._seeds if s in self._nodeIDs])
             if "label" in col:
                 self._labels = np.array(list(learning_data[col]))
-                self._lcc_labels = np.array([s for s in self._labels if s in self._nodeIDs])
 
-        for col in headers:
-            if "node" in col:
-                self._seeds = np.array(list(learning_data[col]))
-            if "label" in col:
-                self._labels = np.array(list(learning_data[col]))
+        # subselect seeds and labels that are in the lcc
+        self._lcc_seeds = []
+        self._lcc_labels = []
+        for seed, label in zip(self.seeds, self._labels):
+        if seed in self._nodeIDs:
+            self._lcc_seeds.append(seed)
+            self._lcc_labels.append(label)
+
 
         
         print(type(self._labels[0]), file=sys.stderr)
