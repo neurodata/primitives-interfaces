@@ -80,7 +80,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
 
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
-        print("graph reader produce started", file=sys.stderr) # TODO
+        # print("graph reader produce started", file=sys.stderr) # TODO
         data_resources_keys = list(inputs.keys())
 
         # obtain the path to dataset
@@ -152,7 +152,7 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
             print(nodeIDs[0][:20], file=sys.stderr)
             # TASK STUFF
             print("task: {}". format(TASK), file=sys.stderr)
-        print("graph reader produce ended", file=sys.stderr)
+        # print("graph reader produce ended", file=sys.stderr)
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 

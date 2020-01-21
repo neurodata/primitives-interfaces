@@ -127,7 +127,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def produce(self, *, inputs: Inputs,
                 timeout: float = None,
                 iterations: int = None) -> CallResult[Outputs]:
-        print('ase produce started', file=sys.stderr)
+        # print('ase produce started', file=sys.stderr)
         np.random.seed(self.random_seed)
 
         # unpacks necessary input arguments
@@ -181,7 +181,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 embedding = X_hat.copy()
 
                 inputs[1][0] = container.ndarray(embedding)
-                print("ase produce ended (omni used)", file=sys.stderr)
+                # print("ase produce ended (omni used)", file=sys.stderr)
 
                 return base.CallResult(inputs)
 
@@ -193,6 +193,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         inputs[1][0] = container.ndarray(X_hat)
 
-        print("ase produce ended (omni not used)", file=sys.stderr)
+        # print("ase produce ended (omni not used)", file=sys.stderr)
 
         return base.CallResult(inputs)

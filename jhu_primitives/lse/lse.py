@@ -121,7 +121,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def produce(self, *, inputs: Inputs,
                 timeout: float = None,
                 iterations: int = None) -> CallResult[Outputs]:
-        print('lse produce started', file=sys.stderr)
+        # print('lse produce started', file=sys.stderr)
         np.random.seed(self.random_seed)
 
         # unpacks necessary input arguments
@@ -182,6 +182,6 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         inputs[1][0] = container.ndarray(X_hat)
 
-        print("lse produce ended (omni not used)", file=sys.stderr)
+        # print("lse produce ended (omni not used)", file=sys.stderr)
 
         return base.CallResult(inputs)

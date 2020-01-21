@@ -82,7 +82,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(self.random_seed)
-        print('lcc produce started', file=sys.stderr)
+        # print('lcc produce started', file=sys.stderr)
 
         # unpack the data from the graph to list reader
         learning_data, graphs_full_all, nodeIDs_full_all, task_type = inputs
@@ -149,6 +149,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             # LCC stuff
             print("unique components: {}".format(np.unique(components)),
                   file=sys.stderr)
-        print('lcc produce ended', file=sys.stderr)
+        # print('lcc produce ended', file=sys.stderr)
 
         return base.CallResult(outputs)

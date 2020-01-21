@@ -113,7 +113,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         dim:
             - The number of clusters in which to assign the data
         """
-        print('gclust produce started', file=sys.stderr)
+        # print('gclust produce started', file=sys.stderr)
         np.random.seed(self.random_seed)
 
         if self._embedding is None:
@@ -146,7 +146,6 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         lcc_index = testing['components'].value_counts().idxmax()
         g_indices = np.where(testing['components'] == lcc_index)[0].astype(int)
 
-        print(np.unique(model.predict(self._embedding)), file=sys.stderr)
         predictions[g_indices] = model.predict(self._embedding)
         for i in range(len(testing)):
             if i in g_indices:
@@ -170,7 +169,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             print("unique final labels (labels, counts): {}".format(
                 np.unique(final_labels, return_counts=True)), file=sys.stderr)
 
-        print('gclust produce ended', file=sys.stderr)
+        # print('gclust produce ended', file=sys.stderr)
         return base.CallResult(outputs)
 
 

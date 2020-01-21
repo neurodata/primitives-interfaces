@@ -127,7 +127,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         Returns
             labels - Class labels for each unlabeled vertex
         """
-        print("gclass produce started", file=sys.stderr)
+        # print("gclass produce started", file=sys.stderr)
 
         if not self._fitted:
             raise ValueError("Not fitted")
@@ -163,7 +163,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         outputs = container.DataFrame(learning_data[['d3mIndex',LABEL]])
         outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
 
-        print("gclass produce ended", file=sys.stderr)
+        # print("gclass produce ended", file=sys.stderr)
 
         return base.CallResult(outputs)
 
@@ -173,7 +173,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         if self._fitted:
             return base.CallResult(None)
 
-        print("gclass fit started", file=sys.stderr)
+        # print("gclass fit started", file=sys.stderr)
 
         # unpack training inputs
         self._embedding = self._training_inputs[1][0]
@@ -278,7 +278,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         self._fitted = True
 
-        print("gclass fit ended", file=sys.stderr)
+        # print("gclass fit ended", file=sys.stderr)
 
         return base.CallResult(None)
 
