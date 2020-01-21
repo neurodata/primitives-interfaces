@@ -282,14 +282,12 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             print("sum of prior probabilities: {}".format(np.sum(self._pis)),
                   file=sys.stderr)
 
-        
         print("labels before: {}".format(self._labels), file=sys.stderr)
         # reindex labels if necessary
-        for i in range(len(self._labels)): # reset labels to [0,.., K-1]
-            itemindex = np.where(self._unique_labels==self._labels[i])[0][0]
-            self._labels[i] = int(itemindex)
+        # for i in range(len(self._labels)): # reset labels to [0,.., K-1]
+        #     itemindex = np.where(self._unique_labels==self._labels[i])[0][0]
+        #     self._labels[i] = int(itemindex)
         print("labels after: {}".format(self._labels), file=sys.stderr)
-
 
         assert 1 == 0
 
