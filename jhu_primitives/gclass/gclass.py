@@ -227,12 +227,12 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._unique_labels, label_counts = np.unique(self._labels, return_counts = True)
         self._unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels, return_counts = True)
 
-        if label_counts != lcc_label_counts:
+        if np.all(label_counts != lcc_label_counts):
             raise exceptions.NotSupportedError(
                 'nodes from some classes are not present in the lcc; ' + 
                 'the problem is ill-defined')
 
-        debugging = False
+        debugging = True
         if debugging:
             print("shape of the embedding: {}".format(self._embedding.shape),
                   file=sys.stderr)
