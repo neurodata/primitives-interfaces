@@ -130,7 +130,7 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         outputs = container.List([
             learning_data, graphs_largest_all, nodeIDs_largest_all])
 
-        debugging = True
+        debugging = False
         if debugging:
             # GRAPH STUFF
             print("length of the first graph: {}".format(
@@ -146,8 +146,9 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
             print(nodeIDs_largest_all[0][:20], file=sys.stderr)
             # TASK STUFF
             print("task: {}". format(task_type), file=sys.stderr)
-
-            print(np.unique(components), file=sys.stderr)
+            # LCC stuff
+            print("unique components: {}".format(np.unique(components)),
+                  file=sys.stderr)
         print('lcc produce ended', file=sys.stderr)
 
         return base.CallResult(outputs)

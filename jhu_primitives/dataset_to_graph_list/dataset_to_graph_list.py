@@ -132,9 +132,8 @@ class DatasetToGraphList(transformer.TransformerPrimitiveBase[Inputs, Outputs, H
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
 
-
         # TODO many debugging print statements.
-        debugging = True
+        debugging = False
         if debugging:
             # DATAFRAME STUFF
             # print("label counts:", file=sys.stderr)

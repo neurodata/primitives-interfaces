@@ -152,7 +152,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         for i in range(len(testing)):
             if i in g_indices:
                 label = predictions[i]
-                final_labels[i] = int(label)
+                final_labels[i] = int(label) + 1
             else:
                 final_labels[i] = int(max(predictions)) + int(testing['components'][i])
     
