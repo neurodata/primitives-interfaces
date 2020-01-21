@@ -282,28 +282,21 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             print("sum of prior probabilities: {}".format(np.sum(self._pis)),
                   file=sys.stderr)
 
-        # estimate the means
+        # estimate means and covariances
         estimated_means = np.zeros((K, d))
+        estimated_covs = np.zeros((K, d, d))
         for i, lab in enumerate(self._unique_lcc_labels):
             temp_seeds = np.where(self._lcc_labels == lab)[0]
-            estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
-        self._means = container.ndarray(estimated_means)
-
-        # estimate the covariances
-        covs = np.zeros((K, d, d))
-        for i, lab in enumerate(self._unique_labels): 
-            temp_seeds = np.where(self._lcc_labels == lab)[0]
             feature_vectors = self._embedding[temp_seeds]
-            covs[i] = np.cov(feature_vectors, rowvar = False)
+            estimated_means[i] = np.mean(feature_vectors, axis=0)
+            estimated_covs[i] = np.cov(feature_vectors, rowvar = False)
+        self._means = container.ndarray(estimated_means)
+        # use 'pooled covariance' if we are using lda
         if not self._ENOUGH_SEEDS:
-            estimated_covs = covs
-        else:
-            estimated_covs = np.zeros((d,d))
-            for i in range(K):
-                estimated_covs += covs[i]*(label_counts[i] - 1)
-            estimated_covs = estimated_covs / (n - K)
-            alternative_estimated_covs = np.sum(covs * (label_counts - 1).reshape(-1, 1, 1), axis=0) / (n - K)
-            print(np.all(estimated_covs == alternative_estimated_covs), file=sys.stderr)
+            pooled_cov = np.sum(
+                estimated_covs * (label_counts - 1).reshape(-1, 1, 1),
+                axis=0) / (n - K)
+            estimated_covs = np.repeat(pooled_cov, K)
         self._covariances = container.ndarray(estimated_covs)
         self._PD = True
 
