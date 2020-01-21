@@ -157,22 +157,26 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         n_elbows = self.hyperparams['which_elbow']
 
+        # TODO: this all needs to be cleaned up.
         if self.hyperparams['use_attributes']:
             adj = [g]
             MORE_ATTR = True
             attr_number = 1
             while MORE_ATTR:
-                attr = 'attr'
+                attr = 'attr' # TODO this is no longer true for edgelists
+                # not that important
                 temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + str(attr_number)).values()))
                 if len(temp_attr) == 0:
                     MORE_ATTR = False
                 else:
+                    # construct a gaussian kernerl (smartly) (should be n by n)
                     K = np.sum((temp_attr[:, np.newaxis][:, np.newaxis, :] - temp_attr[:, np.newaxis][np.newaxis, :, :])**2, axis = -1)
+                    # PTR on the kernel
                     adj.append(graspyPTR(K))
                     attr_number += 1
-            M = len(adj)
+            M = len(adj) # matrices including original
             
-            if M > 1:
+            if M > 1: # if more than graph, then we omni
                 omni_object = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
                 X_hats = omni_object.fit_transform(adj)
                 X_hat = np.mean(X_hats, axis = 0)
@@ -189,12 +193,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         else:
             X_hat = ase_object.fit_transform(g)
 
-        # TODO rewrite into a nicer way to export outputs
-        # print(X_hat.shape, file=sys.stderr)
         inputs[1][0] = container.ndarray(X_hat)
-
-        # print(X_hat, file=sys.stderr)
-        # print(inputs[2][:20], file=sys.stderr)
 
         print("ase produce ended", file=sys.stderr)
 

@@ -134,17 +134,17 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         K = len(self._unique_labels)
 
-        csv = inputs[0]
+        learning_data = inputs[0]
 
-        headers=csv.columns
+        headers=learning_data.columns
 
         for col in headers:
             if "node" in col:
-                testing_nodeIDs = csv[col]
+                testing_nodeIDs = learning_data[col]
             if "Label" in col or "label" in col or "class" in col:
                 LABEL = col
 
-        final_labels = np.zeros(len(csv))
+        final_labels = np.zeros(len(learning_data))
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
         #print(string_nodeIDs, file=sys.stderr)
         # print(testing_nodeIDs, file=sys.stderr)
@@ -181,8 +181,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 except:
                     final_labels[i] = self._unique_labels[np.argmax(self._pis)]
 
-        csv[LABEL] = final_labels
-        outputs = container.DataFrame(csv[['d3mIndex',LABEL]])
+        learning_data[LABEL] = final_labels
+        outputs = container.DataFrame(learning_data[['d3mIndex',LABEL]])
         outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
 
         # print(np.argmax(self._pis), file=sys.stderr)
@@ -190,34 +190,49 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         return base.CallResult(outputs)
 
-    def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
+    def fit(self, *,
+            timeout: float = None,
+            iterations: int = None) -> base.CallResult[None]:
         if self._fitted:
             return base.CallResult(None)
 
+
         self._embedding = self._training_inputs[1][0]
+        self._nodeIDs = np.array(self._training_inputs[2][0])
 
-        self._nodeIDs = np.array(self._training_inputs[2])
-        # print(self._nodeIDs, file=sys.stderr)
-
-        csv = self._training_inputs[0]
-        headers=csv.columns
+        learning_data = self._training_inputs[0]
+        headers=learning_data.columns
 
         for col in headers:
             if "node" in col:
-                self._seeds = np.array(list(csv[col]))
+                self._seeds = np.array(list(learning_data[col]))
                 self._lcc_seeds = np.array([s for s in self._seeds if s in self._nodeIDs])
             if "label" in col:
-                self._labels = np.array(list(csv[col]))
+                self._labels = np.array(list(learning_data[col]))
                 self._lcc_labels = np.array([s for s in self._labels if s in self._nodeIDs])
-        # print(len(self._seeds), file=sys.stderr)
-        # print(len(self._lcc_seeds), file=sys.stderr)
-        # TODO: assumes labels are int-like
-        # self._labels = np.array([i for i in self._labels])
-        # self._lcc_labels = np.array([i for i in self._lcc_labels])
 
+        # TODO: assumes labels are int-like
+        self._labels = np.array([i for i in self._labels])
+        self._lcc_labels = np.array([i for i in self._lcc_labels])
         # get unique labels
         self._unique_labels, label_counts = np.unique(self._labels, return_counts = True)
-        self._unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels)
+        self._unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels, return_counts = True)
+
+        print("shape of the embedding: {}".format(self._embedding.shape),
+              file=sys.stderr)
+        print("length of the seeds: {}".format(len(self._seeds)),
+              file=sys.stderr)
+        print("lenth of the lcc_seeds: {}".format(len(self._lcc_seeds)),
+              file=sys.stderr)
+        print("length of the labels: {}".format(len(self._labels)),
+              file=sys.stderr)
+        print("lenth of the lcc_labels: {}".format(len(self._lcc_labels)),
+              file=sys.stderr)
+        print("unique labels: {}".format(self._unique_labels),
+              file=sys.stderr)
+        print("unique lcc labels: {}".format(self._unique_lcc_labels),
+              file=sys.stderr)
+
         K = len(self._unique_labels)
 
         n, d = self._embedding.shape
