@@ -252,11 +252,10 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             print("label types: {}".format(type(self._labels[0])),
                   file=sys.stderr)
 
-        if np.all(self._unique_labels != self._unique_labels_lcc):
+        if np.all(self._unique_labels != self._unique_lcc_labels):
             raise exceptions.NotSupportedError(
                 'nodes from some classes are not present in the lcc; ' + 
                 'the problem is ill-defined')
-
 
         n, d = self._embedding.shape
         K = len(self._unique_labels)
