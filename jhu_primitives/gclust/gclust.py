@@ -113,7 +113,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         dim:
             - The number of clusters in which to assign the data
         """
-        np.random.seed(self._random_seed)
+        np.random.seed(self.random_seed)
         print('gclust produce started', file=sys.stderr)
         if self._embedding is None:
             self._embedding = inputs[1][0]
