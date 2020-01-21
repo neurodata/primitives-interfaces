@@ -147,7 +147,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         final_labels = np.zeros(len(learning_data))
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
         if self._PD and self._ENOUGH_SEEDS:
-            print('enough seeds and PD', file=sys.stderr)
             for i in range(len(testing_nodeIDs)):
                 try:
                     temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
@@ -159,7 +158,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
                 except Exception as e:
                     final_labels[i] = self._unique_labels[np.argmax(self._pis)]
         else:
-            print('not enough seeds or not PD', file=sys.stderr)
             for i in range(len(testing_nodeIDs)):
                 try:
                     temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
@@ -177,6 +175,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         outputs = container.DataFrame(learning_data[['d3mIndex',LABEL]])
         outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
 
+        print(final_labels, file=sys.stderr)
         return base.CallResult(outputs)
 
     def fit(self, *,
