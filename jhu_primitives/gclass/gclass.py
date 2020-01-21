@@ -302,7 +302,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             for i in range(K):
                 estimated_covs += covs[i]*(label_counts[i] - 1)
             estimated_covs = estimated_covs / (n - K)
-            alternative_estimated_covs = covs * (label_counts - 1) / (n - K)
+            alternative_estimated_covs = covs * np.sum((label_counts - 1), axis=0) / (n - K)
             print(np.all(estimated_covs == alternative_estimated_covs), file=sys.stderr)
         self._covariances = container.ndarray(estimated_covs)
         self._PD = True
