@@ -127,23 +127,26 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                          random_seed=random_seed,
                          docker_containers=docker_containers)
 
-    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
+    def produce(self, *, inputs: Inputs,
+                timeout: float = None,
+                iterations: int = None) -> CallResult[Outputs]:
+        print('ase produce started', file=sys.stderr)
         np.random.seed(self.random_seed)
-        print('ase, baby!', file=sys.stderr)
-        csv = inputs[0]
-        G = inputs[1][0].copy()
 
-        headers=csv.columns
+        # unpacks necessary input arguments
+        learning_data, graphs_all, nodeIDs_all = inputs
 
+        # ase only works for one graph (but we can change that)
+        G = graphs_all[0].copy()
+
+        # catches link-prediction problem type
+        # if it is not such - applies pass to ranks, which is a method to
+        # rescale edge weights based on their relative ranks
+        headers = learning_data.columns
         if "linkExists" in headers:
             g=np.array(G.copy())
         else:
             g=graspyPTR(G)
-
-        # if link_predicton:
-        #     g = np.array(G.copy())
-        # else:
-        #    g = graspyPTR(G)
 
         n = g.shape[0]
 
@@ -187,10 +190,13 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             X_hat = ase_object.fit_transform(g)
 
         # print(X_hat.shape, file=sys.stderr)
+        # TODO rewrite into a nicer way to export outputs
         inputs[1][0] = container.ndarray(X_hat)
 
-        print("end of ase pring", file=sys.stderr)
+        print(X_hat, file=sys.stderr)
         print(inputs[2][:20], file=sys.stderr)
+
+        print("ase produce ended", file=sys.stderr)
 
         assert 1 == 0
         return base.CallResult(inputs)
