@@ -127,16 +127,12 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         Returns
             labels - Class labels for each unlabeled vertex
         """
+        print("gclass fit started", file=sys.stderr)
 
         if not self._fitted:
             raise ValueError("Not fitted")
 
-        n = self._embedding.shape[0]
-
-        K = len(self._unique_labels)
-
         learning_data = inputs[0]
-
         headers=learning_data.columns
 
         for col in headers:
@@ -145,29 +141,22 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             if "Label" in col or "label" in col or "class" in col:
                 LABEL = col
 
-        assert 1 == 0
+        n = self._embedding.shape[0]
+        K = len(self._unique_labels)
 
         final_labels = np.zeros(len(learning_data))
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
-        #print(string_nodeIDs, file=sys.stderr)
-        # print(testing_nodeIDs, file=sys.stderr)
         if self._PD and self._ENOUGH_SEEDS:
             print('enough seeds and PD', file=sys.stderr)
             for i in range(len(testing_nodeIDs)):
                 try:
                     temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
-                    # print(temp, file=sys.stderr)
-                    # print(self._pis, file=sys.stderr)
-                    # print(self._means, file=sys.stderr)
-                    # print(self._covariances[0], file=sys.stderr)
-
                     weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
-                    print("we got inside a try", file=sys.stderr)
-                    print(weighted_pdfs, file=sys.stderr)
+                    # print("we got inside a try", file=sys.stderr)
+                    # print(weighted_pdfs, file=sys.stderr)
                     label = np.argmax(weighted_pdfs)
                     final_labels[i] = self._unique_label[int(label)]
                 except Exception as e:
-                    # print(e, file=sys.stderr)
                     final_labels[i] = self._unique_labels[np.argmax(self._pis)]
         else:
             print('not enough seeds or not PD', file=sys.stderr)
@@ -188,9 +177,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         outputs = container.DataFrame(learning_data[['d3mIndex',LABEL]])
         outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
 
-        # print(np.argmax(self._pis), file=sys.stderr)
-        print(outputs.values, file=sys.stderr)
-
         return base.CallResult(outputs)
 
     def fit(self, *,
@@ -198,7 +184,6 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             iterations: int = None) -> base.CallResult[None]:
         if self._fitted:
             return base.CallResult(None)
-        print("gclass fit started", file=sys.stderr)
 
         # unpack training inputs
         self._embedding = self._training_inputs[1][0]
