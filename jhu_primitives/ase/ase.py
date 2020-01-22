@@ -176,6 +176,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             M = len(adj) # matrices including original
             
             if M > 1: # if more than graph, then we omni
+
                 omni_object = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
                 X_hats = omni_object.fit_transform(adj)
                 X_hat = np.mean(X_hats, axis = 0)
