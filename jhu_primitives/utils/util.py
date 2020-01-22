@@ -41,7 +41,7 @@ DATASETS = {
 PIPELINES = {
             "graphMatching": [
                 "sgm_pipeline",
-                "sgm_pipeline_10"
+            #     "sgm_pipeline_10"
                 ],
             # "vertexClassification": [
             #     "gclass_ase_pipeline",
