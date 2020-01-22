@@ -129,7 +129,6 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
 
     def set_training_data(self, *, inputs: Inputs) -> None:
         # Grab both graphs. Cast as a Graph object in case inputs are Multigraphs.
-        print(type(inputs['0']), file=sys.stderr)
         graph_dataframe0 = inputs['0']
         graph_dataframe1 = inputs['1']
 
@@ -147,12 +146,16 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         except:
             self._csv_TRAIN = inputs['2']
 
-        print(self._g1.nodes, file=sys.stderr)
-        print(self._g2.nodes, file=sys.stderr)
-        print(self._csv_TRAIN, file=sys.stderr)
+        print(len(list(self._g1.nodes)), file=sys.stderr)
+        print(len(list(self._g2.nodes)), file=sys.stderr)
+        print(len(list(self._csv_TRAIN)), file=sys.stderr)
 
         # Pad graphs if needed. As of 2/4/2019 only "naive" padding implemented.
         self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2)
+
+        print(len(list(self._g1.nodes)), file=sys.stderr)
+        print(len(list(self._g2.nodes)), file=sys.stderr)
+        print(len(list(self._csv_TRAIN)), file=sys.stderr)
 
         # Grab the G1 training nodeIDs and cast to string. The cast to string is important to
         # allow handling of more general nodeID types.
