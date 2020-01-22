@@ -286,8 +286,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         x_sums = np.zeros(shape = (K, d))
 
         estimated_means = np.zeros((K, d))
-        for i in range(K):
-            temp_seeds = self._seeds[np.where(self._labels == i)[0]]
+        for i, lab in enumerate(self._unique_lcc_labels):
+            temp_seeds = self._seeds[np.where(self._lcc_labels == lab)[0]]
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
         #for i in range(len(self._seeds)):
         #    nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
@@ -300,8 +300,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         mean_centered_sums = np.zeros(shape = (K, d, d))
 
         covs = np.zeros(shape = (K, d, d))
-        for i in range(K):
-            feature_vectors = self._embedding[self._seeds[self._labels == i], :]
+        for i, lab in enumerate(self._unique_lcc_labels):
+            feature_vectors = self._embedding[self._seeds[self._lcc_labels == lab], :]
             covs[i] = np.cov(feature_vectors, rowvar = False)
 
         if self._ENOUGH_SEEDS:
@@ -315,7 +315,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._PD = True
 
         self._means = container.ndarray(estimated_means)
-        self._covariances = container.ndarray(estimated_cov)
+        self._covariances = container.ndarray(np.repeat(estimated_cov.reshape(1, d, d), K, axis=0))
 
 
         print("estimated means: {}".format(self._means), file=sys.stderr)
