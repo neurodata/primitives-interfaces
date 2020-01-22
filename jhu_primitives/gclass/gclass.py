@@ -127,7 +127,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         Returns
             labels - Class labels for each unlabeled vertex
         """
-        print("gclass produce started", file=sys.stderr)
+        # print("gclass produce started", file=sys.stderr)
 
         if not self._fitted:
             raise ValueError("Not fitted")
@@ -163,7 +163,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         outputs = container.DataFrame(learning_data[['d3mIndex',LABEL]])
         outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
 
-        debugging = True
+        debugging = False
         if debugging:
             print("proportions: {}".format(self._pis), file=sys.stderr)
             print("final labels: {}".format(final_labels), file=sys.stderr)
@@ -282,42 +282,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._covariances = container.ndarray(estimated_covs)
         self._PD = True
 
-        # print("estimated mean (Anton's): {}".format(self._means), file=sys.stderr)
-        # print("estimated covariances (Anton's): {}".format(self._covariances), file=sys.stderr)
-
-        # # HAYDENS VERSION #
-        # # gather the means
-        # estimated_means = np.zeros((K, d))
-        # for i in range(K):
-        #     temp_seeds = self._seeds[np.where(self._labels.astype(int) == i)[0]].astype(int)
-        #     print("hayden temp seed: {}".format(temp_seeds), file=sys.stderr)
-        #     estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
-
-        # covs = np.zeros(shape = (K, d, d))
-        # for i in range(K):
-        #     feature_vectors = self._embedding[self._seeds[self._labels.astype(int) == i].astype(int), :]
-        #     covs[i] = np.cov(feature_vectors, rowvar = False)
-
-        # if self._ENOUGH_SEEDS:
-        #     estimated_cov = covs
-        # else:
-        #     estimated_cov = np.zeros(shape = (d,d))
-        #     for i in range(K):
-        #         estimated_cov += covs[i]*(label_counts[i] - 1)
-        #     estimated_cov = estimated_cov / (n - K)
-
-        # self._PD = True
-
-        # self._means = container.ndarray(estimated_means)
-        # self._covariances = container.ndarray(np.repeat(estimated_cov.reshape(1, d, d), K, axis=0))
-
-
-        # print("estimated mean (Hayden's): {}".format(self._means), file=sys.stderr)
-        # print("estimated covariances (Hayden's): {}".format(self._covariances), file=sys.stderr)
-
         self._fitted = True
 
-        print("gclass fit ended", file=sys.stderr)
+        # print("gclass fit ended", file=sys.stderr)
 
         return base.CallResult(None)
 
