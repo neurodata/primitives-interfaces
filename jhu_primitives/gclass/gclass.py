@@ -164,6 +164,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
 
         if debugging:
+            print("proportions: {}".format(self._pis), file=sys.stderr)
             print("final labels: {}".format(final_labels), file=sys.stderr)
         # print("gclass produce ended", file=sys.stderr)
 
