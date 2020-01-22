@@ -147,6 +147,10 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         except:
             self._csv_TRAIN = inputs['2']
 
+        print(self._g1.nodes, file=sys.stderr)
+        print(self._g2.nodes, file=sys.stderr)
+        print(self._csv_TRAIN, file=sys.stderr)
+
         # Pad graphs if needed. As of 2/4/2019 only "naive" padding implemented.
         self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2)
 
