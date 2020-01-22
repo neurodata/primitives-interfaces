@@ -33,7 +33,7 @@ setup(
     version=VERSION,
     description='JHU Python interfaces for TA1 primitives for d3m',
     long_description='A library wrapping JHU\'s Python interfaces for the D3M program\'s TA1 primitives.',
-    author='Hayden S. Helm, Joshua Agterberg, Bijan Varjavand, Disa Mhembere, Eric Bridgeford, Youngser Park, Heather G. Patsolic, Tyler M. Tomita, Jesse L. Patsolic',
+    author='Hayden S. Helm, Joshua Agterberg, Bijan Varjavand, Anton Alyakin, Disa Mhembere, Eric Bridgeford, Youngser Park, Heather G. Patsolic, Tyler M. Tomita, Jesse L. Patsolic',
     author_email="hhelm2@jhu.edu",
     packages=[
               PACKAGE_NAME,
@@ -42,13 +42,13 @@ setup(
               'jhu_primitives.gclust',
               'jhu_primitives.load_graphs',
               'jhu_primitives.lcc',
-              #'jhu_primitives.lse',
+              'jhu_primitives.lse',
               'jhu_primitives.link_pred_graph_reader',
               'jhu_primitives.link_pred_rc',
               # 'jhu_primitives.oosase',
               # 'jhu_primitives.ooslse',
               #'jhu_primitives.sgc',
-              #'jhu_primitives.sgm',
+              'jhu_primitives.sgm',
               # 'jhu_primitives.sgvn',
               'jhu_primitives.utils',
     ],
@@ -66,7 +66,7 @@ setup(
             # 'data_transformation.out_of_sample_laplacian_spectral_embedding.JHU=jhu_primitives.ooslse:OutOfSampleLaplacianSpectralEmbedding',
             #'vertex_nomination.spectral_vertex_nomination.JHU=jhu_primitives.sgvn:SingleGraphVertexNomination',
             #'vertex_nomination.spectral_graph_clustering.JHU=jhu_primitives.sgc:SpectralGraphClustering',
-            #'graph_matching.seeded_graph_matching.JHU=jhu_primitives.sgm:SeededGraphMatching'
+            'graph_matching.seeded_graph_matching.JHU=jhu_primitives.sgm:SeededGraphMatching'
             ]
     },
     # package_data = {'': ['*.r', '*.R']},

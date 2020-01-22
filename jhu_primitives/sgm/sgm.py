@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # sgm.py
-# Copyright (c) 2019. All rights reserved.
+# Copyright (c) 2020. All rights reserved.
 
 # Thanks to Ben Johnson for his SGM code
 
