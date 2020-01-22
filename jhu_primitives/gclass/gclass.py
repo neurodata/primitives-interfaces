@@ -167,7 +167,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         if debugging:
             print("proportions: {}".format(self._pis), file=sys.stderr)
             print("final labels: {}".format(final_labels), file=sys.stderr)
-        print("gclass produce ended", file=sys.stderr)
+        # print("gclass produce ended", file=sys.stderr)
 
         return base.CallResult(outputs)
 
@@ -177,7 +177,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         if self._fitted:
             return base.CallResult(None)
 
-        print("gclass fit started", file=sys.stderr)
+        # print("gclass fit started", file=sys.stderr)
 
         # unpack training inputs
         self._embedding = self._training_inputs[1][0]
@@ -245,6 +245,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         # heuristically check if we have enough datapoints in all classes
         # if we do - perform qda. else - lda.
+        # maybe this should use label counts in the lcc only..
         self._ENOUGH_SEEDS = True
         for i in range(K):
             if label_counts[i] < d*(d + 1)/2:
