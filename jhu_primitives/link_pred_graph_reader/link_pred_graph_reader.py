@@ -168,4 +168,4 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         #     temp_G.add_edge(keys[i][0], keys[i][1])
         #     temp_G.add_edge(keys[i][1], keys[i][0])
 
-        return base.CallResult(container.List([csv, container.ndarray(A), 1, info]))
+        return base.CallResult(container.List([csv, [container.ndarray(A)], 1, info]))
