@@ -285,6 +285,10 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         # gather the means
         estimated_means = np.zeros((K, d))
         for i, lab in enumerate(self._unique_lcc_labels):
+            print(self._lcc_labels == lab, file=sys.stderr)
+            print(np.where(self._lcc_labels == lab), file=sys.stderr)
+            print(np.where(self._lcc_labels == lab)[0], file=sys.stderr)
+            print(self._seeds[np.where(self._lcc_labels == lab)[0]], file=sys.stderr)
             temp_seeds = self._seeds[np.where(self._lcc_labels == lab)[0]]
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
 
