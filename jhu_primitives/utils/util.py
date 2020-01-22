@@ -212,6 +212,7 @@ def write_pipeline_run(dataset, path):
     run_path += path.split('/')[-1] + "-" + dataset.split('/')[-1] + "_pipeline_run.yml"
     cmd += " -O " + run_path
     os.system(cmd)
+    print(cmd, file=sys.stderr)
     os.system("gzip " + run_path)
 
 def pipeline_run_all(paths_to_pipelines):
