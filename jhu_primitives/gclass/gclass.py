@@ -163,6 +163,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         outputs = container.DataFrame(learning_data[['d3mIndex',LABEL]])
         outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
 
+        if debugging:
+            print("final labels: {}".format(final_labels), file=sys.stderr)
         # print("gclass produce ended", file=sys.stderr)
 
         return base.CallResult(outputs)
