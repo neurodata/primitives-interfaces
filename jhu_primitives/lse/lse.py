@@ -125,7 +125,9 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         np.random.seed(self.random_seed)
 
         # unpacks necessary input arguments
-        learning_data, graphs_all, nodeIDs_all = inputs
+        # note that inputs 2 and on are passed through untouched ! 
+        learning_data = inputs[0]
+        graphs_all = inputs[1]
 
         # lse only works for one graph (but we can change that)
         G = graphs_all[0].copy()
