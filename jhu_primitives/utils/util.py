@@ -25,9 +25,9 @@ DATASETS = {
             #     ],
             "vertexClassification": [
                 "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
-            #     "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
-            #     "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
-            #     "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
                 ],
             # "communityDetection": [
             #     "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
