@@ -281,6 +281,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._covariances = container.ndarray(estimated_covs)
         self._PD = True
 
+        print("estimated mean (Anton's): {}".format(self._means), file=sys.stderr)
+        print("estimated covariances (Anton's): {}".format(self._covariances), file=sys.stderr)
+
         # HAYDENS VERSION #
         # gather the means
         estimated_means = np.zeros((K, d))
@@ -308,8 +311,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._covariances = container.ndarray(np.repeat(estimated_cov.reshape(1, d, d), K, axis=0))
 
 
-        print("estimated means: {}".format(self._means), file=sys.stderr)
-        print("estimated covariances: {}".format(self._covariances), file=sys.stderr)
+        print("estimated mean (Hayden's): {}".format(self._means), file=sys.stderr)
+        print("estimated covariances (Hayden's): {}".format(self._covariances), file=sys.stderr)
 
         self._fitted = True
 
