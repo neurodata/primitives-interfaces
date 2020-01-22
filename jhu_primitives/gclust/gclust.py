@@ -113,12 +113,12 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         dim:
             - The number of clusters in which to assign the data
         """
-
-        #print('gclust, baby!!', file=sys.stderr)
+        # print('gclust produce started', file=sys.stderr)
+        np.random.seed(self.random_seed)
         if self._embedding is None:
             self._embedding = inputs[1][0]
 
-        nodeIDs = inputs[2]
+        nodeIDs = inputs[2][0]
         nodeIDS = np.array([int(i) for i in nodeIDs])
 
         max_clusters = self.hyperparams['max_clusters']
@@ -126,10 +126,10 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         if max_clusters < self._embedding.shape[1]:
             self._embedding = self._embedding[:, :max_clusters].copy()
 
-        gclust_object = graspyGCLUST(min_components=max_clusters, covariance_type="all")
+        gclust_object = graspyGCLUST(max_components=max_clusters,
+                                     covariance_type="all")
         gclust_object.fit(self._embedding)
         model = gclust_object.model_
-        
 
         testing = inputs[0]
 
@@ -141,20 +141,34 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
 
         final_labels = np.zeros(len(testing_nodeIDs))
         
-        predictions = np.zeros(len(testing))
-        g_indices = np.where(testing['components'] == 1)[0].astype(int)
+        predictions = np.zeros(len(testing_nodeIDs))
+        lcc_index = testing['components'].value_counts().idxmax()
+        g_indices = np.where(testing['components'] == lcc_index)[0].astype(int)
 
         predictions[g_indices] = model.predict(self._embedding)
         for i in range(len(testing)):
             if i in g_indices:
                 label = predictions[i]
-                final_labels[i] = int(label) + 1
+                final_labels[i] = int(label)
             else:
-                final_labels[i] = int(max(predictions)) + int(testing['components'][i])
+                final_labels[i] = int(max(predictions)) + int(testing['components'][i]) + 1
     
         testing['community'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'community']])
         outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
+
+        debugging = False
+        if debugging:
+            print("index of the lcc: {}".format(lcc_index), file=sys.stderr)
+            print("testing_nodeIDs length {}".format(
+                len(testing_nodeIDs)), file=sys.stderr)
+            print("lcc length {}".format(len(g_indices)), file=sys.stderr)
+            print("unique predictions (labels, counts): {}".format(
+                np.unique(predictions, return_counts=True)), file=sys.stderr)
+            print("unique final labels (labels, counts): {}".format(
+                np.unique(final_labels, return_counts=True)), file=sys.stderr)
+
+        # print('gclust produce ended', file=sys.stderr)
         return base.CallResult(outputs)
 
 

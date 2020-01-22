@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 
 # ase.py
-# Created by Disa Mhembere on 2017-09-12.
-# Email: disa@jhu.edu
-# Copyright (c) 2017. All rights reserved.
+# Copyright (c) 2020. All rights reserved.
 
-
-import numpy as np
 from typing import Sequence, TypeVar, Union, Dict
-import networkx
 import os
 import sys
+import networkx
+import numpy as np
 
 from scipy.stats import norm
 from scipy.stats import rankdata
@@ -121,25 +118,32 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         'preconditions': ['NO_MISSING_VALUES']
     })
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
-        super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0,
+                 docker_containers: Dict[str, base.DockerContainer] = None) -> None:
+        super().__init__(hyperparams=hyperparams,
+                         random_seed=random_seed,
+                         docker_containers=docker_containers)
 
-    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        np.random.seed(1234)
-        #print('ase, baby!', file=sys.stderr)
-        G = inputs[1][0].copy()
+    def produce(self, *, inputs: Inputs,
+                timeout: float = None,
+                iterations: int = None) -> CallResult[Outputs]:
+        # print('ase produce started', file=sys.stderr)
+        np.random.seed(self.random_seed)
 
-        try:
-            link_predicton = inputs[3]
-            if type(link_predicton) is not bool:
-                link_predicton = False
-        except:
-            link_predicton = False
+        # unpacks necessary input arguments
+        learning_data, graphs_all, nodeIDs_all = inputs
 
-        if link_predicton:
-            g = np.array(G.copy())
+        # ase only works for one graph (but we can change that)
+        G = graphs_all[0].copy()
+
+        # catches link-prediction problem type
+        # if it is not such - applies pass to ranks, which is a method to
+        # rescale edge weights based on their relative ranks
+        headers = learning_data.columns
+        if "linkExists" in headers:
+            g=np.array(G.copy())
         else:
-            g = graspyPTR(G)
+            g=graspyPTR(G)
 
         n = g.shape[0]
 
@@ -150,22 +154,26 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         n_elbows = self.hyperparams['which_elbow']
 
+        # TODO: this all needs to be cleaned up.
         if self.hyperparams['use_attributes']:
             adj = [g]
             MORE_ATTR = True
             attr_number = 1
             while MORE_ATTR:
-                attr = 'attr'
+                attr = 'attr' # TODO this is no longer true for edgelists
+                # not that important
                 temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + str(attr_number)).values()))
                 if len(temp_attr) == 0:
                     MORE_ATTR = False
                 else:
+                    # construct a gaussian kernerl (smartly) (should be n by n)
                     K = np.sum((temp_attr[:, np.newaxis][:, np.newaxis, :] - temp_attr[:, np.newaxis][np.newaxis, :, :])**2, axis = -1)
+                    # PTR on the kernel
                     adj.append(graspyPTR(K))
                     attr_number += 1
-            M = len(adj)
+            M = len(adj) # matrices including original
             
-            if M > 1:
+            if M > 1: # if more than graph, then we omni
                 omni_object = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
                 X_hats = omni_object.fit_transform(adj)
                 X_hat = np.mean(X_hats, axis = 0)
@@ -173,12 +181,18 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 embedding = X_hat.copy()
 
                 inputs[1][0] = container.ndarray(embedding)
+                # print("ase produce ended (omni used)", file=sys.stderr)
 
                 return base.CallResult(inputs)
 
         ase_object = graspyASE(n_components=max_dimension, n_elbows = n_elbows)
-        X_hat = ase_object.fit_transform(g)
+        if isinstance(ase_object, tuple):
+            X_hat = np.concatenate(ase_object.fit_transform(g), axis=1)
+        else:
+            X_hat = ase_object.fit_transform(g)
 
         inputs[1][0] = container.ndarray(X_hat)
+
+        # print("ase produce ended (omni not used)", file=sys.stderr)
 
         return base.CallResult(inputs)

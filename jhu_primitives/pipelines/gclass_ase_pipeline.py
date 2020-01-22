@@ -2,9 +2,9 @@ from d3m.metadata import pipeline as meta_pipeline
 from d3m.metadata.base import Context, ArgumentType
 
 from jhu_primitives.pipelines.base import BasePipeline
+from jhu_primitives.lcc import LargestConnectedComponent
 from jhu_primitives.ase import AdjacencySpectralEmbedding
 from jhu_primitives.gclass import GaussianClassification
-from jhu_primitives.lcc import LargestConnectedComponent
 from jhu_primitives.load_graphs import LoadGraphs
 
 DATASETS = {

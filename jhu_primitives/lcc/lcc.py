@@ -82,35 +82,73 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         np.random.seed(self.random_seed)
-        #print('lcc, baby!', file=sys.stderr)        
+        # print('lcc produce started', file=sys.stderr)
 
-        csv = inputs[0]
-        G = inputs[1][0]
-        nodeIDs = inputs[2]
-        TASK = inputs[3]
+        # unpack the data from the graph to list reader
+        learning_data, graphs_full_all, nodeIDs_full_all, task_type = inputs
 
-        # print(len(G), file=sys.stderr)
-        subgraphs = [G.subgraph(i).copy() for i in nx.connected_components(G)]
-        
-        components = np.zeros(len(G), dtype=int)
-        for i, connected_component in enumerate(nx.connected_components(G)):
-            #print(np.array(list(connected_component), dtype=int), file=sys.stderr)
-            components[np.array(list(connected_component), dtype=int)] = i+1
+        # initialize lists for connected components and associated nodeids
+        graphs_largest_all = []
+        nodeIDs_largest_all = []
 
-        # NODEID = ""
-        # for header in csv.columns:
-        #     if "nodeID" in header:
-        #         NODEID = header
-        # nodeIDs = list(csv[NODEID].values)
-        
-        # if TASK == "vertexClassification":
-        #     csv['components'] = components[np.array(csv[NODEID], dtype=int)]
-        if TASK == "communityDetection":
-            csv['components'] = components        
-            
-        G_connected = [0]
-        for i in subgraphs:
-            if len(i) > len(G_connected):
-                G_connected = i
+        for graph_index in range(len(graphs_full_all)):
+            # select the graph and node ids for the current graph
+            graph_full = graphs_full_all[graph_index]
+            nodeIDs_full = nodeIDs_full_all[graph_index]
 
-        return base.CallResult(container.List([csv, [G_connected.copy()], nodeIDs]))
+            # split the current graph into connected components
+            subgraphs = [graph_full.subgraph(i).copy()
+                        for i in sorted(nx.connected_components(graph_full),
+                                        key=len, reverse=True)]
+
+            # pick the largest connected component of the current graph
+            graph_largest = [0]
+            components = np.zeros(len(graph_full), dtype=int) # only for CD
+            for i, connected_component in enumerate(subgraphs):
+                # obtain indices associated with the node_ids in this component
+                temp_indices = [j for j, x in enumerate(nodeIDs_full)
+                                if x in [str(c) for c in list(connected_component)]]
+                components[temp_indices] = i
+                # check if the component is largest
+                if len(connected_component) > len(graph_largest):
+                    # if it is largest - flag as such
+                    graph_largest = connected_component.copy()
+                    # and subselect the appropriate nodeIDs
+                    nodeIDs_largest = nodeIDs_full[temp_indices]
+
+            # append the largest_connected component and nodeIDs
+            graphs_largest_all.append(graph_largest)
+            nodeIDs_largest_all.append(nodeIDs_largest)
+
+            # for communityDetection the component needs to be specified in
+            # the dataframe; in this problem there is always only one graph
+            # TODO: condsider avoiding the specification of the problem
+            #       likely can be achiebed by handling nodeIDs data smartly
+            if task_type == "communityDetection":
+                learning_data['components'] = components
+
+        outputs = container.List([
+            learning_data, graphs_largest_all, nodeIDs_largest_all])
+
+        debugging = False
+        if debugging:
+            # GRAPH STUFF
+            print("length of the first graph: {}".format(
+                len(list(graphs_largest_all[0].nodes()))), file=sys.stderr)
+            print("first 20 nodes of the first graph", file=sys.stderr)
+            print(list(graphs_largest_all[0].nodes())[:20], file=sys.stderr)
+            # NODE IDS STUFF
+            print("type of a nodeID: {}".format(
+                type(nodeIDs_largest_all[0][0])), file=sys.stderr)
+            print("length of the nodeIds: {}".format(
+                len(nodeIDs_largest_all[0])), file=sys.stderr)
+            print("first 20 nodesIDs", file=sys.stderr)
+            print(nodeIDs_largest_all[0][:20], file=sys.stderr)
+            # TASK STUFF
+            print("task: {}". format(task_type), file=sys.stderr)
+            # LCC stuff
+            print("unique components: {}".format(np.unique(components)),
+                  file=sys.stderr)
+        # print('lcc produce ended', file=sys.stderr)
+
+        return base.CallResult(outputs)

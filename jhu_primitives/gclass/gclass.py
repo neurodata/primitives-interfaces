@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
 # gclass.py
-# Copyright (c) 2017. All rights reserved.
+# Copyright (c) 2020. All rights reserved.
 
 from typing import Sequence, TypeVar, Union, Dict
 import os
 import sys
 
-from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
-from d3m import container
 from d3m import utils
+from d3m import container
+from d3m import exceptions
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
@@ -126,142 +127,158 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         Returns
             labels - Class labels for each unlabeled vertex
         """
+        # print("gclass produce started", file=sys.stderr)
 
         if not self._fitted:
             raise ValueError("Not fitted")
 
+        learning_data = inputs[0]
+        headers=learning_data.columns
+
+        for col in headers:
+            if "node" in col:
+                testing_nodeIDs = learning_data[col]
+            if "Label" in col or "label" in col or "class" in col:
+                LABEL = col
+
         n = self._embedding.shape[0]
+        K = len(self._unique_labels)
 
-        unique_labels = np.unique(self._labels)
-        K = len(unique_labels)
-
-        testing = inputs[0]
-
-        try:
-            testing_nodeIDs = np.asarray(testing['G1.nodeID'])
-        except:
-            testing_nodeIDs = np.asarray(testing['nodeID'])
-        final_labels = np.zeros(len(testing))
+        final_labels = np.zeros(len(learning_data))
         string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
-        #print(string_nodeIDs, file=sys.stderr)
-        #print(testing_nodeIDs, file=sys.stderr)
-        if self._PD and self._ENOUGH_SEEDS:
-            for i in range(len(testing_nodeIDs)):
-                temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
-                weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances[j, :, :]) for j in range(K)])
-                label = np.argmax(weighted_pdfs)
-                final_labels[i] = int(label)
-        else:
+        for i in range(len(testing_nodeIDs)):
+            if testing_nodeIDs[i] in self._nodeIDs:
+                temp = np.where(self._nodeIDs == str(testing_nodeIDs[i]))[0][0]
+                likelihoods = np.array([MVN.pdf(self._embedding[temp,:],
+                                                self._means[j],
+                                                self._covariances[j, :, :])
+                                        for j in range(K)])
+                posteriors = self._pis * likelihoods
+                label = np.argmax(posteriors)
+                final_labels[i] = self._unique_labels[int(label)]
+            else:
+                final_labels[i] = self._unique_labels[np.argmax(self._pis)]
 
-            for i in range(len(testing_nodeIDs)):
-                temp = np.where(string_nodeIDs == str(testing_nodeIDs[i]))[0][0]
-                try:
-                    weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
-                except:
-                    self._covariances += self._covariances + np.ones(self._covariances.shape)*0.00001
-                    weighted_pdfs = np.array([self._pis[j]*MVN.pdf(self._embedding[temp,:], self._means[j], self._covariances) for j in range(K)])
-                label = np.argmax(weighted_pdfs)
-                final_labels[i] = int(label)
+        learning_data[LABEL] = final_labels
+        outputs = container.DataFrame(learning_data[['d3mIndex',LABEL]])
+        outputs[['d3mIndex', LABEL]] = outputs[['d3mIndex', LABEL]].astype(int)
 
-        if self._problem == "VN":
-            testing['classLabel'] = final_labels
-            outputs = container.DataFrame(testing[['d3mIndex','classLabel']])
-            outputs[['d3mIndex', 'classLabel']] = outputs[['d3mIndex', 'classLabel']].astype(int)
-        else:
-            testing['community'] = final_labels
-            outputs = container.DataFrame(testing[['d3mIndex', 'community']])
-            outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
+        # print("gclass produce ended", file=sys.stderr)
 
         return base.CallResult(outputs)
 
-    def fit(self, *, timeout: float = None, iterations: int = None) -> base.CallResult[None]:
+    def fit(self, *,
+            timeout: float = None,
+            iterations: int = None) -> base.CallResult[None]:
         if self._fitted:
             return base.CallResult(None)
 
+        # print("gclass fit started", file=sys.stderr)
+
+        # unpack training inputs
         self._embedding = self._training_inputs[1][0]
+        self._nodeIDs = np.array(self._training_inputs[2][0])
+        learning_data = self._training_inputs[0]
+        headers = learning_data.columns
 
-        self._nodeIDs = np.array(self._training_inputs[2])
+        # take seeds and their labels from the learning data
+        for col in headers:
+            if "node" in col:
+                self._seeds = np.array(list(learning_data[col]))
+            if "Label" in col or "label" in col or "class" in col:
+                self._labels = np.array(list(learning_data[col]))
 
-        try:
-            self._seeds = self._training_inputs[0]['G1.nodeID']
-        except:
-            self._seeds = self._training_inputs[0]['nodeID'].astype(float).astype(int)
+        # subselect seeds and labels that are in the lcc
+        self._lcc_seeds = []
+        self._lcc_labels = []
+        for seed, label in zip(self._seeds, self._labels):
+            if seed in self._nodeIDs:
+                self._lcc_seeds.append(seed)
+                self._lcc_labels.append(label)
+        self._labels = np.array([i for i in self._labels])
+        self._lcc_labels = np.array([i for i in self._lcc_labels])
 
-        self._seeds = np.array([int(i) for i in self._seeds])
+        # get unique labels
+        self._unique_labels, label_counts = np.unique(self._labels,
+                                                      return_counts = True)
+        self._unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels,
+                                                              return_counts = True)
 
-        try:
-            self._labels = self._training_inputs[0]['classLabel']
-            self._problem = 'VN'
+        debugging = False
+        if debugging:
+            print("shape of the embedding: {}".format(self._embedding.shape),
+                  file=sys.stderr)
+            print("length of the seeds: {}".format(len(self._seeds)),
+                  file=sys.stderr)
+            print("length of the labels: {}".format(len(self._labels)),
+                  file=sys.stderr)
+            print("unique labels: {}".format(self._unique_labels),
+                  file=sys.stderr)
+            print("label counts: {}".format(label_counts),
+                  file=sys.stderr)
+            print("lenth of the lcc_seeds: {}".format(len(self._lcc_seeds)),
+                  file=sys.stderr)
+            print("lenth of the lcc_labels: {}".format(len(self._lcc_labels)),
+                  file=sys.stderr)
+            print("unique lcc labels: {}".format(self._unique_lcc_labels),
+                  file=sys.stderr)
+            print("lcc label counts: {}".format(lcc_label_counts),
+                  file=sys.stderr)
+            print("label types: {}".format(type(self._labels[0])),
+                  file=sys.stderr)
 
-        except:
-            self._labels = self._training_inputs[0]['community']
-            self._problem = 'CD'
-
-        self._labels = np.array([int(i) for i in self._labels])
-
-        unique_labels, label_counts = np.unique(self._labels, return_counts = True)
-        K = len(unique_labels)
+        if np.all(self._unique_labels != self._unique_lcc_labels):
+            raise exceptions.NotSupportedError(
+                'nodes from some classes are not present in the lcc; ' + 
+                'the problem is ill-defined')
 
         n, d = self._embedding.shape
+        K = len(self._unique_labels)
 
         if int(K) < d:
             self._embedding = self._embedding[:, :K].copy()
             d = int(K)
 
-        self._ENOUGH_SEEDS = True # For full estimation
-
-        # get unique labels
-        unique_labels, label_counts = np.unique(self._labels, return_counts = True)
+        # heuristically check if we have enough datapoints in all classes
+        # if we do - perform qda. else - lda.
+        self._ENOUGH_SEEDS = True
         for i in range(K):
             if label_counts[i] < d*(d + 1)/2:
                 self._ENOUGH_SEEDS = False
                 break
+        self._ENOUGH_SEEDS = False
 
+        # prior probabilities estimation (note that they are global, not lcc)
         self._pis = label_counts/len(self._seeds)
+        
+        debugging = False
+        if debugging:
+            print("prior probabilities: {}".format(self._pis),
+                  file=sys.stderr)
+            print("sum of prior probabilities: {}".format(np.sum(self._pis)),
+                  file=sys.stderr)
 
-
-        # reindex labels if necessary
-        for i in range(len(self._labels)): # reset labels to [0,.., K-1]
-            itemindex = np.where(unique_labels==self._labels[i])[0][0]
-            self._labels[i] = int(itemindex)
-
-
-        # gather the means
-        x_sums = np.zeros(shape = (K, d))
-
+        # estimate means and covariances
         estimated_means = np.zeros((K, d))
-        for i in range(K):
-            temp_seeds = self._seeds[np.where(self._labels == i)[0]]
-            estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
-        #for i in range(len(self._seeds)):
-        #    nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
-        #    temp_feature_vector = self._embedding[nodeID, :]
-        #    temp_label = self._labels[i]
-        #    x_sums[temp_label, :] += temp_feature_vector
-
-        #estimated_means = [x_sums[i,:]/label_counts[i] for i in range(K)]
-
-        mean_centered_sums = np.zeros(shape = (K, d, d))
-
-        covs = np.zeros(shape = (K, d, d))
-        for i in range(K):
-            feature_vectors = self._embedding[self._seeds[self._labels == i], :]
-            covs[i] = np.cov(feature_vectors, rowvar = False)
-
-        if self._ENOUGH_SEEDS:
-            estimated_cov = covs
-        else:
-            estimated_cov = np.zeros(shape = (d,d))
-            for i in range(K):
-                estimated_cov += covs[i]*(label_counts[i] - 1)
-            estimated_cov = estimated_cov / (n - K)
-
+        estimated_covs = np.zeros((K, d, d))
+        for i, lab in enumerate(self._unique_lcc_labels):
+            temp_seeds = np.where(self._lcc_labels == lab)[0]
+            feature_vectors = self._embedding[temp_seeds]
+            estimated_means[i] = np.mean(feature_vectors, axis=0)
+            estimated_covs[i] = np.cov(feature_vectors, rowvar = False)
+        self._means = container.ndarray(estimated_means)
+        # use 'pooled covariance' if we are using lda
+        if not self._ENOUGH_SEEDS:
+            pooled_cov = np.sum(
+                estimated_covs * (label_counts - 1).reshape(-1, 1, 1),
+                axis=0) / (n - K)
+            estimated_covs = np.repeat(pooled_cov.reshape(1, d, d), K, axis=0)
+        self._covariances = container.ndarray(estimated_covs)
         self._PD = True
 
-        self._means = container.ndarray(estimated_means)
-        self._covariances = container.ndarray(estimated_cov)
-
         self._fitted = True
+
+        # print("gclass fit ended", file=sys.stderr)
 
         return base.CallResult(None)
 

@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 
 # lse.py
-# Copyright (c) 2017. All rights reserved.
+# Copyright (c) 2020. All rights reserved.
 
 from typing import Sequence, TypeVar, Union, Dict
 import os
+import sys
 import numpy as np
 import networkx
 
-from scipy.stats import rankdata
 from scipy.stats import norm
+from scipy.stats import rankdata
 from sklearn.decomposition import TruncatedSVD
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-from d3m import container
-from d3m import utils
+from d3m import utils, container
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
@@ -30,17 +30,23 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    max_dimension = hyperparams.Hyperparameter[int](default=2, semantic_types=[
-        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ])
+    max_dimension = hyperparams.Hyperparameter[int](
+        default=2,
+        semantic_types=[
+            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+        ])
 
-    which_elbow = hyperparams.Hyperparameter[int](default=1, semantic_types=[
-        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ])
+    which_elbow = hyperparams.Hyperparameter[int](
+        default=1,
+        semantic_types=[
+            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+        ])
 
-    use_attributes = hyperparams.Hyperparameter[bool](default = False, semantic_types = [
-        'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ])
+    use_attributes = hyperparams.Hyperparameter[bool](
+        default = False,
+        semantic_types = [
+            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+        ])
 
 class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     """
@@ -106,14 +112,25 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         'primitive_family': "DATA_TRANSFORMATION"
     })
 
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
-        super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0,
+                 docker_containers: Dict[str, base.DockerContainer] = None) -> None:
+        super().__init__(hyperparams=hyperparams,
+                         random_seed=random_seed,
+                         docker_containers=docker_containers)
 
-    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        np.random.seed(1234)
+    def produce(self, *, inputs: Inputs,
+                timeout: float = None,
+                iterations: int = None) -> CallResult[Outputs]:
+        # print('lse produce started', file=sys.stderr)
+        np.random.seed(self.random_seed)
 
-        G = inputs[0].copy()
+        # unpacks necessary input arguments
+        learning_data, graphs_all, nodeIDs_all = inputs
 
+        # lse only works for one graph (but we can change that)
+        G = graphs_all[0].copy()
+
+        # applies pass to ranks - rescales edge weights based on their relative ranks
         g = graspyPTR(G)
 
         n = g.shape[0]
@@ -163,6 +180,8 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         lse_object = graspyLSE(n_components = max_dimension, n_elbows=n_elbows)
         X_hat = lse_object.fit_transform(g)
 
-        inputs[0] = container.ndarray(X_hat)
+        inputs[1][0] = container.ndarray(X_hat)
+
+        # print("lse produce ended (omni not used)", file=sys.stderr)
 
         return base.CallResult(inputs)
