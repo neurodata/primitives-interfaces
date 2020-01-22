@@ -39,13 +39,13 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             'id': 'cb192a83-63e2-4075-bab9-e6ba1a8365b6',
             'version': '0.1.0',
             'name': "Extract a list of Graphs from a Dataset",
-            'python_path': 'd3m.primitives.data_transformation.load_graphs.JHU',
+            'python_path': 'd3m.primitives.data_transformation.dataset_to_graph_list.JHU',
             'keywords': ['graph'],
             'source': {
                 'name': "JHU",
                 'uris': [
                     # Unstructured URIs. Link to file and link to repo in this case.
-                    'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/load_graphs/load_graphs.py',
+                    'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/dataset_to_graph_list/dataset_to_graph_list.py',
                     'https://github.com/neurodata/primitives-interfaces.git',
                 ],
                 'contact': 'mailto:hhelm2@jhu.edu'
@@ -80,6 +80,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
+        # print("graph reader produce started", file=sys.stderr) # TODO
         data_resources_keys = list(inputs.keys())
 
         # obtain the path to dataset
@@ -108,24 +109,50 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
         # load the graphs and convert to a networkx object
         graphs = []
+        nodeIDs = []
         for i in dataResources:
             if i['resType'] == "table":
                 df = inputs['learningData']
             elif i['resType'] == 'graph':
-                graphs.append(nx.read_gml(location_base_uri + "/" + i['resPath']))
+                graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
+                graphs.append(graph_temp)
                 if TASK in ["communityDetection", "vertexClassification"]:
-                    nodeIDs = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
+                    nodeIDs_temp = list(nx.get_node_attributes(graphs[0], 'nodeID').values())
+                    nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
+                    nodeIDs_temp = container.ndarray(nodeIDs_temp)
+                    nodeIDs.append(nodeIDs_temp)
             elif i['resType'] == "edgeList":
                 temp_graph = self._read_edgelist(
                     location_base_uri + "/" + i['resPath'],
                     i["columns"], )
                 graphs.append(temp_graph)
                 if TASK in ["communityDetection", "vertexClassification"]:
-                    nodeIDs = list(temp_graph.nodes)
-        # todo: read data=True stuff
-        id_to_idx = {nodeIDs[i]: i for i in range(len(nodeIDs))}
-        #print(id_to_idx, file=sys.stderr)
-        # nodeIDs = container.ndarray(np.array([int(i) for i in nodeIDs]))
+                    nodeIDs_temp = list(temp_graph.nodes)
+                    nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
+                    nodeIDs_temp = container.ndarray(nodeIDs_temp)
+                    nodeIDs.append(nodeIDs_temp)
+
+        # TODO many debugging print statements.
+        debugging = False
+        if debugging:
+            # DATAFRAME STUFF
+            # print("label counts:", file=sys.stderr)
+            # for i in range(9):
+            #     print("label: {}, count: {}".format(
+            #         i, np.sum(df['label'] == str(i))), file=sys.stderr)
+            # GRAPH STUFF
+            print("length of the first graph: {}".format(len(list(graphs[0].nodes()))),
+                file=sys.stderr)
+            print("first 20 nodes of the first graph", file=sys.stderr)
+            print(list(graphs[0].nodes())[:20], file=sys.stderr)
+            # NODE IDS STUFF
+            print("type of a nodeID: {}".format(type(nodeIDs[0][0])), file=sys.stderr)
+            print("length of the nodeIds: {}".format(len(nodeIDs[0])), file=sys.stderr)
+            print("first 20 nodesIDs", file=sys.stderr)
+            print(nodeIDs[0][:20], file=sys.stderr)
+            # TASK STUFF
+            print("task: {}". format(TASK), file=sys.stderr)
+        # print("graph reader produce ended", file=sys.stderr)
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
@@ -134,11 +161,15 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         # assumed that any edgelist passed has a source in the first col
         # and a reciever in the second col.
         # TODO make this function handle time series (Ground Truth)
-        #G = nx.read_edgelist(path, columns[1]['colName'], columns[2]['colName'])
-        edgeList=pd.read_csv(path)
-        G = nx.convert_matrix.from_pandas_edgelist(edgeList, columns[1]['colName'], columns[2]['colName'])
-
-        #print(G.nodes(data=True), file=sys.stderr)
+        # specify columns of edges
+        from_column = columns[1]['colName']
+        to_column = columns[2]['colName']
+        # specify types
+        dtypes_dict = {from_column: str, to_column: str}
+        edgeList=pd.read_csv(path, dtype=dtypes_dict)
+        G = nx.convert_matrix.from_pandas_edgelist(edgeList,
+                                                   from_column,
+                                                   to_column)
         return G
 
 
