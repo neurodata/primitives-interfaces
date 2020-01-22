@@ -131,10 +131,12 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         np.random.seed(self.random_seed)
 
         # unpacks necessary input arguments
-        learning_data, graphs_all, nodeIDs_all = inputs
+        # note that other inputs are just passed through ! 
+        learning_data = inputs[0]
+        graphs_all = inputs[1]
 
         # ase only works for one graph (but we can change that)
-        G = graphs_all[0].copy()
+        G = inputs[1][0].copy()
 
         # catches link-prediction problem type
         # if it is not such - applies pass to ranks, which is a method to
