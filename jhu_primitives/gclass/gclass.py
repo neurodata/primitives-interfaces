@@ -284,14 +284,13 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         # HAYDENS VERSION #
         # gather the means
         estimated_means = np.zeros((K, d))
-        for i, lab in enumerate(self._unique_lcc_labels):
-            temp_seeds = np.where(self._lcc_labels == lab)[0]
+        for i in range(K):
+            temp_seeds = self._seeds[np.where(self._labels == i)[0]].astype(int)
             estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
 
         covs = np.zeros(shape = (K, d, d))
-        for i, lab in enumerate(self._unique_lcc_labels):
-            temp_seeds = np.where(self._lcc_labels == lab)[0]
-            feature_vectors = self._embedding[temp_seeds, :]
+        for i in range(K):
+            feature_vectors = self._embedding[self._seeds[self._labels == i].astype(int), :]
             covs[i] = np.cov(feature_vectors, rowvar = False)
 
         if self._ENOUGH_SEEDS:
