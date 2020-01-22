@@ -262,6 +262,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             print("sum of prior probabilities: {}".format(np.sum(self._pis)),
                   file=sys.stderr)
 
+        # MY VERSION #
         # estimate means and covariances
         estimated_means = np.zeros((K, d))
         estimated_covs = np.zeros((K, d, d))
@@ -279,6 +280,43 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             estimated_covs = np.repeat(pooled_cov.reshape(1, d, d), K, axis=0)
         self._covariances = container.ndarray(estimated_covs)
         self._PD = True
+
+        # HAYDENS VERSION #
+        # gather the means
+        x_sums = np.zeros(shape = (K, d))
+
+        estimated_means = np.zeros((K, d))
+        for i in range(K):
+            temp_seeds = self._seeds[np.where(self._labels == i)[0]]
+            estimated_means[i] = np.mean(self._embedding[temp_seeds], axis=0)
+        #for i in range(len(self._seeds)):
+        #    nodeID = np.where(self._nodeIDs == self._seeds[i])[0][0]
+        #    temp_feature_vector = self._embedding[nodeID, :]
+        #    temp_label = self._labels[i]
+        #    x_sums[temp_label, :] += temp_feature_vector
+
+        #estimated_means = [x_sums[i,:]/label_counts[i] for i in range(K)]
+
+        mean_centered_sums = np.zeros(shape = (K, d, d))
+
+        covs = np.zeros(shape = (K, d, d))
+        for i in range(K):
+            feature_vectors = self._embedding[self._seeds[self._labels == i], :]
+            covs[i] = np.cov(feature_vectors, rowvar = False)
+
+        if self._ENOUGH_SEEDS:
+            estimated_cov = covs
+        else:
+            estimated_cov = np.zeros(shape = (d,d))
+            for i in range(K):
+                estimated_cov += covs[i]*(label_counts[i] - 1)
+            estimated_cov = estimated_cov / (n - K)
+
+        self._PD = True
+
+        self._means = container.ndarray(estimated_means)
+        self._covariances = container.ndarray(estimated_cov)
+
 
         print("estimated means: {}".format(self._means), file=sys.stderr)
         print("estimated covariances: {}".format(self._covariances), file=sys.stderr)
