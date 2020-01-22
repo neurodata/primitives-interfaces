@@ -280,6 +280,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._covariances = container.ndarray(estimated_covs)
         self._PD = True
 
+        print("estimated means: {}".format(self._means), file=sys.stderr)
+        print("estimated covariances: {}".format(self._covariances), file=sys.stderr)
+
         self._fitted = True
 
         print("gclass fit ended", file=sys.stderr)
