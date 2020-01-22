@@ -146,16 +146,8 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         except:
             self._csv_TRAIN = inputs['2']
 
-        print(len(list(self._g1.nodes)), file=sys.stderr)
-        print(len(list(self._g2.nodes)), file=sys.stderr)
-        print(len(list(self._csv_TRAIN)), file=sys.stderr)
-
         # Pad graphs if needed. As of 2/4/2019 only "naive" padding implemented.
         self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2)
-
-        print(len(list(self._g1.nodes)), file=sys.stderr)
-        print(len(list(self._g2.nodes)), file=sys.stderr)
-        print(len(list(self._csv_TRAIN)), file=sys.stderr)
 
         # Grab the G1 training nodeIDs and cast to string. The cast to string is important to
         # allow handling of more general nodeID types.
@@ -182,7 +174,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         # Create new columns in the training csv for easy access of node indices.
         self._csv_TRAIN['new_g1_id'] = pd.Series(self._g1_nodeIDs_TRAIN).apply(lambda x: self._g1_idmap[x])
         self._csv_TRAIN['new_g2_id'] = pd.Series(self._g2_nodeIDs_TRAIN).apply(lambda x: self._g2_idmap[x])
-     
+
         # Grab G1, G2 adjacency matrices.
         self._g1_adjmat = nx.adjacency_matrix(self._g1)
         self._g2_adjmat = nx.adjacency_matrix(self._g2)
@@ -213,7 +205,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             num_iters = 20,
             tolerance = 1,
             verbose = False)
-        
+
         # Final P.
         P_out = sparse.csr_matrix((np.ones(self._n_nodes), (np.arange(self._n_nodes), P_out)))
 
