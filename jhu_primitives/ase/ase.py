@@ -183,6 +183,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
                 embedding = X_hat.copy()
 
+                print(M, file=sys.stderr)
                 inputs[1][0] = container.ndarray(embedding)
                 # print("ase produce ended (omni used)", file=sys.stderr)
 
