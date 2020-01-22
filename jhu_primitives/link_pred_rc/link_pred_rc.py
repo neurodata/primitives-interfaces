@@ -89,7 +89,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
             
         np.random.seed(self.random_seed)
         
-        csv = inputs[1]
+        csv = inputs[0]
         
 
         # print(csv, file=sys.stderr)
@@ -155,9 +155,9 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         if self._fitted:
             return base.CallResult(None)
 
-        embeddings = self._training_inputs[0]
-        csv = self._training_inputs[1]
-        n_nodes, n_links = self._training_inputs[2][0], self._training_inputs[2][1]
+        embeddings = self._training_inputs[1][0]
+        csv = self._training_inputs[0]
+        n_nodes, n_links = self._training_inputs[3]
 
         n_info = csv.shape[0]
         ranks = [[[], []] for i in range(n_links + 1)]
