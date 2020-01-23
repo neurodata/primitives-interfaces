@@ -209,7 +209,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         return CallResult(None)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        csv_TEST = inputs['learningData']
+        csv_TEST = inputs['learningData'].copy()
 
         g1_dense = self._g1_adjmat.todense()
         g2_dense = self._g2_adjmat.todense()
