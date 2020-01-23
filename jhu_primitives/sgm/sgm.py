@@ -251,7 +251,6 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             g1_ind = self._g1_idmap[str(csv_TEST['G1.nodeID'].iloc[i])]
             g2_ind = self._g2_idmap[str(csv_TEST['G2.nodeID'].iloc[i])]
             matches[i] = int(permutation_matrix[int(g1_ind), int(g2_ind)] > threshold)
-        print(matches, file=sys.stderr)
         csv_TEST['match'] = matches
 
         predictions = {"d3mIndex": csv_TEST['d3mIndex'], "match": csv_TEST['match']}
