@@ -169,11 +169,11 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             self._g2_nodeIDs = np.array(self._g2_nodeIDs).astype(str)
         else:
             # Do the same for all of G1.
-            self._g1_nodeIDs = list(self_g1.nodes)
+            self._g1_nodeIDs = list(self._g1.nodes)
             self._g1_nodeIDs = np.array(self._g1_nodeIDs).astype(str)
 
             # Do the same for all of G2.
-            self._g2_nodeIDs = list(self_g2.nodes)
+            self._g2_nodeIDs = list(self._g2.nodes)
             self._g2_nodeIDs = np.array(self._g2_nodeIDs).astype(str)
             
 
