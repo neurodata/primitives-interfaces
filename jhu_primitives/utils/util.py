@@ -14,28 +14,28 @@ import re
 
 PROBLEM_TYPES = [
     "graphMatching",
-    # "vertexClassification",
-    # "communityDetection",
-    # "linkPrediction",
+    "vertexClassification",
+    "communityDetection",
+    "linkPrediction",
     ]
 
 DATASETS = {
             "graphMatching": [
                 "datasets-private/seed_datasets_current/49_facebook_MIN_METADATA",
                 ],
-            # "vertexClassification": [
-            #     "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
-            #     "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
-            #     "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
-            #     "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
-            #     ],
-            # "communityDetection": [
-            #     "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
-            #     ],
-            # "linkPrediction": [
-            #     "datasets/seed_datasets_current/59_umls_MIN_METADATA",
-            #     "datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
-            #     ]
+            "vertexClassification": [
+                "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
+                ],
+            "communityDetection": [
+                "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
+                ],
+            "linkPrediction": [
+                "datasets/seed_datasets_current/59_umls_MIN_METADATA",
+                "datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
+                ]
             }
 
 PIPELINES = {
@@ -43,23 +43,23 @@ PIPELINES = {
                 "sgm_pipeline",
             #     "sgm_pipeline_10"
                 ],
-            # "vertexClassification": [
-            #     "gclass_ase_pipeline",
-            #     "gclass_lse_pipeline",
+            "vertexClassification": [
+                "gclass_ase_pipeline",
+                "gclass_lse_pipeline",
             #     "gclass_oosase_pipeline",
             #     "gclass_ooslse_pipeline",
             #     "sgc_pipeline"
-            #     ],
-            # "communityDetection": [
-            #     "gmm_ase_pipeline",
-            #     "gmm_lse_pipeline",
+                ],
+            "communityDetection": [
+                "gmm_ase_pipeline",
+                "gmm_lse_pipeline",
             #     "gmm_oosase_pipeline",
             #     "gmm_ooslse_pipeline"
             #     "sgc_pipeline"
-            #     ],
-            # "linkPrediction": [
-            #     "link_pred_pipeline",
-            #     ],
+                ],
+            "linkPrediction": [
+                "link_pred_pipeline",
+                ],
              }
 
 def convert(name):
@@ -211,8 +211,8 @@ def write_pipeline_run(dataset, path):
     run_path = '/'.join(path.split('/')[:-2]) + "/pipeline_runs/"
     run_path += path.split('/')[-1] + "-" + dataset.split('/')[-1] + "_pipeline_run.yml"
     cmd += " -O " + run_path
-    os.system(cmd)
     print(cmd, file=sys.stderr)
+    os.system(cmd)
     os.system("gzip " + run_path)
 
 def pipeline_run_all(paths_to_pipelines):
