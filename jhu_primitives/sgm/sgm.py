@@ -149,27 +149,15 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         # Pad graphs if needed. As of 2/4/2019 only "naive" padding implemented.
         self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2)
 
-        # Grab the G1 training nodeIDs and cast to string. The cast to string is important to
-        # allow handling of more general nodeID types.
-        self._g1_nodeIDs_TRAIN = self._csv_TRAIN['G1.nodeID'].values
-        self._g1_nodeIDs_TRAIN = self._g1_nodeIDs_TRAIN.astype(str)
+        # Grab the G1 training nodeIDs and cast to string.
+        # The cast to string is important to allow handling of more general nodeID types.
+        self._g1_nodeIDs_TRAIN = self._csv_TRAIN['G1.nodeID'].values.astype(str)
 
         # Do the same for the seeds for G2.
-        self._g2_nodeIDs_TRAIN = self._csv_TRAIN['G2.nodeID'].values
-        self._g2_nodeIDs_TRAIN = self._g2_nodeIDs_TRAIN.astype(str)
+        self._g2_nodeIDs_TRAIN = self._csv_TRAIN['G2.nodeID'].values.astype(str)
 
-        # we no longer have labels
-        # # Do the same for all of G1.
-        # self._g1_nodeIDs = list(nx.get_node_attributes(self._g1, 'label').values())
-        # self._g1_nodeIDs = np.array(self._g1_nodeIDs).astype(str)
-
-        # # Do the same for all of G2.
-        # self._g2_nodeIDs = list(nx.get_node_attributes(self._g2, 'label').values())
-        # self._g2_nodeIDs = np.array(self._g2_nodeIDs).astype(str)
-
-        # Do the same for all of G1.
+        # extract nodeInodeIds of the whole graph
         self._g1_nodeIDs = np.array(list(self._g1.nodes)).astype(str)
-        # Do the same for all of G2.
         self._g2_nodeIDs = np.array(list(self._g2.nodes)).astype(str)
             
         # Create mapping from nodeID to the node's index in its respective graph.
