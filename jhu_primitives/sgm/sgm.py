@@ -149,14 +149,13 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         # Pad graphs if needed. As of 2/4/2019 only "naive" padding implemented.
         self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2)
 
-        # Grab the G1 training nodeIDs and cast to string.
         # The cast to string is important to allow handling of more general nodeID types.
-        self._g1_nodeIDs_TRAIN = self._csv_TRAIN['G1.nodeID'].values.astype(str)
 
-        # Do the same for the seeds for G2.
+        # grab training node IDs
+        self._g1_nodeIDs_TRAIN = self._csv_TRAIN['G1.nodeID'].values.astype(str)
         self._g2_nodeIDs_TRAIN = self._csv_TRAIN['G2.nodeID'].values.astype(str)
 
-        # extract nodeInodeIds of the whole graph
+        # extract nodeIds of the whole graph
         self._g1_nodeIDs = np.array(list(self._g1.nodes)).astype(str)
         self._g2_nodeIDs = np.array(list(self._g2.nodes)).astype(str)
             
