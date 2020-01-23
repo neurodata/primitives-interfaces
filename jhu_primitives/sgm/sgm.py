@@ -159,34 +159,23 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         self._g2_nodeIDs_TRAIN = self._g2_nodeIDs_TRAIN.astype(str)
 
         # we no longer have labels
-        if False:
-            # Do the same for all of G1.
-            self._g1_nodeIDs = list(nx.get_node_attributes(self._g1, 'label').values())
-            self._g1_nodeIDs = np.array(self._g1_nodeIDs).astype(str)
+        # # Do the same for all of G1.
+        # self._g1_nodeIDs = list(nx.get_node_attributes(self._g1, 'label').values())
+        # self._g1_nodeIDs = np.array(self._g1_nodeIDs).astype(str)
 
-            # Do the same for all of G2.
-            self._g2_nodeIDs = list(nx.get_node_attributes(self._g2, 'label').values())
-            self._g2_nodeIDs = np.array(self._g2_nodeIDs).astype(str)
-        else:
-            # Do the same for all of G1.
-            self._g1_nodeIDs = list(self._g1.nodes)
-            self._g1_nodeIDs = np.array(self._g1_nodeIDs).astype(str)
+        # # Do the same for all of G2.
+        # self._g2_nodeIDs = list(nx.get_node_attributes(self._g2, 'label').values())
+        # self._g2_nodeIDs = np.array(self._g2_nodeIDs).astype(str)
 
-            # Do the same for all of G2.
-            self._g2_nodeIDs = list(self._g2.nodes)
-            self._g2_nodeIDs = np.array(self._g2_nodeIDs).astype(str)
+        # Do the same for all of G1.
+        self._g1_nodeIDs = np.array(list(self._g1.nodes)).astype(str)
+        # Do the same for all of G2.
+        self._g2_nodeIDs = np.array(list(self._g2.nodes)).astype(str)
             
-
         # Create mapping from nodeID to the node's index in its respective graph.
         # i.e. self._g1_idmap[nodeID_1] = node_1
         self._g1_idmap = dict(zip(self._g1_nodeIDs, range(self._n_nodes)))
         self._g2_idmap = dict(zip(self._g2_nodeIDs, range(self._n_nodes)))
-
-        print(self._n_nodes, file=sys.stderr)
-        print(self._g1_nodeIDs, file=sys.stderr)
-        print(self._g1_idmap, file=sys.stderr)
-        print(self._g2_nodeIDs, file=sys.stderr)
-        print(self._g2_idmap, file=sys.stderr)
 
         # Create new columns in the training csv for easy access of node indices.
         self._csv_TRAIN['new_g1_id'] = pd.Series(self._g1_nodeIDs_TRAIN).apply(lambda x: self._g1_idmap[x])
