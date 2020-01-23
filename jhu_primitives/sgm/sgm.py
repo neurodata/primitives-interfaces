@@ -149,13 +149,15 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         # Pad graphs if needed. As of 2/4/2019 only "naive" padding implemented.
         self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2)
 
-        # The cast to string is important to allow handling of more general nodeID types.
+        # it is possible that the following code can be majorly simplified
 
-        # grab training node IDs
+        # grab training nodeIDs
+        # all nodeIDs are treated as strings (most general type)
         self._g1_nodeIDs_TRAIN = self._csv_TRAIN['G1.nodeID'].values.astype(str)
         self._g2_nodeIDs_TRAIN = self._csv_TRAIN['G2.nodeID'].values.astype(str)
 
-        # extract nodeIds of the whole graph
+        # extract nodeIDs of the whole graph
+        # all nodeIDs are treated as strings (most general type)
         self._g1_nodeIDs = np.array(list(self._g1.nodes)).astype(str)
         self._g2_nodeIDs = np.array(list(self._g2.nodes)).astype(str)
             
@@ -236,9 +238,9 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
             g1_ind = self._g1_idmap[str(csv_TEST['G1.nodeID'].iloc[i])]
             g2_ind = self._g2_idmap[str(csv_TEST['G2.nodeID'].iloc[i])]
             if permutation_matrix[int(g1_ind), int(g2_ind)] > threshold: #this is the thing we need
-                csv_TEST['match'][i] = 1
+                csv_TEST['match', i] = 1
             else:
-                csv_TEST['match'][i] = 0
+                csv_TEST['match', i] = 0
 
         predictions = {"d3mIndex": csv_TEST['d3mIndex'], "match": csv_TEST['match']}
         return base.CallResult(container.DataFrame(predictions), has_finished = True, iterations_done = 1)
