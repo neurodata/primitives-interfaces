@@ -246,7 +246,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         print(predictions, file=sys.stderr)
             
         print("antons predictions", file=sys.stderr)
-        matches = np.zeros(n_test)
+        matches = np.zeros(n_test, dtype=int)
         for i in range(n_test):
             g1_ind = self._g1_idmap[str(csv_TEST['G1.nodeID'].iloc[i])]
             g2_ind = self._g2_idmap[str(csv_TEST['G2.nodeID'].iloc[i])]
