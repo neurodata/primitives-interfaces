@@ -245,7 +245,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         # predictions = {"d3mIndex": csv_TEST['d3mIndex'], "match": csv_TEST['match']}
         # print(predictions, file=sys.stderr)
             
-        print("antons predictions", file=sys.stderr)
+        # print("antons predictions", file=sys.stderr)
         matches = np.zeros(n_test, dtype=int)
         for i in range(n_test):
             g1_ind = self._g1_idmap[str(csv_TEST['G1.nodeID'].iloc[i])]
@@ -254,5 +254,5 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         csv_TEST['match'] = matches
 
         predictions = {"d3mIndex": csv_TEST['d3mIndex'], "match": csv_TEST['match']}
-        print(predictions, file=sys.stderr)
+        # print(predictions, file=sys.stderr)
         return base.CallResult(container.DataFrame(predictions), has_finished = True, iterations_done = 1)
