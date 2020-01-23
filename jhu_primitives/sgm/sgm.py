@@ -171,7 +171,12 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         self._g1_idmap = dict(zip(self._g1_nodeIDs, range(self._n_nodes)))
         self._g2_idmap = dict(zip(self._g2_nodeIDs, range(self._n_nodes)))
 
-        print(self._g1_idmap.keys(), file=sys.stderr)
+        print(self._n_nodes, file=sys.stderr)
+        print(self._g1_nodeIDs, file=sys.stderr)
+        print(self._g1_idmap, file=sys.stderr)
+        print(self._g2_nodeIDs, file=sys.stderr)
+        print(self._g2_idmap, file=sys.stderr)
+
         # Create new columns in the training csv for easy access of node indices.
         self._csv_TRAIN['new_g1_id'] = pd.Series(self._g1_nodeIDs_TRAIN).apply(lambda x: self._g1_idmap[x])
         self._csv_TRAIN['new_g2_id'] = pd.Series(self._g2_nodeIDs_TRAIN).apply(lambda x: self._g2_idmap[x])
