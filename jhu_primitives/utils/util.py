@@ -211,7 +211,7 @@ def write_pipeline_run(dataset, path):
     run_path = '/'.join(path.split('/')[:-2]) + "/pipeline_runs/"
     run_path += path.split('/')[-1] + "-" + dataset.split('/')[-1] + "_pipeline_run.yml"
     cmd += " -O " + run_path
-    print(cmd, file=sys.stderr)
+    # print(cmd, file=sys.stderr)
     os.system(cmd)
     os.system("gzip " + run_path)
 
@@ -224,7 +224,7 @@ def pipeline_run_all(paths_to_pipelines):
                 os.remove(run_path + file)
     for problem_type in PROBLEM_TYPES:
         paths_to_pipelines_problem_type = paths_to_pipelines[problem_type]
-        print(paths_to_pipelines_problem_type, file=sys.stderr)
+        # print(paths_to_pipelines_problem_type, file=sys.stderr)
         datasets = DATASETS[problem_type]
         for dataset in datasets:
             for path in paths_to_pipelines_problem_type:
@@ -238,7 +238,7 @@ def pipeline_run_all(paths_to_pipelines):
                 cmd += " -t " + dataset_path + "TEST/dataset_TEST/datasetDoc.json"
                 cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
                 cmd += " -O " + problem_path + "_pipeline_run.yml" # pipeline_runs/id.yml
-                print(cmd, file=sys.stderr)
+                # print(cmd, file=sys.stderr)
                 os.system(cmd)
 
 
