@@ -234,16 +234,16 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         #threshold = self.hyperparams['threshold']
         threshold = 0
 
-        print("haydens predictions", file=sys.stderr)
-        for i in range(n_test):
-            g1_ind = self._g1_idmap[str(csv_TEST['G1.nodeID'].iloc[i])]
-            g2_ind = self._g2_idmap[str(csv_TEST['G2.nodeID'].iloc[i])]
-            if permutation_matrix[int(g1_ind), int(g2_ind)] > threshold: #this is the thing we need
-                csv_TEST['match'][i] = 1
-            else:
-                csv_TEST['match'][i] = 0
-        predictions = {"d3mIndex": csv_TEST['d3mIndex'], "match": csv_TEST['match']}
-        print(predictions, file=sys.stderr)
+        # print("haydens predictions", file=sys.stderr)
+        # for i in range(n_test):
+        #     g1_ind = self._g1_idmap[str(csv_TEST['G1.nodeID'].iloc[i])]
+        #     g2_ind = self._g2_idmap[str(csv_TEST['G2.nodeID'].iloc[i])]
+        #     if permutation_matrix[int(g1_ind), int(g2_ind)] > threshold: #this is the thing we need
+        #         csv_TEST['match'][i] = 1
+        #     else:
+        #         csv_TEST['match'][i] = 0
+        # predictions = {"d3mIndex": csv_TEST['d3mIndex'], "match": csv_TEST['match']}
+        # print(predictions, file=sys.stderr)
             
         print("antons predictions", file=sys.stderr)
         matches = np.zeros(n_test, dtype=int)
