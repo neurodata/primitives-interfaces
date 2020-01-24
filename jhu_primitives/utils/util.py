@@ -21,7 +21,7 @@ PROBLEM_TYPES = [
 
 DATASETS = {
             "graphMatching": [
-                "datasets-private/seed_datasets_current/49_facebook_MIN_METADATA",
+                "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
                 ],
             "vertexClassification": [
                 "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
