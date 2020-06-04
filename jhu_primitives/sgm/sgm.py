@@ -25,7 +25,12 @@ Inputs = container.Dataset
 Outputs = container.DataFrame
 
 class Params(params.Params):
-    None
+    csv_train: container.DataFrame
+    g1_idmap: dict
+    g2_idmap: dict
+    g1_adjmat: sparse.csr.csr_matrix
+    g2_adjmat: sparse.csr.csr_matrix
+    P: sparse.csr.csr_matrix
 
 class Hyperparams(hyperparams.Hyperparams):
     None
@@ -100,11 +105,8 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
 
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, docker_containers: Dict[str, base.DockerContainer] = None) -> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
-        self._g1 = None
-        self._g2 = None
-        self._csv = None
-        self._g1_nodeIDs = None
-        self._g2_nodeIDs = None
+        self._fitted: bool = False
+        self._csv_train = None
         self._g1_idmap = None
         self._g2_idmap = None
         self._g1_adjmat = None
@@ -121,11 +123,27 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         assert G1.order() == G2.order()
         return G1, G2, n_nodes
 
-    def get_params(self) -> None:
-        return Params
+    def get_params(self) -> Params:
+        if not self._fitted:
+            raise ValueError("Fit not performed.")
+
+        return Params(
+            csv_train = self._csv_train,
+            g1_idmap = self._g1_idmap,
+            g2_idmap = self._g2_idmap,
+            g1_adjmat = self._g1_adjmat,
+            g2_adjmat = self._g2_adjmat,
+            P = self._P,
+        )
 
     def set_params(self, *, params: Params) -> None:
-        pass
+        self._fitted = True
+        self._csv_train = params['csv_train']
+        self._g1_idmap = params['g1_idmap']
+        self._g2_idmap = params['g2_idmap']
+        self._g1_adjmat = params['g1_adjmat']
+        self._g2_adjmat = params['g2_adjmat']
+        self._P = params['P']
 
     def set_training_data(self, *, inputs: Inputs) -> None:
         # Grab both graphs. Cast as a Graph object in case inputs are Multigraphs.
@@ -137,54 +155,55 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         path_to_graph0 = location_uri[:-15] + "graphs/" + graph_dataframe0.at[0,'filename'] 
         path_to_graph1 = location_uri[:-15] + "graphs/" + graph_dataframe1.at[0,'filename'] 
 
-        self._g1 = nx.read_gml(path=path_to_graph0[7:]) 
-        self._g2 = nx.read_gml(path=path_to_graph1[7:]) 
+        g1 = nx.read_gml(path=path_to_graph0[7:]) 
+        g2 = nx.read_gml(path=path_to_graph1[7:]) 
         
         # Grab training data csv
         try:
-            self._csv_TRAIN = inputs['learningData']
+            self._csv_train = inputs['learningData']
         except:
-            self._csv_TRAIN = inputs['2']
+            self._csv_train = inputs['2']
 
         # Pad graphs if needed. As of 2/4/2019 only "naive" padding implemented.
-        self._g1, self._g2, self._n_nodes = self._pad_graph(self._g1, self._g2)
+        g1, g2, self._n_nodes = self._pad_graph(g1, g2)
 
         # it is possible that the following code can be majorly simplified
 
         # grab training nodeIDs
         # all nodeIDs are treated as strings (most general type)
-        self._g1_nodeIDs_TRAIN = self._csv_TRAIN['G1.nodeID'].values.astype(str)
-        self._g2_nodeIDs_TRAIN = self._csv_TRAIN['G2.nodeID'].values.astype(str)
+        g1_nodeIDs_TRAIN = self._csv_train['G1.nodeID'].values.astype(str)
+        g2_nodeIDs_TRAIN = self._csv_train['G2.nodeID'].values.astype(str)
 
         # extract nodeIDs of the whole graph
         # all nodeIDs are treated as strings (most general type)
-        self._g1_nodeIDs = np.array(list(self._g1.nodes)).astype(str)
-        self._g2_nodeIDs = np.array(list(self._g2.nodes)).astype(str)
+        g1_nodeIDs = np.array(list(g1.nodes)).astype(str)
+        g2_nodeIDs = np.array(list(g2.nodes)).astype(str)
             
         # Create mapping from nodeID to the node's index in its respective graph.
         # i.e. self._g1_idmap[nodeID_1] = node_1
-        self._g1_idmap = dict(zip(self._g1_nodeIDs, range(self._n_nodes)))
-        self._g2_idmap = dict(zip(self._g2_nodeIDs, range(self._n_nodes)))
+        self._g1_idmap = dict(zip(g1_nodeIDs, range(self._n_nodes)))
+        self._g2_idmap = dict(zip(g2_nodeIDs, range(self._n_nodes)))
 
         # Create new columns in the training csv for easy access of node indices.
-        self._csv_TRAIN['new_g1_id'] = pd.Series(self._g1_nodeIDs_TRAIN).apply(lambda x: self._g1_idmap[x])
-        self._csv_TRAIN['new_g2_id'] = pd.Series(self._g2_nodeIDs_TRAIN).apply(lambda x: self._g2_idmap[x])
+        self._csv_train['new_g1_id'] = pd.Series(g1_nodeIDs_TRAIN).apply(lambda x: self._g1_idmap[x])
+        self._csv_train['new_g2_id'] = pd.Series(g2_nodeIDs_TRAIN).apply(lambda x: self._g2_idmap[x])
 
         # Grab G1, G2 adjacency matrices.
-        self._g1_adjmat = nx.adjacency_matrix(self._g1)
-        self._g2_adjmat = nx.adjacency_matrix(self._g2)
+        g1_adjmat = nx.adjacency_matrix(g1)
+        g2_adjmat = nx.adjacency_matrix(g2)
 
         # Symmetrize the adjacency matrices of G1, G2.
-        self._g1_adjmat = ((self._g1_adjmat + self._g1_adjmat.T) > 0).astype(np.float32)
-        self._g2_adjmat = ((self._g2_adjmat + self._g2_adjmat.T) > 0).astype(np.float32)
+        self._g1_adjmat = ((g1_adjmat + g1_adjmat.T) > 0).astype(np.float32)
+        self._g2_adjmat = ((g2_adjmat + g2_adjmat.T) > 0).astype(np.float32)
+
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
         # reps = self.hyperparams['reps']
         # Grab trianing csv to access seed information.
-        csv_array = np.array(self._csv_TRAIN)
+        csv_array = np.array(self._csv_train)
 
         # Grab row indices of seeds.
-        seed_idx = self._csv_TRAIN['match'] == '1'
+        seed_idx = self._csv_train['match'] == '1'
 
         # Initialize P as an array of ones.
         P = csv_array[:, -2:][seed_idx]
@@ -193,7 +212,9 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
         P = sparse.csr_matrix((np.ones(P.shape[0]), (P[:,0].astype(int), P[:,1].astype(int))), shape=(self._n_nodes, self._n_nodes))
 
         # Initialize an SGM object that will perform the optimization.
-        sgm = JVSparseSGM(A = self._g1_adjmat, B = self._g2_adjmat, P = P)
+        sgm = JVSparseSGM(A = self._g1_adjmat, 
+                          B = self._g2_adjmat,
+                          P = P)
 
         # Frank Wolfe / LAP solver.
         P_out = sgm.run(
@@ -206,6 +227,7 @@ class SeededGraphMatching( UnsupervisedLearnerPrimitiveBase[Inputs, Outputs,Para
 
         # Accessible later.
         self._P = P_out
+        self._fitted = True
         return CallResult(None)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:

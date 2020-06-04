@@ -122,7 +122,7 @@ class LaplacianSpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 timeout: float = None,
                 iterations: int = None) -> CallResult[Outputs]:
         # print('lse produce started', file=sys.stderr)
-        np.random.seed(self.random_seed)
+        # np.random.seed(self.random_seed)
 
         # unpacks necessary input arguments
         # note that inputs 2 and on are passed through untouched ! 

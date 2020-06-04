@@ -128,7 +128,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 timeout: float = None,
                 iterations: int = None) -> CallResult[Outputs]:
         # print('ase produce started', file=sys.stderr)
-        np.random.seed(self.random_seed)
+
+        # ASE never uses random seed, but it produces a waring
+        # np.random.seed(self.random_seed)
 
         # unpacks necessary input arguments
         # note that other inputs are just passed through ! 

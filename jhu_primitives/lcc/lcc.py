@@ -81,7 +81,6 @@ class LargestConnectedComponent(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, docker_containers=docker_containers)
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
-        np.random.seed(self.random_seed)
         # print('lcc produce started', file=sys.stderr)
 
         # unpack the data from the graph to list reader

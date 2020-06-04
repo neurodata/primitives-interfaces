@@ -32,11 +32,14 @@ class Params(params.Params):
     embedding: container.ndarray
     seeds: container.ndarray
     labels: container.ndarray
+    lcc_labels: container.ndarray
+    unique_labels: container.ndarray
+    unique_lcc_labels: container.ndarray
     ENOUGH_SEEDS: bool
     PD: bool
-    pis: container.ndarray
-    means: container.ndarray
-    covariances: container.ndarray
+#    pis: container.ndarray
+#    means: container.ndarray
+#    covariances: container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
     hp = None
@@ -112,6 +115,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._embedding: container.ndarray = None
         self._seeds: container.ndarray = None
         self._labels: container.ndarray = None
+        self._lcc_labels: container.ndarray = None
+        self._unique_labels = None
+        self._unique_lcc_labels = None
         self._ENOUGH_SEEDS: bool = False
         self._PD: bool = False
         self._pis: container.ndarray = None
@@ -145,7 +151,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         K = len(self._unique_labels)
 
         final_labels = np.zeros(len(learning_data))
-        string_nodeIDs = np.array([str(i) for i in self._nodeIDs])
+        string_nodeIDs = container.ndarray(np.array([str(i) for i in self._nodeIDs]))
         for i in range(len(testing_nodeIDs)):
             if testing_nodeIDs[i] in self._nodeIDs:
                 temp = np.where(self._nodeIDs == str(testing_nodeIDs[i]))[0][0]
@@ -188,25 +194,30 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         # take seeds and their labels from the learning data
         for col in headers:
             if "node" in col:
-                self._seeds = np.array(list(learning_data[col]))
+                self._seeds = container.ndarray(np.array(list(learning_data[col])))
             if "Label" in col or "label" in col or "class" in col:
-                self._labels = np.array(list(learning_data[col]))
+                self._labels = container.ndarray(np.array(list(learning_data[col])))
 
         # subselect seeds and labels that are in the lcc
-        self._lcc_seeds = []
-        self._lcc_labels = []
+        lcc_seeds = []
+        lcc_labels = []
         for seed, label in zip(self._seeds, self._labels):
             if seed in self._nodeIDs:
-                self._lcc_seeds.append(seed)
-                self._lcc_labels.append(label)
-        self._labels = np.array([i for i in self._labels])
-        self._lcc_labels = np.array([i for i in self._lcc_labels])
+                lcc_seeds.append(seed)
+                lcc_labels.append(label)
+
+        # cast to d3m appropriate types
+        self._lcc_seeds = container.ndarray(lcc_seeds)
+        self._lcc_labels = container.ndarray(lcc_labels)
 
         # get unique labels
-        self._unique_labels, label_counts = np.unique(self._labels,
-                                                      return_counts = True)
-        self._unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels,
-                                                              return_counts = True)
+        unique_labels, label_counts = np.unique(self._labels,
+                                                 return_counts = True)
+        unique_lcc_labels, lcc_label_counts = np.unique(self._lcc_labels,
+                                                        return_counts = True)
+        # cast to d3m appropriate types
+        self._unique_labels = container.ndarray(unique_labels)
+        self._unique_lcc_labels = container.ndarray(unique_lcc_labels)
 
         debugging = False
         if debugging:
@@ -254,7 +265,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._ENOUGH_SEEDS = False
 
         # prior probabilities estimation (note that they are global, not lcc)
-        self._pis = label_counts/len(self._seeds)
+        self._pis = container.ndarray(np.array(label_counts/len(self._seeds)))
         
         debugging = False
         if debugging:
@@ -305,6 +316,9 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
             embedding = self._embedding,
             seeds = self._seeds,
             labels= self._labels,
+            lcc_labels= self._lcc_labels,
+            unique_labels= self._unique_labels,
+            unique_lcc_labels= self._unique_lcc_labels,
             ENOUGH_SEEDS = self._ENOUGH_SEEDS,
             PD = self._PD
         )
@@ -320,5 +334,8 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         self._embedding = params['embedding']
         self._seeds = params['seeds']
         self._labels = params['labels']
+        self._lcc_labels = params['lcc_labels']
+        self._unique_labels = params['unique_labels']
+        self._unique_lcc_labels = params['unique_lcc_labels']
         self._ENOUGH_SEEDS = params['ENOUGH_SEEDS']
         self._PD = params['PD']
