@@ -79,7 +79,7 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         # read in graph and training csv
-        np.random.seed(self.random_seed)
+        random_state = np.random.RandomState(seed=self.random_seed)
         graph_dataframe = inputs['0']
         csv = inputs['learningData']
         
@@ -136,8 +136,8 @@ class LinkPredictionGraphReader(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
         for i in range(M):
             imputations = 0
             while imputations < n_edges[i]:
-                v1 = np.random.randint(n)
-                v2 = np.random.randint(n)
+                v1 = random_state.randint(n)
+                v2 = random_state.randint(n)
                 if v1 == v2 or A_imps[i][v1, v2] == 1:
                     pass
                 else:

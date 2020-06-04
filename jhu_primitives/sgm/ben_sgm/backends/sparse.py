@@ -15,10 +15,11 @@ from scipy import sparse
 # SGM loop
 
 class BaseSGMSparse(_BaseSGM):
-    def run(self, num_iters, tolerance, verbose=True):
+    def run(self, num_iters, tolerance, verbose=True,
+            random_seed = 1):
         A, B, P = self.A, self.B, self.P
         if hasattr(self, '_warmup'):
-            self._warmup()
+            self._warmup(random_seed = random_seed)
         
         self._reset_timers()
         
@@ -71,8 +72,8 @@ class BaseSGMSparse(_BaseSGM):
 # --
 
 class _ScipySGMSparse(BaseSGMSparse):
-    def _warmup(self):
-        cost = sparse.random(100, 100, density=0.5).tocsr()
+    def _warmup(self, random_seed=1):
+        cost = sparse.random(100, 100, density=0.5, random_state=random_seed).tocsr()
         _ = self.solve_lap(cost, None)
     
     def compute_trace(self, AX, B, Y):

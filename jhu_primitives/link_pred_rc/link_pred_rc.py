@@ -16,7 +16,7 @@ Inputs = container.List
 Outputs = container.DataFrame
 
 class Params(params.Params):
-    embeddings: container.List
+    embeddings: container.ndarray
     inner_products: container.List
 
 class Hyperparams(hyperparams.Hyperparams):
@@ -87,7 +87,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
         if not self._fitted:
             raise ValueError("Not fitted")
             
-        np.random.seed(self.random_seed)
+        random_state = np.random.RandomState(seed=self.random_seed)
         
         csv = inputs[0]
         
@@ -144,7 +144,7 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
             elif abs(quantile_noexists - 1/2) > abs(quantile_exists - 1/2):
                 predictions[i] = int(1)
             else:
-                predictions[i] = int(np.random.binomial(1, 0.5))
+                predictions[i] = int(random_state.binomial(1, 0.5))
             
         csv['linkExists'] = predictions.astype(int)
         outputs = container.DataFrame(csv[['d3mIndex', 'linkExists']])
@@ -188,8 +188,8 @@ class LinkPredictionRankClassifier(UnsupervisedLearnerPrimitiveBase[Inputs, Outp
             ranks[i][0] = np.sort(ranks[i][0])
             ranks[i][1] = np.sort(ranks[i][1])
 
-        self._embeddings = embeddings
-        self._inner_products = ranks
+        self._embeddings = container.ndarray(embeddings)
+        self._inner_products = container.List(ranks)
 
         self._fitted = True
 
