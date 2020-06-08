@@ -114,7 +114,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             if i['resType'] == "table":
                 if i['resID'] == 'learningData':
                     df = inputs['learningData']
-                    print(df, file=sys.stderr)
                 else:
                     # assume it is a nodeList otherwise. currently, there
                     # aren't any D3M nodeList datasets that have more than one
@@ -122,7 +121,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # a way to match an edgeList to a nodeList. hence, we have
                     # to assume thatnodeList corresponds to the first graph
                     edge_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
-                    print(edge_list, file=sys.stderr)
+                    print( edge_list.columns , file=sys.stderr)
             elif i['resType'] == 'graph':
                 graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
                 graphs.append(graph_temp)
