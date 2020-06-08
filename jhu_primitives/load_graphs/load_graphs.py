@@ -125,11 +125,12 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     print("first 20 nodes of the first graph", file=sys.stderr)
                     print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
                     node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
+                    node_list.set_index('nodeID')
+                    node_list.index = node_list.index.astype(str)
+
 
                     for attribute in node_list.columns.tolist()[1:]:
-                        series = pd.Series(node_list[attribute],
-                                           index=node_list['nodeID'])
-                        series.index = series.index.astype(str)
+                        series = pd.Series(node_list[attribute])
                         print(series.to_dict(), file=sys.stderr)
                         nx.set_node_attributes(graph,
                                                series.to_dict(),
