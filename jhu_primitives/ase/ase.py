@@ -179,7 +179,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             embedding = np.array(omni.fit_transform(adjacencies))
             if embedding.ndim == 4:
                 embedding = np.mean(embedding, axis=1)
-            embedding = np.concatenate(embedding, axis=1)
+                embedding = np.concatenate(embedding, axis=1)
+            else:
+                embedding = np.mean(embedding, axis=0)
 
 
             print(omni.fit_transform(adjacencies).shape)
