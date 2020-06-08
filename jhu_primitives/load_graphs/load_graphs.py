@@ -122,7 +122,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # a way to match an edgeList to a nodeList. hence, we have
                     # to assume thatnodeList corresponds to the first graph
                     edge_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
-                    print(edge_list, fule=sys.stderr)
+                    print(edge_list, file=sys.stderr)
             elif i['resType'] == 'graph':
                 graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
                 graphs.append(graph_temp)
