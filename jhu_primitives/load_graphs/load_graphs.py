@@ -121,6 +121,9 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # a way to match an edgeList to a nodeList. hence, we have
                     # to assume thatnodeList corresponds to the first graph
                     graph = graphs[0]
+
+                    print("first 20 nodes of the first graph", file=sys.stderr)
+                    print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
                     node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
 
                     for attribute in node_list.columns.tolist()[1:]:
@@ -129,6 +132,8 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                                                          index=node_list['nodeID']).to_dict(),
                                                node_list['nodeID'])
 
+                    print("first 20 nodes of the first graph after assignment", file=sys.stderr)
+                    print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
 
             elif i['resType'] == 'graph':
                 graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
