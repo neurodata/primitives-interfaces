@@ -111,7 +111,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         graphs = []
         nodeIDs = []
         for i in dataResources:
-            print(i['resID'], file=sys.stderr)
             if i['resType'] == "table":
                 if i['resID'] == 'learningData':
                     df = inputs['learningData']
@@ -123,14 +122,13 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # to assume thatnodeList corresponds to the first graph
                     graph = graphs[0]
                     node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
-                    print(node_list.columns.tolist() , file=sys.stderr)
 
-                    # # To
                     for attribute in node_list.columns.tolist()[1:]:
-                        nx.set_node_attributes(graph, pd.Series(node_list[attribute],
-                                                                index=node_list['nodeID']).to_dict())
-                    #     graph
-                    #     print(attribute, file=sys.stderr)
+                        nx.set_node_attributes(graph,
+                                               pd.Series(node_list[attribute],
+                                                         index=node_list['nodeID']).to_dict(),
+                                               node_list['nodeID'])
+
 
             elif i['resType'] == 'graph':
                 graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
@@ -151,8 +149,8 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
 
-        # print("first 20 nodes of the first graph", file=sys.stderr)
-        # print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
+        print("first 20 nodes of the first graph", file=sys.stderr)
+        print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
 
         # TODO many debugging print statements.
         debugging = False
