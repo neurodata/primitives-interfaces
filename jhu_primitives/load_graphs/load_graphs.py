@@ -133,7 +133,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     nodeIDs.append(nodeIDs_temp)
 
         print("first 20 nodes of the first graph", file=sys.stderr)
-        print(list(graphs[0].nodes())[:20], file=sys.stderr)
+        print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
 
         # TODO many debugging print statements.
         debugging = False
