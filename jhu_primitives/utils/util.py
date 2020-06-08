@@ -24,7 +24,7 @@ DATASETS = {
              #     "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
              #     ],
             "vertexClassification": [
-                "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
+                # "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
                 "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
              #    "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
              #    "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",

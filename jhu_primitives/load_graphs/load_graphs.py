@@ -131,9 +131,16 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
+            elif i['resType'] == "nodeList":
+                # currently, there aren't any D3M nodeList datasets that have
+                # more than one graph. furthermore, even if there was such,
+                # there isn't even a way to match an edgeList to a nodeList.
+                # hence, assume that the nodeList corresponds to the first graph
+                edge_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
+                print(edge_list, file=sys.stderr)
 
-        print("first 20 nodes of the first graph", file=sys.stderr)
-        print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
+        # print("first 20 nodes of the first graph", file=sys.stderr)
+        # print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
 
         # TODO many debugging print statements.
         debugging = False
@@ -147,7 +154,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             print("length of the first graph: {}".format(len(list(graphs[0].nodes()))),
                 file=sys.stderr)
             print("first 20 nodes of the first graph", file=sys.stderr)
-            print(list(graphs[0].nodes())[:20], file=sys.stderr)
+            print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
             # NODE IDS STUFF
             print("type of a nodeID: {}".format(type(nodeIDs[0][0])), file=sys.stderr)
             print("length of the nodeIds: {}".format(len(nodeIDs[0])), file=sys.stderr)
@@ -163,7 +170,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
     def _read_edgelist(self, path, columns):
         # assumed that any edgelist passed has a source in the first col
         # and a reciever in the second col.
-        # TODO make this function handle time series (Ground Truth)
         # specify columns of edges
         from_column = columns[1]['colName']
         to_column = columns[2]['colName']
