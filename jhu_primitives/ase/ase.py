@@ -166,7 +166,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             MORE_ATTR = True
             attr_number = 1
 
-            attributes = set(np.array([list(g.node[n].keys()) for n in g.nodes()]).flatten())
+            attributes = set(np.array([list(G.node[n].keys()) for n in G.nodes()]).flatten())
             print(attributes, file=sys.stderr)
 
             while MORE_ATTR:
