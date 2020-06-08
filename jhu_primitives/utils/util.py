@@ -13,36 +13,36 @@ import shutil
 import re
 
 PROBLEM_TYPES = [
-     "graphMatching",
+     # "graphMatching",
      "vertexClassification",
-     "communityDetection",
-     "linkPrediction",
+     # "communityDetection",
+     # "linkPrediction",
     ]
 
 DATASETS = {
-             "graphMatching": [
-                 "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
-                 ],
+             # "graphMatching": [
+             #     "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
+             #     ],
             "vertexClassification": [
                 "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
                 "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
-                "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
-                "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
-                ],
-              "communityDetection": [
-                  "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
-                  ],
-             "linkPrediction": [
-                 "datasets/seed_datasets_current/59_umls_MIN_METADATA",
-                 "datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
-                 ]
+             #    "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
+             #    "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
+             #    ],
+             #  "communityDetection": [
+             #      "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
+             #      ],
+             # "linkPrediction": [
+             #     "datasets/seed_datasets_current/59_umls_MIN_METADATA",
+             #     "datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
+             #     ]
             }
 
 PIPELINES = {
-             "graphMatching": [
-                 "sgm_pipeline",
-            #     "sgm_pipeline_10"
-                 ],
+            #  "graphMatching": [
+            #      "sgm_pipeline",
+            # #     "sgm_pipeline_10"
+            #      ],
             "vertexClassification": [
                 "gclass_ase_pipeline",
                 "gclass_lse_pipeline",
@@ -50,16 +50,16 @@ PIPELINES = {
             #     "gclass_ooslse_pipeline",
             #     "sgc_pipeline"
                 ],
-              "communityDetection": [
-                 "gmm_ase_pipeline",
-                 "gmm_lse_pipeline",
-            #     "gmm_oosase_pipeline",
-            #     "gmm_ooslse_pipeline"
-            #     "sgc_pipeline"
-                 ],
-             "linkPrediction": [
-                 "link_pred_pipeline",
-                 ],
+            #   "communityDetection": [
+            #      "gmm_ase_pipeline",
+            #      "gmm_lse_pipeline",
+            # #     "gmm_oosase_pipeline",
+            # #     "gmm_ooslse_pipeline"
+            # #     "sgc_pipeline"
+            #      ],
+            #  "linkPrediction": [
+            #      "link_pred_pipeline",
+            #      ],
              }
 
 def convert(name):
@@ -68,7 +68,7 @@ def convert(name):
 
 def load_args():
     parser = argparse.ArgumentParser(description = "Pipeline runner")
-    
+
     parser.add_argument(
         'target_repo',
         action = 'store',
@@ -196,7 +196,7 @@ def pipeline_run(problem_type, target_repo, paths_to_pipelines):
             cmd += " -i " + dataset_path + "TRAIN/dataset_TRAIN/datasetDoc.json"
             cmd += " -t " + dataset_path + "TEST/dataset_TEST/datasetDoc.json"
             cmd += " -a " + dataset_path + "SCORE/dataset_SCORE/datasetDoc.json"
-            run_path = '/'.join(path.split('/')[:-2]) + "/pipeline_runs/" + path.split('/')[-1] 
+            run_path = '/'.join(path.split('/')[:-2]) + "/pipeline_runs/" + path.split('/')[-1]
             cmd += " -O " + run_path + "_pipeline_run.yml"
             #print(cmd, file=sys.stderr)
             os.system(cmd)
