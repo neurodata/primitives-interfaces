@@ -112,7 +112,12 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         nodeIDs = []
         for i in dataResources:
             if i['resType'] == "table":
-                df = inputs['learningData']
+                if i['resID'] == 'nodeList':
+                    edge_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
+                    print(edge_list, file=sys.stderr)
+                else:
+                    print(i['resID'], file=sys.stderr)
+                    df = inputs[i['resID']]
             elif i['resType'] == 'graph':
                 graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
                 graphs.append(graph_temp)
@@ -136,8 +141,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                 # more than one graph. furthermore, even if there was such,
                 # there isn't even a way to match an edgeList to a nodeList.
                 # hence, assume that the nodeList corresponds to the first graph
-                edge_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
-                print(edge_list, file=sys.stderr)
 
         # print("first 20 nodes of the first graph", file=sys.stderr)
         # print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
