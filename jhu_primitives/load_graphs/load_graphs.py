@@ -114,9 +114,12 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             if i['resType'] == "table":
                 if i['resID'] == 'nodeList':
                     edge_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
-                    print(edge_list, file=sys.stderr)
                 else:
-                    print(i['resID'], file=sys.stderr)
+                    # currently, there aren't any D3M nodeList datasets that
+                    # have more than one graph. furthermore, even if there was
+                    # such, there isn't even a way to match an edgeList to a
+                    # nodeList. hence, assume that the nodeList corresponds to
+                    # the first graph
                     df = inputs[i['resID']]
             elif i['resType'] == 'graph':
                 graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
@@ -136,11 +139,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
-            elif i['resType'] == "nodeList":
-                # currently, there aren't any D3M nodeList datasets that have
-                # more than one graph. furthermore, even if there was such,
-                # there isn't even a way to match an edgeList to a nodeList.
-                # hence, assume that the nodeList corresponds to the first graph
 
         # print("first 20 nodes of the first graph", file=sys.stderr)
         # print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
