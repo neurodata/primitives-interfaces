@@ -111,7 +111,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         graphs = []
         nodeIDs = []
         for i in dataResources:
-            print(i['resID'])
+            print(i['resID'], file=sys.stderr)
             if i['resType'] == "table":
                 if i['resID'] == 'learningData':
                     df = inputs['learningData']
