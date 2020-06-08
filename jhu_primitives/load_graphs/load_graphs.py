@@ -111,6 +111,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         graphs = []
         nodeIDs = []
         for i in dataResources:
+            print(i['resID'])
             if i['resType'] == "table":
                 if i['resID'] == 'learningData':
                     df = inputs['learningData']
@@ -120,13 +121,16 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # graph. furthermore, even if there was such, there isn't
                     # a way to match an edgeList to a nodeList. hence, we have
                     # to assume thatnodeList corresponds to the first graph
-                    graph_to_assign = graphs[0]
+                    graph = graphs[0]
                     node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
                     print(node_list.columns.tolist() , file=sys.stderr)
 
-                    for attribute in node_list.columns.tolist():
-                        print(attribute, file=sys.stderr)
-                    # nx.set_node_attributes(G, 'name', pd.Series(nodes.name, index=nodes.node).to_dict())
+                    # # To
+                    # for attribute in node_list.columns.tolist()[1:]:
+                    #     nx.set_node_attributes(graph, pd.Series(node_list[attribute],
+                    #                                             index=nodes.node).to_dict())
+                    #     graph
+                    #     print(attribute, file=sys.stderr)
 
             elif i['resType'] == 'graph':
                 graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
