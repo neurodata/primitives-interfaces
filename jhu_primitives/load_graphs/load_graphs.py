@@ -122,9 +122,9 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # to assume thatnodeList corresponds to the first graph
                     graph_to_assign = graphs[0]
                     node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
-                    print(node_list.columns , file=sys.stderr)
+                    print(node_list.columns.tolist() , file=sys.stderr)
 
-                    for attribute in node_list.columns:
+                    for attribute in node_list.columns.tolist():
                         print(attribute, file=sys.stderr)
                     # nx.set_node_attributes(G, 'name', pd.Series(nodes.name, index=nodes.node).to_dict())
 
