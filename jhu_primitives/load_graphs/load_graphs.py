@@ -54,7 +54,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
             # install a Python package first to be even able to run setup.py of another package. Or you have
             # a dependency which is not on PyPi.
-            'installation': [ 
+            'installation': [
                 {
                 'type': 'UBUNTU',
                 'package': 'libxml2-dev',
@@ -95,12 +95,12 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
         # get the task type from the task docs
         temp_path = datasetDoc_uri.split('/')
         problemDoc_uri = '/'.join(temp_path[:-2]) + '/' + '/'.join(temp_path[-2:]).replace('dataset', 'problem')
-        
+
         with open(problemDoc_uri) as json_file:
              task_types = json.load(json_file)['about']['taskKeywords']
-        
+
         # TODO consider avoiding explicit use of problem type throughout pipeline
-        TASK = "" 
+        TASK = ""
         for task in task_types:
             if task in ["communityDetection", "linkPrediction", "vertexClassification", "graphMatching"]:
                 TASK = task
@@ -131,6 +131,9 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
+
+        print("first 20 nodes of the first graph", file=sys.stderr)
+        print(list(graphs[0].nodes())[:20], file=sys.stderr)
 
         # TODO many debugging print statements.
         debugging = False
