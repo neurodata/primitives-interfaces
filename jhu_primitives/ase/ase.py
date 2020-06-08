@@ -162,6 +162,8 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
 
         if self.hyperparams['use_attributes'] and len(attributes_names):
 
+            # construct a matrix of attributes
+            # TODO consider to just passing through the nodeList now that it exists
             attributes_array = np.zeros((n, len(attributes_names)))
             for i, attribute in enumerate(attributes_names):
                 attributes_array[:, i] = np.array(list(networkx.get_node_attributes(graph, attribute).values()))
@@ -172,7 +174,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             adjacencies = [graph_adjacency, kernel_matrix]
 
             omni = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
-            embedding = omni.fit_transform(adjacencies).mean(axis=0).copy()
+            embedding = np.mean(omni.fit_transform(adjacencies), axis=0).copy()
 
             inputs[1][0] = container.ndarray(embedding)
             print("ase produce ended (omni used)", file=sys.stderr)
