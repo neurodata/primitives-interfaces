@@ -178,6 +178,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             omni = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
             embedding = np.mean(omni.fit_transform(adjacencies),  axis=0).copy()
 
+            print(embedding.shape)
             inputs[1][0] = container.ndarray(embedding)
             print("ase produce ended (omni used)", file=sys.stderr)
 
