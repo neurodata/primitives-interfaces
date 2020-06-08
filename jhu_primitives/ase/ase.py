@@ -53,12 +53,6 @@ class Hyperparams(hyperparams.Hyperparams):
         semantic_types = [
             'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     ],
-
-    embed_attributes_together = hyperparams.Hyperparameter[bool](
-        default = False,
-        semantic_types = [
-            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ]
 )
 
 class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
