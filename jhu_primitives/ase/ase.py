@@ -140,7 +140,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         graphs_all = inputs[1]
 
         # ase only works for one graph (but we can change that)
-        G = inputs[1][0].copy()
+        G = graphs_all[0].copy()
 
         # catches link-prediction problem type
         # if it is not such - applies pass to ranks, which is a method to
@@ -166,7 +166,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             MORE_ATTR = True
             attr_number = 1
 
-            attributes = set(np.array([list(G.node[n].keys()) for n in G.nodes()]).flatten())
+            attributes = set([k for n in G.nodes for k in G.nodes[n].keys()])
             print(attributes, file=sys.stderr)
 
             while MORE_ATTR:
