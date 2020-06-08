@@ -122,23 +122,15 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # to assume thatnodeList corresponds to the first graph
                     graph = graphs[0]
 
-                    print("first 20 nodes of the first graph", file=sys.stderr)
-                    print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
-
                     node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
                     node_list.set_index('nodeID')
                     node_list.index = node_list.index.astype(str)
 
-
                     for attribute in node_list.columns.tolist()[1:]:
                         series = pd.Series(node_list[attribute])
-                        print(series.to_dict(), file=sys.stderr)
                         nx.set_node_attributes(graph,
                                                series.to_dict(),
                                                attribute)
-
-                    print("first 20 nodes of the first graph after assignment", file=sys.stderr)
-                    print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
 
             elif i['resType'] == 'graph':
                 graph_temp = nx.read_gml(location_base_uri + "/" + i['resPath'])
@@ -158,9 +150,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
-
-        print("first 20 nodes of the first graph", file=sys.stderr)
-        print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
 
         # TODO many debugging print statements.
         debugging = False
