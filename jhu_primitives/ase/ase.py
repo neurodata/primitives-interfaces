@@ -179,7 +179,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             embedding = np.mean(omni.fit_transform(adjacencies),  axis=0).copy()
 
 
-            print(omni.fit_transform(adjacencies))
+            print(omni.fit_transform(adjacencies).shape)
             print(embedding.shape)
             inputs[1][0] = container.ndarray(embedding)
             print("ase produce ended (omni used)", file=sys.stderr)
