@@ -114,6 +114,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
             if i['resType'] == "table":
                 if i['resID'] == 'nodeList':
                     edge_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
+                    print(edge_list, file=sys.stderr)
                 else:
                     # currently, there aren't any D3M nodeList datasets that
                     # have more than one graph. furthermore, even if there was
