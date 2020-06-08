@@ -172,11 +172,14 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             kernel_matrix = graspyPTR(rbf_kernel(attributes_array))
 
             adjacencies = [graph_adjacency, kernel_matrix]
-            print(graph_adjacency.shape, file=sys.stderr)
-            print(kernel_matrix.shape, file=sys.stderr)
+            print(graph_adjacency, file=sys.stderr)
+            print(kernel_matrix, file=sys.stderr)
 
             omni = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
-            embedding = np.mean(omni.fit_transform(adjacencies),  axis=0).copy()
+            embedding = np.array(omni.fit_transform(adjacencies))
+            if embedding.ndim == 4:
+                embedding = np.mean(embedding, axis=1)
+            embedding = np.concatenate(embedding, axis=1)
 
 
             print(omni.fit_transform(adjacencies).shape)
