@@ -45,7 +45,7 @@ PIPELINES = {
             #      ],
             "vertexClassification": [
                 "gclass_ase_pipeline",
-                "gclass_lse_pipeline",
+                # "gclass_lse_pipeline",
             #     "gclass_oosase_pipeline",
             #     "gclass_ooslse_pipeline",
             #     "sgc_pipeline"

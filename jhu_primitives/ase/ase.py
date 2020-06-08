@@ -47,11 +47,19 @@ class Hyperparams(hyperparams.Hyperparams):
         lower = 1,
         upper = 2
     )
+
     use_attributes = hyperparams.Hyperparameter[bool](
         default = False,
         semantic_types = [
             'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    ])
+    ],
+
+    embed_attributes_together = hyperparams.Hyperparameter[bool](
+        default = False,
+        semantic_types = [
+            'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+    ]
+)
 
 class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     """
@@ -133,7 +141,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # np.random.seed(self.random_seed)
 
         # unpacks necessary input arguments
-        # note that other inputs are just passed through ! 
+        # note that other inputs are just passed through !
         learning_data = inputs[0]
         graphs_all = inputs[1]
 
@@ -154,7 +162,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         max_dimension = self.hyperparams['max_dimension']
 
         if max_dimension > n:
-            max_dimension = n 
+            max_dimension = n
 
         n_elbows = self.hyperparams['which_elbow']
 
@@ -163,6 +171,10 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             adj = [g]
             MORE_ATTR = True
             attr_number = 1
+
+            attributes = set(np.array([list(self.graph.node[n].keys()) for n in self.graph.nodes()]).flatten())
+            print(attributes, file=sys.stderr)
+
             while MORE_ATTR:
                 attr = 'attr' # TODO this is no longer true for edgelists
                 # not that important
@@ -176,7 +188,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                     adj.append(graspyPTR(K))
                     attr_number += 1
             M = len(adj) # matrices including original
-            
+
             if M > 1: # if more than graph, then we omni
 
                 omni_object = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
