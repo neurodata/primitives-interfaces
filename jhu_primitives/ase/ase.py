@@ -12,6 +12,7 @@ import numpy as np
 from scipy.stats import norm
 from scipy.stats import rankdata
 from sklearn.decomposition import TruncatedSVD
+from sklearn.metrics.pairwise import rbf_kernel
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from d3m import utils, container
@@ -129,81 +130,64 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
     def produce(self, *, inputs: Inputs,
                 timeout: float = None,
                 iterations: int = None) -> CallResult[Outputs]:
-        # print('ase produce started', file=sys.stderr)
-
-        # ASE never uses random seed, but it produces a waring
-        # np.random.seed(self.random_seed)
-
         # unpacks necessary input arguments
         # note that other inputs are just passed through !
         learning_data = inputs[0]
         graphs_all = inputs[1]
 
         # ase only works for one graph (but we can change that)
-        G = graphs_all[0].copy()
+        graph = graphs_all[0].copy()
 
         # catches link-prediction problem type
         # if it is not such - applies pass to ranks, which is a method to
         # rescale edge weights based on their relative ranks
         headers = learning_data.columns
         if "linkExists" in headers:
-            g=np.array(G.copy())
+            graph_adjacency = np.array(graph.copy())
         else:
-            g=graspyPTR(G)
+            graph_adjacency = graspyPTR(graph)
 
-        n = g.shape[0]
-
+        n_elbows = self.hyperparams['which_elbow']
         max_dimension = self.hyperparams['max_dimension']
 
+        n = graph_adjacency.shape[0]
+
+        # it is counter-intuitive to embed into more dimensions than the original
         if max_dimension > n:
             max_dimension = n
 
-        n_elbows = self.hyperparams['which_elbow']
+        # check if there are any attributes, other than nodeIDs
+        attributes_names = set([k for n in graph.nodes for k in graph.nodes[n].keys()])
+        attributes_names.discard('nodeID')
 
-        # TODO: this all needs to be cleaned up.
-        if self.hyperparams['use_attributes']:
-            adj = [g]
-            MORE_ATTR = True
-            attr_number = 1
+        if self.hyperparams['use_attributes'] and len(attributes_names):
 
-            attributes = set([k for n in G.nodes for k in G.nodes[n].keys()])
-            print(attributes, file=sys.stderr)
+            attributes_array = np.zeros((n, len(attributes_names)))
+            for i, attribute in enumerate(attributes_names):
+                attributes_array[:, i] = np.array(list(networkx.get_node_attributes(graph, attribute).values()))
 
-            while MORE_ATTR:
-                attr = 'attr' # TODO this is no longer true for edgelists
-                # not that important
-                temp_attr = np.array(list(networkx.get_node_attributes(G, 'attr' + str(attr_number)).values()))
-                if len(temp_attr) == 0:
-                    MORE_ATTR = False
-                else:
-                    # construct a gaussian kernerl (smartly) (should be n by n)
-                    K = np.sum((temp_attr[:, np.newaxis][:, np.newaxis, :] - temp_attr[:, np.newaxis][np.newaxis, :, :])**2, axis = -1)
-                    # PTR on the kernel
-                    adj.append(graspyPTR(K))
-                    attr_number += 1
-            M = len(adj) # matrices including original
+            # construct a graussian kernel. then apply pass to ranks.
+            kernel_matrix = graspyPTR(rbf_kernel(attributes_array))
 
-            if M > 1: # if more than graph, then we omni
+            adjacencies = [graph_adjacency, kernel_matrix]
 
-                omni_object = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
-                X_hats = omni_object.fit_transform(adj)
-                X_hat = np.mean(X_hats, axis = 0)
+            omni = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
+            embedding = omni.fit_transform(adjacencies).mean(axis=0).copy()
 
-                embedding = X_hat.copy()
+            inputs[1][0] = container.ndarray(embedding)
+            print("ase produce ended (omni used)", file=sys.stderr)
 
-                inputs[1][0] = container.ndarray(embedding)
-                # print("ase produce ended (omni used)", file=sys.stderr)
+            return base.CallResult(inputs)
 
-                return base.CallResult(inputs)
-
-        ase_object = graspyASE(n_components=max_dimension, n_elbows = n_elbows)
-        if isinstance(ase_object, tuple):
-            X_hat = np.concatenate(ase_object.fit_transform(g), axis=1)
         else:
-            X_hat = ase_object.fit_transform(g)
+            ase_object = graspyASE(n_components=max_dimension,
+                                   n_elbows = n_elbows)
+            embedding = ase_object.fit_transform(graph_adjacency)
+            if isinstance(embedding, tuple):
+                embedding = np.concatenate(embedding, axis=1)
 
-        inputs[1][0] = container.ndarray(X_hat)
+            inputs[1][0] = container.ndarray(embedding)
 
-        # print("ase produce ended (omni not used)", file=sys.stderr)
+            print("ase produce ended (omni not used)", file=sys.stderr)
 
-        return base.CallResult(inputs)
+            return base.CallResult(inputs)
