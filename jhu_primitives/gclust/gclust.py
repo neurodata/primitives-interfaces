@@ -44,7 +44,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
         'version': "0.1.0",
         'name': "jhu.gclust",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.graph_clustering.gaussian_clustering.JHU',
+        'python_path': 'd3m.primitives.graph_clustering.gaussian.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['graph', 'gaussian clustering'],
         'source': {
@@ -141,7 +141,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
             return base.CallResult(testing)
 
         final_labels = np.zeros(len(testing_nodeIDs))
-        
+
         predictions = np.zeros(len(testing_nodeIDs))
         lcc_index = testing['components'].value_counts().idxmax()
         g_indices = np.where(testing['components'] == lcc_index)[0].astype(int)
@@ -153,7 +153,7 @@ class GaussianClustering(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Param
                 final_labels[i] = int(label)
             else:
                 final_labels[i] = int(max(predictions)) + int(testing['components'][i]) + 1
-    
+
         testing['community'] = final_labels
         outputs = container.DataFrame(testing[['d3mIndex', 'community']])
         outputs[['d3mIndex', 'community']] = outputs[['d3mIndex', 'community']].astype(int)
