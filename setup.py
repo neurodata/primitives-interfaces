@@ -1,13 +1,10 @@
 import os
 import sys
 from setuptools import setup
-from setuptools.command.install import install
-from subprocess import check_output, call
-from sys import platform
 
 PACKAGE_NAME = 'jhu_primitives'
 MINIMUM_PYTHON_VERSION = 3, 6
-VERSION = '2020.1.9.1'
+VERSION = '2020.5.9.1'
 
 def check_python_version():
     """Exit when the Python version is too low."""
@@ -47,9 +44,7 @@ setup(
               'jhu_primitives.link_pred_rc',
               # 'jhu_primitives.oosase',
               # 'jhu_primitives.ooslse',
-              #'jhu_primitives.sgc',
               'jhu_primitives.sgm',
-              # 'jhu_primitives.sgvn',
               'jhu_primitives.utils',
     ],
     entry_points = {
@@ -64,8 +59,6 @@ setup(
             'link_prediction.rank_classification.JHU=jhu_primitives.link_pred_rc:LinkPredictionRankClassifier',
             # 'data_transformation.out_of_sample_adjacency_spectral_embedding.JHU=jhu_primitives.oosase:OutOfSampleAdjacencySpectralEmbedding',
             # 'data_transformation.out_of_sample_laplacian_spectral_embedding.JHU=jhu_primitives.ooslse:OutOfSampleLaplacianSpectralEmbedding',
-            #'vertex_nomination.spectral_vertex_nomination.JHU=jhu_primitives.sgvn:SingleGraphVertexNomination',
-            #'vertex_nomination.spectral_graph_clustering.JHU=jhu_primitives.sgc:SpectralGraphClustering',
             'graph_matching.seeded_graph_matching.JHU=jhu_primitives.sgm:SeededGraphMatching'
             ]
     },
