@@ -56,7 +56,7 @@ PIPELINES = {
             #     "gmm_oosase_pipeline",
             #     "gmm_ooslse_pipeline"
             #     "sgc_pipeline"
-                 ],
+                 # ],
             #  "linkPrediction": [
             #      "link_pred_pipeline",
             #      ],
