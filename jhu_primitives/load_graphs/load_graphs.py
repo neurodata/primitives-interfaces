@@ -115,6 +115,8 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                 if i['resID'] == 'learningData':
                     df = inputs['learningData']
                 else:
+                    node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
+
                     # assume it is a nodeList otherwise. currently, there
                     # aren't any D3M nodeList datasets that have more than one
                     # graph. furthermore, even if there was such, there isn't
@@ -122,13 +124,11 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # to assume thatnodeList corresponds to the first graph
                     graph = graphs[0]
 
-                    node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
-
                     # the following block essentially catches VXTC synthetic
                     # dataset and overwrites nodeList indices withh edgeList.
                     # without a doubt not an AutoML way, but is necessary
                     first_idx_edge = sorted(list(graph.nodes(data=False)))[0]
-                    first_idx_node = sorted(list(node_list.index))[0]
+                    first_idx_node = sorted(list(node_list['nodeID']))[0]
                     print(first_idx_edge, first_idx_node)
                     if (first_idx_edge.isdigit() and first_idx_node.isdigit()
                         and int(first_idx_edge) != int(first_idx_node)):
@@ -167,28 +167,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
-
-        # TODO many debugging print statements.
-        debugging = False
-        if debugging:
-            # DATAFRAME STUFF
-            # print("label counts:", file=sys.stderr)
-            # for i in range(9):
-            #     print("label: {}, count: {}".format(
-            #         i, np.sum(df['label'] == str(i))), file=sys.stderr)
-            # GRAPH STUFF
-            print("length of the first graph: {}".format(len(list(graphs[0].nodes()))),
-                file=sys.stderr)
-            print("first 20 nodes of the first graph", file=sys.stderr)
-            print(list(graphs[0].nodes(data=True))[:20], file=sys.stderr)
-            # NODE IDS STUFF
-            print("type of a nodeID: {}".format(type(nodeIDs[0][0])), file=sys.stderr)
-            print("length of the nodeIds: {}".format(len(nodeIDs[0])), file=sys.stderr)
-            print("first 20 nodesIDs", file=sys.stderr)
-            print(nodeIDs[0][:20], file=sys.stderr)
-            # TASK STUFF
-            print("task: {}". format(TASK), file=sys.stderr)
-        # print("graph reader produce ended", file=sys.stderr)
 
         return base.CallResult(container.List([df, graphs, nodeIDs, TASK]))
 
