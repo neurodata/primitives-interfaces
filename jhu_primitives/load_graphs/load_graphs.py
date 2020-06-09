@@ -124,11 +124,14 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
                     node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
                     # print(node_list)
-                    print(type(list(node_list.index)[0]))
-                    node_list = df.astype({'nodeID': 'str'})
                     node_list = node_list.set_index('nodeID')
-                    print(type(list(node_list.index)[0]))
                     node_list.index = node_list.index.astype(str)
+
+                    for index, row in node_list.iterrows():
+                        print(row)
+                        raise NotImplementedError()
+                        graph.nodes[index]['attr1'] = nodes.name[i]
+                        graph.nodes[index]['attr2'] = nodes.gender[i]
 
                     for attribute in node_list.columns.tolist()[1:]:
                         series = pd.Series(node_list[attribute],
