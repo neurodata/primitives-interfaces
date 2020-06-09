@@ -123,14 +123,15 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     graph = graphs[0]
 
                     node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
-                    print(node_list)
+                    # print(node_list)
                     # node_list = node_list.set_index('nodeID')
                     print(node_list)
                     node_list.index = node_list.index.astype(str)
 
                     for attribute in node_list.columns.tolist()[1:]:
-                        series = pd.Series(node_list[attribute],)
-                                      #     index=node_list.index)
+                        series = pd.Series(node_list[attribute],
+                                          index=node_list.index)
+                                           # )
                         print(pd.Series(node_list[attribute],))
                         print(pd.Series(node_list[attribute],
                                            index=node_list.index))
