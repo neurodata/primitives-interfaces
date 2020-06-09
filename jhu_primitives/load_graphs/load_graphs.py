@@ -129,7 +129,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # without a doubt not an AutoML way, but is necessary
                     first_idx_edge = str(sorted(list(graph.nodes(data=False)))[0])
                     first_idx_node = str(sorted(list(node_list['nodeID']))[0])
-                    print(first_idx_edge, first_idx_node)
                     if (first_idx_edge.isdigit() and first_idx_node.isdigit()
                         and int(first_idx_edge) != int(first_idx_node)):
                         node_list = node_list.sort('nodeID').reset_index(drop=True)

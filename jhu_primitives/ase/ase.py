@@ -172,8 +172,6 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             kernel_matrix = graspyPTR(rbf_kernel(attributes_array))
 
             adjacencies = [graph_adjacency, kernel_matrix]
-            print(graph_adjacency, file=sys.stderr)
-            print(kernel_matrix, file=sys.stderr)
 
             omni = graspyOMNI(n_components = max_dimension, n_elbows = n_elbows)
             embedding = np.array(omni.fit_transform(adjacencies))
@@ -183,10 +181,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             else: # undirected inputs
                 embedding = np.mean(embedding, axis=0)
 
-            print(embedding.shape)
             inputs[1][0] = container.ndarray(embedding)
-            print("ase produce ended (omni used)", file=sys.stderr)
-
             return base.CallResult(inputs)
 
         else:
@@ -197,7 +192,4 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
                 embedding = np.concatenate(embedding, axis=1)
 
             inputs[1][0] = container.ndarray(embedding)
-
-            print("ase produce ended (omni not used)", file=sys.stderr)
-
             return base.CallResult(inputs)
