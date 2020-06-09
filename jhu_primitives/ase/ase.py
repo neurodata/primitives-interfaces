@@ -138,17 +138,19 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # ase only works for one graph (but we can change that)
         graph = graphs_all[0].copy()
 
+        n_elbows = self.hyperparams['which_elbow']
+        max_dimension = self.hyperparams['max_dimension']
+        use_attributes = self.hyperparams['use_attributes']
+
         # catches link-prediction problem type
         # if it is not such - applies pass to ranks, which is a method to
         # rescale edge weights based on their relative ranks
         headers = learning_data.columns
         if "linkExists" in headers:
             graph_adjacency = np.array(graph.copy())
+            use_attributes = False
         else:
             graph_adjacency = graspyPTR(graph)
-
-        n_elbows = self.hyperparams['which_elbow']
-        max_dimension = self.hyperparams['max_dimension']
 
         n = graph_adjacency.shape[0]
 
@@ -160,7 +162,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         attributes_names = set([k for n in graph.nodes for k in graph.nodes[n].keys()])
         attributes_names.discard('nodeID')
 
-        if self.hyperparams['use_attributes'] and len(attributes_names):
+        if use_attributes and len(attributes_names):
 
             # construct a matrix of attributes
             # TODO consider to just passing through the nodeList now that it exists
