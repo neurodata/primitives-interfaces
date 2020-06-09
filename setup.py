@@ -57,7 +57,7 @@ setup(
             'data_transformation.adjacency_spectral_embedding.JHU=jhu_primitives.ase:AdjacencySpectralEmbedding',
             'data_transformation.load_graphs.JHU=jhu_primitives.load_graphs:LoadGraphs',
             'data_preprocessing.largest_connected_component.JHU=jhu_primitives.lcc:LargestConnectedComponent',
-            'classification.gaussian_classification.JHU=jhu_primitives.gclass:GaussianClassification',
+            'classification.gaussian.JHU=jhu_primitives.gclass:GaussianClassification',
             'graph_clustering.gaussian_clustering.JHU=jhu_primitives.gclust:GaussianClustering',
             'data_transformation.laplacian_spectral_embedding.JHU=jhu_primitives.lse:LaplacianSpectralEmbedding',
             'link_prediction.data_conversion.JHU=jhu_primitives.link_pred_graph_reader:LinkPredictionGraphReader',

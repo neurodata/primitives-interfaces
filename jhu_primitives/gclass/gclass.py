@@ -55,7 +55,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         'version': "0.1.0",
         'name': "jhu.gclass",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.classification.gaussian_classification.JHU',
+        'python_path': 'd3m.primitives.classification.gaussian.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['gaussian classification', 'graph', 'graphs', 'classification', 'supervised', 'supervised learning'],
         'source': {
@@ -244,7 +244,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         if np.all(self._unique_labels != self._unique_lcc_labels):
             raise exceptions.NotSupportedError(
-                'nodes from some classes are not present in the lcc; ' + 
+                'nodes from some classes are not present in the lcc; ' +
                 'the problem is ill-defined')
 
         n, d = self._embedding.shape
@@ -266,7 +266,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
 
         # prior probabilities estimation (note that they are global, not lcc)
         self._pis = container.ndarray(np.array(label_counts/len(self._seeds)))
-        
+
         debugging = False
         if debugging:
             print("prior probabilities: {}".format(self._pis),

@@ -1,22 +1,13 @@
 import os
-import sys
 import json
 import typing
 import numpy as np
 import pandas as pd
 import networkx as nx
 
-from d3m import utils
-from d3m import container
-from d3m import exceptions
-from d3m.base import utils as base_utils
+from d3m import utils, container, exceptions
 from d3m.metadata import base as metadata_base, hyperparams
 from d3m.primitive_interfaces import base, transformer
-from d3m.primitive_interfaces.base import CallResult
-
-import common_primitives
-
-# from d3m.metadata import hyperparams, base as metadata_module, params
 
 Inputs = container.Dataset
 Outputs = container.List

@@ -51,7 +51,7 @@ class GaussianClassification(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, P
         'version': "0.1.0",
         'name': "jhu.gclass",
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.classification.gaussian_classification.JHU',
+        'python_path': 'd3m.primitives.classification.gaussian.JHU',
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['gaussian classification', 'graph', 'graphs', 'classification', 'supervised', 'supervised learning'],
         'source': {
