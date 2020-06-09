@@ -112,6 +112,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     # to assume thatnodeList corresponds to the first graph
                     graph = graphs[0]
 
+                    # TODO make them into nodeIDs instead.
                     # the following block essentially catches VXTC synthetic
                     # dataset and overwrites nodeList indices withh edgeList.
                     # without a doubt not an AutoML way, but is necessary

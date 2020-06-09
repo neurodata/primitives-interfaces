@@ -147,7 +147,7 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         # rescale edge weights based on their relative ranks
         headers = learning_data.columns
         if "linkExists" in headers:
-            graph_adjacency = np.array(graph.copy())
+            graph_adjacency = np.array(graph.copy()) # TODO only pass graphs, not adjacencies
             use_attributes = False
         else:
             graph_adjacency = graspyPTR(graph)
@@ -159,8 +159,9 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
             max_dimension = n
 
         # check if there are any attributes, other than nodeIDs
-        attributes_names = set([k for n in graph.nodes for k in graph.nodes[n].keys()])
-        attributes_names.discard('nodeID')
+        if use_attributes:
+            attributes_names = set([k for n in graph.nodes for k in graph.nodes[n].keys()])
+            attributes_names.discard('nodeID')
 
         if use_attributes and len(attributes_names):
 
