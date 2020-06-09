@@ -80,9 +80,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
 
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
-        # print("graph reader produce started", file=sys.stderr) # TODO
-        data_resources_keys = list(inputs.keys())
-
         # obtain the path to dataset
         temp_json = inputs.to_json_structure()
         datasetDoc_uri = temp_json['location_uris'][0][7:]
@@ -155,7 +152,6 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
-                raise NotImplementedError()
             elif i['resType'] == "edgeList":
                 temp_graph = self._read_edgelist(
                     location_base_uri + "/" + i['resPath'],
