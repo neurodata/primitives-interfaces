@@ -131,6 +131,9 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     for attribute in node_list.columns.tolist()[1:]:
                         series = pd.Series(node_list[attribute],)
                                       #     index=node_list.index)
+                        print(pd.Series(node_list[attribute],))
+                        print(pd.Series(node_list[attribute],
+                                           index=node_list.index))
                         nx.set_node_attributes(graph,
                                                series.to_dict(),
                                                attribute)
@@ -143,6 +146,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     nodeIDs_temp = np.array([str(i) for i in nodeIDs_temp])
                     nodeIDs_temp = container.ndarray(nodeIDs_temp)
                     nodeIDs.append(nodeIDs_temp)
+                raise NotImplementedError()
             elif i['resType'] == "edgeList":
                 temp_graph = self._read_edgelist(
                     location_base_uri + "/" + i['resPath'],
