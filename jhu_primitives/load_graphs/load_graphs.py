@@ -123,9 +123,24 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     graph = graphs[0]
 
                     node_list = pd.read_csv(location_base_uri + "/" + i['resPath'])
+
+                    # the following block essentially catches VXTC synthetic
+                    # dataset and overwrites nodeList indices withh edgeList.
+                    # without a doubt not an AutoML way, but is necessary
+                    first_idx_edge = sorted(list(graph.nodes(data=False)))[0]
+                    first_idx_node = sorted(list(node_list.index))[0]
+                    print(first_idx_edge, first_idx_node)
+                    if (first_idx_edge.isdigit() and first_idx_node.isdigit()
+                        and int(first_idx_edge) != int(first_idx_node)):
+                        node_list = node_list.sort('nodeID').reset_index(drop=True)
+                        d3m_indices = np.sort(np.array(list(graph.nodes(data=False)).astype(int)))
+                        node_list['nodeID'] = d3m_indices
+
+                    # make nodeID an index (so it is not used an attribute)
                     node_list = node_list.set_index('nodeID')
                     node_list.index = node_list.index.astype(str)
 
+                    # iterate over attributes and assign them to nodes
                     for attribute in node_list.columns.tolist():
                         series = pd.Series(node_list[attribute],
                                           index=node_list.index)
