@@ -132,7 +132,7 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     if (first_idx_edge.isdigit() and first_idx_node.isdigit()
                         and int(first_idx_edge) != int(first_idx_node)):
                         node_list = node_list.sort_values('nodeID').reset_index(drop=True)
-                        d3m_indices = np.sort(np.array(list(graph.nodes(data=False)).astype(int)))
+                        d3m_indices = np.sort(np.array(list(graph.nodes(data=False))).astype(int))
                         node_list['nodeID'] = d3m_indices
 
                     # make nodeID an index (so it is not used an attribute)
