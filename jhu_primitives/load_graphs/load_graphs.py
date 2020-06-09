@@ -127,7 +127,8 @@ class LoadGraphs(transformer.TransformerPrimitiveBase[Inputs, Outputs, Hyperpara
                     node_list.index = node_list.index.astype(str)
 
                     for attribute in node_list.columns.tolist()[1:]:
-                        series = pd.Series(node_list[attribute])
+                        series = pd.Series(node_list[attribute],
+                                           index=node_list.index)
                         nx.set_node_attributes(graph,
                                                series.to_dict(),
                                                attribute)
