@@ -138,6 +138,7 @@ def generate_json(target_repo, type_):
                 pipeline_class = getattr(module, pipeline)
 
                 pipeline_dir = dir(module)
+                print(pipeline_dir)
                 p_dir = [convert(p) for p in pipeline_dir]
                 primitives = [prim for prim in primitive_names if prim in p_dir]
                 print(primitives)
