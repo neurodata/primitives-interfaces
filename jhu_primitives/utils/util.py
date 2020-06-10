@@ -140,6 +140,7 @@ def generate_json(target_repo, type_):
                 pipeline_dir = dir(module)
                 p_dir = [convert(p) for p in pipeline_dir]
                 primitives = [prim for prim in primitive_names if prim in p_dir]
+                print(primitives)
 
                 for dataset in datasets:
                     dataset_name = dataset.split("/")[-1]
