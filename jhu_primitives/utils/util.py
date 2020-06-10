@@ -159,9 +159,9 @@ def generate_json(target_repo, type_):
                         full_path = os.path.join(jhu_path, python_paths[primitive], versions[primitive], 'pipelines', pipeline_id)
                         shutil.copy(os.path.join(path, 'temp.json'),
                                     full_path + '.json')       # creates the pipeline json
-                        #write_meta(dataset_name, dataset_new, temp_path + pipeline_id)
                         write_pipeline_run(dataset, full_path)
                         paths_to_pipelines[problem_type].append(full_path)
+                        print(full_path)
         os.remove('temp.json')
         return paths_to_pipelines
 
