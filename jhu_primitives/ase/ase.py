@@ -158,9 +158,10 @@ class AdjacencySpectralEmbedding(TransformerPrimitiveBase[Inputs, Outputs, Hyper
         if max_dimension > n:
             max_dimension = n
 
-        # check if there are any attributes, other than nodeIDs
-        attributes_names = set([k for n in graph.nodes for k in graph.nodes[n].keys()])
-        attributes_names.discard('nodeID')
+        if use_attributes:
+            # check if there are any attributes, other than nodeIDs
+            attributes_names = set([k for n in graph.nodes for k in graph.nodes[n].keys()])
+            attributes_names.discard('nodeID')
 
         if use_attributes and len(attributes_names):
 
