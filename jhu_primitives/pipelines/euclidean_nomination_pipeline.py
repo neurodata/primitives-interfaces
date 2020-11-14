@@ -1,18 +1,16 @@
 from d3m import index
 from d3m.metadata.base import ArgumentType
-from d3m.metadata.pipeline import Pipeline, PrimitiveStep
-# from d3m.primitives.feature_construction.deep_feature_synthesis import SingleTableFeaturization
-# from d3m.primitives.data_transformation import column_parser
+from d3m.metadata.pipeline import PrimitiveStep
+from d3m.metadata.pipeline import Pipeline
 
-
+from jhu_primitives.pipelines.base import BasePipeline
 from d3m.metadata import pipeline as meta_pipeline
-# from d3m.metadata.base import Context
 
 DATASETS = {
     'LL1_2734_CLIR'
 }
 
-class gclass_ase_pipeline(BasePipeline):
+class euclidean_nomination_pipeline(BasePipeline):
     def __init__(self):
         super().__init__(DATASETS)
 
