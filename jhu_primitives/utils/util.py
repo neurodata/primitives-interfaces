@@ -113,7 +113,7 @@ def generate_json(target_repo, type_):
     print()
     print()
     print()
-    print(all_primtiives)
+    print(all_primitives)
     print()
     print()
     print()
