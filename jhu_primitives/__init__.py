@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 __all__ = [
+           "EuclideanNomination",
            "AdjacencySpectralEmbedding",
            "LoadGraphs",
            "LaplacianSpectralEmbedding",
@@ -16,6 +17,7 @@ __all__ = [
            "SeededGraphMatching",
            ]
 
+from .euclidean_nomination import EuclideanNomination
 from .ase import AdjacencySpectralEmbedding
 from .load_graphs import LoadGraphs 
 from .lse import LaplacianSpectralEmbedding

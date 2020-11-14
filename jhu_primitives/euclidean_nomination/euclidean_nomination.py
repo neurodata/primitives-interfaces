@@ -8,7 +8,7 @@ import os
 import sys
 import numpy as np
 
-from sklearn.metrics import pairwise_distances as pdist
+from scipy.spatial.distance import cdist
 from scipy.optimize import linear_sum_assignment
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
@@ -24,6 +24,7 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
+    pass
     # max_dimension = hyperparams.Bounded[int](
     #     default=2,
     #     semantic_types= [
@@ -71,8 +72,7 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
             ],
             'contact': 'mailto:asaadel1@jhu.edu'
         },
-        'description': 'Creates a similarity matrix from pairwise distances and
-                        nominates one-to-one smallest distance vertex match.',
+        'description': 'Creates a similarity matrix from pairwise distances and nominates one-to-one smallest distance vertex match.',
         'hyperparams_configuration': {
             # 'max_dimension': 'The maximum dimension that can be used for eigendecomposition',
             # 'which_elbow': 'The scree plot "elbow" to use for dimensionality reduction. High values leads to more dimensions selected.',
@@ -112,7 +112,7 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         # is missing which would best describe the primitive, make a merge
         # request.
         'algorithm_types': [
-            "LINEAR_SUM_ASSIGNMENT"
+            "RANDOM_GRAPH"
         ],
         'primitive_family':
             'GRAPH_MATCHING',
@@ -135,21 +135,21 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         yhat = inputs[2]
 
         # do this more carefully TODO
-        xhat_embedding = xhat.values[:,1:]
-        yhat_embedding = yhat.values[:,1:]
-
-        S = pdist(xhat, yhat)
+        xhat_embedding = xhat.values[:,1:].astype(np.float32)
+        yhat_embedding = yhat.values[:,1:].astype(np.float32)
+        
+        S = cdist(xhat_embedding, yhat_embedding, )
         _, match = linear_sum_assignment(S, maximize=False)
 
         matches = np.zeros(len(learning_data), dtype=int)
         for i in range(len(learning_data)):
-            e_id = learning_data.index[xhat['e_nodeID'] == learning_data['e_nodeID'].iloc[i]]
-            g_id = learning_data.index[xhat['g_nodeID'] == learning_data['g_nodeID'].iloc[i]]
+            e_id = xhat.index[xhat['e_nodeID'] == learning_data['e_nodeID'].iloc[i]]
+            g_id = yhat.index[yhat['g_nodeID'] == learning_data['g_nodeID'].iloc[i]]
             matches[i] = 1 if g_id == match[e_id] else 0
 
         learning_data['match'] = matches
 
-        results = learning_data['d3mIndex', 'match']
+        results = learning_data[['d3mIndex', 'match']]
         return base.CallResult(results,
                                has_finished = True,
                                iterations_done = 1)

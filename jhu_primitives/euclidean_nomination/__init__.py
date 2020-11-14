@@ -1,2 +1,2 @@
 from __future__ import absolute_import
-from .ase import AdjacencySpectralEmbedding
+from .euclidean_nomination import EuclideanNomination
