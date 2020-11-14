@@ -156,4 +156,19 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
                                has_finished=True,
                                iterations_done=1)
 
+    def multi_produce(self, *,
+                      produce_methods: Sequence[str],
+                      inputs_1: Inputs,
+                      inputs_2: Inputs,
+                      reference: Inputs,
+                      timeout: float = None,
+                      iterations: int = None) -> base.MultiCallResult:  # type: ignore
+        return self._multi_produce(produce_methods=produce_methods,
+                                   timeout=timeout,
+                                   iterations=iterations,
+                                   inputs_1=inputs_1,
+                                   inputs_2=inputs_2,
+                                   reference=reference)
+
+
 
