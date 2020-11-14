@@ -156,9 +156,13 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         results = reference[['d3mIndex', 'match']]
         print(results, file=sys.stderr)
 
-        return base.CallResult(reference, #results,
-                               has_finished=True,
-                               iterations_done=1)
+        predictions = {"d3mIndex": reference['d3mIndex'], "match": reference['match']}
+        return base.CallResult(container.DataFrame(predictions),
+                               has_finished = True, iterations_done = 1)
+
+        # return base.CallResult(reference, #results,
+        #                        has_finished=True,
+        #                        iterations_done=1)
 
     def multi_produce(self, *,
                       produce_methods: Sequence[str],
