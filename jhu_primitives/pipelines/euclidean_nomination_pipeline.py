@@ -61,7 +61,7 @@ class euclidean_nomination_pipeline(BasePipeline):
             data_reference='steps.1.produce'
         )
         step_3.add_argument(
-            name='input_2',
+            name='inputs_2',
             argument_type=ArgumentType.CONTAINER,
             data_reference='steps.2.produce'
         )
