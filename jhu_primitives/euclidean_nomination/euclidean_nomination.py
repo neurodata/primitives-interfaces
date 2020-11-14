@@ -154,6 +154,7 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         print(reference, file=sys.stderr)
         print(type(reference), file=sys.stderr)
         results = reference[['d3mIndex', 'match']]
+        print(type(results), file=sys.stderr)
 
         return base.CallResult(results,
                                has_finished=True,
