@@ -17,8 +17,8 @@ from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
 
-Inputs = container.List
-Outputs = container.List
+Inputs = container.pandas.DataFrame
+Outputs = container.pandas.DataFrame
 
 class Params(params.Params):
     pass
