@@ -20,7 +20,7 @@ class euclidean_nomination_pipeline(BasePipeline):
 
         # Step 0: dataset_to_dataframe
         step_0 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.data_transformation.dataset_to_dataframe.Common'))
-        step_0.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_reference='inputs.learningData')
+        step_0.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_reference='inputs.0')
         step_0.add_output('produce')
         pipeline.add_step(step_0)
 
