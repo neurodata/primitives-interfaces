@@ -20,7 +20,7 @@ PROBLEM_TYPES = [
 
 DATASETS = {
              "graphMatching": [
-                 "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
+                 # "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
                  "datasets/seed_datasets_current/LL1_2734_CLIR",
                  ],
             # "vertexClassification": [
@@ -40,7 +40,7 @@ DATASETS = {
 
 PIPELINES = {
              "graphMatching": [
-                 "sgm_pipeline",
+                 # "sgm_pipeline",
                  "euclidean_nomination_pipeline"
             #     "sgm_pipeline_10"
                  ],
