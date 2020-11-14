@@ -137,7 +137,7 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         # do this more carefully TODO
         xhat_embedding = xhat.values[:,1:].astype(np.float32)
         yhat_embedding = yhat.values[:,1:].astype(np.float32)
-        
+
         S = cdist(xhat_embedding, yhat_embedding, )
         _, match = linear_sum_assignment(S, maximize=False)
 
@@ -151,9 +151,7 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
 
         results = learning_data[['d3mIndex', 'match']]
         return base.CallResult(results,
-                               has_finished = True,
-                               iterations_done = 1)
-
-        
+                               has_finished=True,
+                               iterations_done=1)
 
 
