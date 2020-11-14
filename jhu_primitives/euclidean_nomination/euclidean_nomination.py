@@ -171,7 +171,7 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
                                    reference=reference)
 
     def fit_multi_produce(self, *,
-                          produce_methods: typing.Sequence[str],
+                          produce_methods: Sequence[str],
                           inputs_1: Inputs,
                           inputs_2: Inputs,
                           reference: Inputs,
