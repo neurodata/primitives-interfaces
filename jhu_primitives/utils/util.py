@@ -99,44 +99,22 @@ def generate_json(target_repo, type_):
     jhu_path = os.path.join(path, target_repo, VERSION, "JHU", "")
 
     all_primitives = os.listdir(jhu_path)
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print(all_primitives)
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
     primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
 
     versions = {}
     for i in range(len(all_primitives)):
         versions[primitive_names[i]] = os.listdir(os.path.join(jhu_path, all_primitives[i]))[0]
 
+    print()
+    print(versions)
+    print()
+
     if type_ == 'primitives':
         for i in range(len(all_primitives)):
             temp = jhu_path + all_primitives[i]
+            print()
+            print(temp)
+            print()
             os.system('python3 -m d3m index describe -i 4 ' + all_primitives[i] + ' > ' + os.path.join(temp, versions[primitive_names[i]], 'primitive.json'))
     else:
         python_paths = {}
