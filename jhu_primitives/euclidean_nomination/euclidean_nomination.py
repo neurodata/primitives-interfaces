@@ -151,10 +151,7 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
 
         reference['match'] = matches
 
-        print(reference, file=sys.stderr)
-        print(type(reference), file=sys.stderr)
         results = reference[['d3mIndex', 'match']]
-        print(results, file=sys.stderr)
 
         predictions = {"d3mIndex": reference['d3mIndex'], "match": reference['match']}
         return base.CallResult(container.DataFrame(predictions),
