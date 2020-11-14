@@ -2,9 +2,10 @@ from d3m import index
 from d3m.metadata.base import ArgumentType
 from d3m.metadata.pipeline import PrimitiveStep
 from d3m.metadata.pipeline import Pipeline
+from d3m.metadata import pipeline as meta_pipeline
 
 from jhu_primitives.pipelines.base import BasePipeline
-from d3m.metadata import pipeline as meta_pipeline
+from jhu_primitives.euclidean_nomination import EuclideanNomination
 
 DATASETS = {
     'LL1_2734_CLIR'
@@ -51,6 +52,30 @@ class euclidean_nomination_pipeline(BasePipeline):
         )
         step_2.add_output('produce')
         pipeline.add_step(step_2)
+
+        step_3 = meta_pipeline.PrimitiveStep(
+            primitive_description=EuclideanNomination.metadata.query())
+        step_3.add_argument(
+            name='inputs_1',
+            argument_type=ArgumentType.CONTAINER,
+            data_reference='steps.1.produce'
+        )
+        step_3.add_argument(
+            name='input_2',
+            argument_type=ArgumentType.CONTAINER,
+            data_reference='steps.2.produce'
+        )
+        step_3.add_argument(
+            name='reference',
+            argument_type=ArgumentType.CONTAINER,
+            data_reference='steps.0.produce'
+        )
+
+        step_3.add_output('produce')
+        pipeline.add_step(step_3)
+
+        # Adding output step to the pipeline
+        pipeline.add_output(name='Predictions', data_reference='steps.3.produce')
 
         return pipeline
 

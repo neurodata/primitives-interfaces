@@ -127,12 +127,14 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
                          random_seed=random_seed,
                          docker_containers=docker_containers)
 
-    def produce(self, *, inputs: Inputs,
+    def produce(self, *,
+                inputs_1: Inputs,
+                inputs_2: Inputs,
+                reference: Inputs,
                 timeout: float = None,
                 iterations: int = None) -> CallResult[Outputs]:
-        learning_data = inputs[0]
-        xhat = inputs[1]
-        yhat = inputs[2]
+        xhat = inputs_1
+        yhat = inputs_2
 
         # do this more carefully TODO
         xhat_embedding = xhat.values[:,1:].astype(np.float32)
@@ -141,15 +143,15 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         S = cdist(xhat_embedding, yhat_embedding, )
         _, match = linear_sum_assignment(S, maximize=False)
 
-        matches = np.zeros(len(learning_data), dtype=int)
-        for i in range(len(learning_data)):
-            e_id = xhat.index[xhat['e_nodeID'] == learning_data['e_nodeID'].iloc[i]]
-            g_id = yhat.index[yhat['g_nodeID'] == learning_data['g_nodeID'].iloc[i]]
+        matches = np.zeros(len(reference), dtype=int)
+        for i in range(len(reference)):
+            e_id = xhat.index[xhat['e_nodeID'] == reference['e_nodeID'].iloc[i]]
+            g_id = yhat.index[yhat['g_nodeID'] == reference['g_nodeID'].iloc[i]]
             matches[i] = 1 if g_id == match[e_id] else 0
 
-        learning_data['match'] = matches
+        reference['match'] = matches
 
-        results = learning_data[['d3mIndex', 'match']]
+        results = reference[['d3mIndex', 'match']]
         return base.CallResult(results,
                                has_finished=True,
                                iterations_done=1)
