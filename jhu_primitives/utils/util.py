@@ -97,6 +97,7 @@ def generate_json(target_repo, type_):
     path = os.path.join(os.path.abspath(os.getcwd()),"")
 
     jhu_path = os.path.join(path, target_repo, VERSION, "JHU", "")
+    print(jhu_path)
 
     all_primitives = os.listdir(jhu_path)
     primitive_names = [primitive.split('.')[-2] for primitive in all_primitives]
