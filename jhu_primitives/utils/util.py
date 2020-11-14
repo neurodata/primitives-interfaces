@@ -135,6 +135,11 @@ def generate_json(target_repo, type_):
             pipelines = PIPELINES[problem_type]
             paths_to_pipelines[problem_type] = []
             for pipeline in pipelines:
+
+                print()
+                print(pipelines)
+                print()
+
                 path_to_pipeline = os.path.join(path, 'primitives-interfaces', 'jhu_primitives', 'pipelines', pipeline)
 
                 spec = importlib.util.spec_from_file_location(pipeline, path_to_pipeline + '.py')
@@ -254,19 +259,6 @@ def pipeline_run_all(paths_to_pipelines):
                 # print(cmd, file=sys.stderr)
                 os.system(cmd)
 
-
-if __name__ == '__main__':
-    target_repo, problem_type = load_args()
-    generate_json(target_repo, "primitives")
-    paths_to_pipelines = generate_json(target_repo, "pipelines")
-    # target_repo, type_ = load_args()
-    # generate_json(target_repo, type_)
-
-    #if problem_type == 'all':
-    #    pipeline_run_all(paths_to_pipelines)
-    #else:
-    #    pipeline_run(problem_type, target_repo, paths_to_pipelines)
-
 def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_type = ""):
     if abs_file_path == "":
         raise ValueError("Need absolute file path ( os.path.abspath(os.getcwd()) )")
@@ -339,3 +331,16 @@ def data_file_uri(abs_file_path = "", uri = "file", datasetDoc = False, dataset_
         return "file://localhost" + s
     else:
         return local_drive + ":" + s
+
+
+if __name__ == '__main__':
+    target_repo, problem_type = load_args()
+    generate_json(target_repo, "primitives")
+    paths_to_pipelines = generate_json(target_repo, "pipelines")
+    # target_repo, type_ = load_args()
+    # generate_json(target_repo, type_)
+
+    #if problem_type == 'all':
+    #    pipeline_run_all(paths_to_pipelines)
+    #else:
+    #    pipeline_run(problem_type, target_repo, paths_to_pipelines)
