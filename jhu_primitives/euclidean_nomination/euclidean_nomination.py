@@ -107,7 +107,7 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
         #     ),
         # ],
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.data_transformation.euclidean_nomination.JHU',
+        'python_path': 'd3m.primitives.graph_matching.euclidean_nomination.JHU',
         # Choose these from a controlled vocabulary in the schema. If anything
         # is missing which would best describe the primitive, make a merge
         # request.
