@@ -49,7 +49,6 @@ class Hyperparams(hyperparams.Hyperparams):
     #         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
     # ],
 # )
-      EuclideanNomination
 
 class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     """
