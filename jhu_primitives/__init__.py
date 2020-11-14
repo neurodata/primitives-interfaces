@@ -19,7 +19,7 @@ __all__ = [
 
 from .euclidean_nomination import EuclideanNomination
 from .ase import AdjacencySpectralEmbedding
-from .load_graphs import LoadGraphs 
+from .load_graphs import LoadGraphs
 from .lse import LaplacianSpectralEmbedding
 from .gclass import GaussianClassification
 from .gclust import GaussianClustering

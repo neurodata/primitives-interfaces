@@ -58,9 +58,9 @@ class EuclideanNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
-        'id': 'b940ccbd-9e9b-3166-af50-210bfd79251b',
+        'id': '94e32827-2c28-4d79-9046-90e5e0999b1b',
         'version': "0.1.0",
-        'name': "jhu.ase",
+        'name': "jhu.euclidean_nomination",
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['nomination', 'matching', 'linear sum assignment'],
         'source': {
