@@ -37,6 +37,7 @@ setup(
     author_email="hhelm2@jhu.edu",
     packages=[
               PACKAGE_NAME,
+              'jhu_primitives.nearest_neighbor_nomination',
               'jhu_primitives.euclidean_nomination',
               'jhu_primitives.partial_procrustes',
               'jhu_primitives.ase',
@@ -57,6 +58,7 @@ setup(
     entry_points = {
         'd3m.primitives': [
             'graph_matching.euclidean_nomination.JHU=jhu_primitives.euclidean_nomination:EuclideanNomination',
+            'graph_matching.nearest_neighbor_nomination.JHU=jhu_primitives.nearest_neighbor_nomination:NearestNeighborNomination',
             'graph_matching.partial_procrustes.JHU=jhu_primitives.partial_procrustes:PartialProcrustes',
             'data_transformation.adjacency_spectral_embedding.JHU=jhu_primitives.ase:AdjacencySpectralEmbedding',
             'data_transformation.load_graphs.JHU=jhu_primitives.load_graphs:LoadGraphs',
