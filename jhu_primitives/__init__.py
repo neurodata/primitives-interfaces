@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 __all__ = [
            "EuclideanNomination",
+           "PartialProcrustes"
            "AdjacencySpectralEmbedding",
            "LoadGraphs",
            "LaplacianSpectralEmbedding",
@@ -18,6 +19,7 @@ __all__ = [
            ]
 
 from .euclidean_nomination import EuclideanNomination
+from .partial_procrustes import PartialProcrustes
 from .ase import AdjacencySpectralEmbedding
 from .load_graphs import LoadGraphs
 from .lse import LaplacianSpectralEmbedding
