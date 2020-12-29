@@ -6,6 +6,7 @@ from d3m.metadata import pipeline as meta_pipeline
 
 from jhu_primitives.pipelines.base import BasePipeline
 from jhu_primitives.euclidean_nomination import EuclideanNomination
+from jhu_primitives.partial_procrustes import PartialProcrustes
 
 DATASETS = {
     'LL1_2734_CLIR'
