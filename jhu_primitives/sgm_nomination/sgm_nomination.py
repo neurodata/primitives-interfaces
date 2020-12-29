@@ -153,6 +153,7 @@ class SGMNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
         gmp = GraphMatch(init='rand', n_init=10)
         match = gmp.fit_predict(S_xx, S_yy, x_seeds, y_seeds)
+        print("sgm_nomination started", file=sys.stderr)
 
         matches = np.zeros(len(reference), dtype=int)
         for i in range(len(reference)):
