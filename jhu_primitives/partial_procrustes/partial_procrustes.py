@@ -138,7 +138,7 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         seeds = reference['match'].astype(bool)
 
         xhat_seed_names = reference[reference.columns[0]][seeds]
-        xhat_seed_names = reference[reference.columns[1]][seeds]
+        yhat_seed_names = reference[reference.columns[1]][seeds]
 
 
         # do this more carefully TODO
