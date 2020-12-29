@@ -147,7 +147,10 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
         xhat_embedding_s = xhat.loc[xhat[xhat.columns[0]].isin(xhat_seed_names)].values[:,1:]
         yhat_embedding_s = yhat.loc[yhat[yhat.columns[0]].isin(yhat_seed_names)].values[:,1:]
-        
+        print(xhat_embedding_s.shape, file=sys.stderr)
+        print(yhat_embedding_s.shape, file=sys.stderr)
+
+
         w, _ = orthogonal_procrustes(yhat_embedding_s, xhat_embedding_s)
         yhat_embedding_align = yhat.values[:,1:] @ w 
         yhat_align = yhat.copy()
