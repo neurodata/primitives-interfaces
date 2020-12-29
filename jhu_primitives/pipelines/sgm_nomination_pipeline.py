@@ -12,7 +12,7 @@ DATASETS = {
     'LL1_2734_CLIR'
 }
 
-class procrustes_nomination_pipeline(BasePipeline):
+class sgm_nomination_pipeline(BasePipeline):
     def __init__(self):
         super().__init__(DATASETS)
 
