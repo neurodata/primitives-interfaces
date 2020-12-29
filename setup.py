@@ -38,6 +38,7 @@ setup(
     packages=[
               PACKAGE_NAME,
               'jhu_primitives.euclidean_nomination',
+              'jhu_primitives.partial_procrustes',
               'jhu_primitives.ase',
               'jhu_primitives.gclass',
               'jhu_primitives.gclust',
@@ -56,6 +57,7 @@ setup(
     entry_points = {
         'd3m.primitives': [
             'graph_matching.euclidean_nomination.JHU=jhu_primitives.euclidean_nomination:EuclideanNomination',
+            'graph_matching.partial_procrustes.JHU=jhu_primitives.partial_procrustes:PartialProcrustes',
             'data_transformation.adjacency_spectral_embedding.JHU=jhu_primitives.ase:AdjacencySpectralEmbedding',
             'data_transformation.load_graphs.JHU=jhu_primitives.load_graphs:LoadGraphs',
             'data_preprocessing.largest_connected_component.JHU=jhu_primitives.lcc:LargestConnectedComponent',
