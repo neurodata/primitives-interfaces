@@ -143,8 +143,8 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
 
 
-        xhat_embedding_s = xhat.loc[xhat[xhat.columns[0]].isin(xhat_seed_names)].values[:,1:].astype(float32)
-        yhat_embedding_s = yhat.loc[yhat[yhat.columns[0]].isin(yhat_seed_names)].values[:,1:].astype(float32)
+        xhat_embedding_s = xhat.loc[xhat[xhat.columns[0]].isin(xhat_seed_names)].values[:,1:].astype(np.float32)
+        yhat_embedding_s = yhat.loc[yhat[yhat.columns[0]].isin(yhat_seed_names)].values[:,1:].astype(np.float32)
         print(xhat_embedding_s.dtype, file=sys.stderr)
         print(yhat_embedding_s.dtype, file=sys.stderr)
 
