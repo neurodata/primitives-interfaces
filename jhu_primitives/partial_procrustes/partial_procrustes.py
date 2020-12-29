@@ -140,8 +140,6 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         xhat_seed_names = reference[reference.columns[0]][seeds]
         xhat_seed_names = reference[reference.columns[1]][seeds]
 
-        df.loc[df[].isin(xhat_seed_name)]
-
 
         # do this more carefully TODO
         xhat_embedding = xhat.values[:,1:].astype(np.float32)
