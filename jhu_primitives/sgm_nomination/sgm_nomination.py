@@ -8,7 +8,8 @@ import os
 import sys
 import numpy as np
 
-from scipy.linalg import orthogonal_procrustes
+from scipy.spatial.distance import cdist
+from graspologic.match import GraphMatch
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from d3m import utils, container
@@ -49,7 +50,7 @@ class Hyperparams(hyperparams.Hyperparams):
     # ],
 # )
 
-class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class SGMNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     """
     Creates a similarity matrix from pairwise distances and nominates one-to-one
     smallest distance vertex match.
@@ -57,21 +58,21 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     # This should contain only metadata which cannot be automatically determined from the code.
     metadata = metadata_module.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
-        'id': 'd830b3c3-e8f1-480d-9970-c404e5064edd',
+        'id': '94e32827-2c28-4d79-9046-90e5e0999b1b',
         'version': "0.1.0",
-        'name': "jhu.partial_procrustes",
+        'name': "jhu.sgm_nomination",
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['procrustes', 'matching', 'alignment'],
+        'keywords': ['nomination', 'matching', 'linear sum assignment'],
         'source': {
             'name': "JHU",
             'uris': [
                 # Unstructured URIs. Link to file and link to repo in this case.
-                'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/partial_procrustes/partial_procrustes.py',
+                'https://github.com/neurodata/primitives-interfaces/blob/master/jhu_primitives/sgm_nomination/sgm_nomination.py',
                 'https://github.com/neurodata/primitives-interfaces',
             ],
             'contact': 'mailto:asaadel1@jhu.edu'
         },
-        'description': 'Aligns two datasets based on the rotation for a seeded group of entries',
+        'description': 'Creates two similarity matrices from pairwise distances and nominates one-to-one using seeded graph matching.',
         'hyperparams_configuration': {
             # 'max_dimension': 'The maximum dimension that can be used for eigendecomposition',
             # 'which_elbow': 'The scree plot "elbow" to use for dimensionality reduction. High values leads to more dimensions selected.',
@@ -106,7 +107,7 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         #     ),
         # ],
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.graph_matching.partial_procrustes.JHU',
+        'python_path': 'd3m.primitives.graph_matching.sgm_nomination.JHU',
         # Choose these from a controlled vocabulary in the schema. If anything
         # is missing which would best describe the primitive, make a merge
         # request.
@@ -140,20 +141,31 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         xhat_seed_names = reference[reference.columns[1]][seeds]
         yhat_seed_names = reference[reference.columns[2]][seeds]
 
+        # do this more carefully TODO
+        xhat_embedding = xhat.values[:,1:].astype(np.float32)
+        yhat_embedding = yhat.values[:,1:].astype(np.float32)
 
+        S_xx = np.exp(-cdist(xhat_embedding, xhat_embedding, ))
+        S_yy = np.exp(-cdist(yhat_embedding, yhat_embedding, ))
+        n = xhat_embedding.shape[0]
+        x_seeds = np.arange(n)[xhat[xhat.columns[0]].isin(xhat_seed_names)]
+        y_seeds = np.arange(n)[yhat[yhat.columns[0]].isin(yhat_seed_names)]
 
-        xhat_embedding_s = xhat.loc[xhat[xhat.columns[0]].isin(xhat_seed_names)].values[:,1:].astype(np.float32)
-        yhat_embedding_s = yhat.loc[yhat[yhat.columns[0]].isin(yhat_seed_names)].values[:,1:].astype(np.float32)
+        gmp = GraphMatch(init='rand', n_init=10)
+        match = gmp.fit_predict(S_xx, S_yy, x_seeds, y_seeds)
 
+        matches = np.zeros(len(reference), dtype=int)
+        for i in range(len(reference)):
+            e_id = xhat.index[xhat['e_nodeID'] == reference['e_nodeID'].iloc[i]]
+            g_id = yhat.index[yhat['g_nodeID'] == reference['g_nodeID'].iloc[i]]
+            matches[i] = 1 if g_id == match[e_id] else 0
 
-        w, _ = orthogonal_procrustes(yhat_embedding_s, xhat_embedding_s)
-        yhat_embedding_align = yhat.values[:,1:].astype(np.float32) @ w 
-        yhat_align = yhat.copy()
-        yhat_align[yhat.columns[1:]] = yhat_embedding_align
+        reference['match'] = matches
 
+        results = reference[['d3mIndex', 'match']]
 
-    
-        return base.CallResult(yhat_align,
+        predictions = {"d3mIndex": reference['d3mIndex'], "match": reference['match']}
+        return base.CallResult(container.DataFrame(predictions),
                                has_finished = True, iterations_done = 1)
 
         # return base.CallResult(reference, #results,

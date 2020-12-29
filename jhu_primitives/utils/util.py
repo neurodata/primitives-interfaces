@@ -47,6 +47,7 @@ PIPELINES = {
                  "euclidean_nomination_pipeline",
                  "procrustes_nomination_pipeline",
                  "nearest_neighbor_nomination_pipeline",
+                 "sgm_nomination_pipeline"
                  ],
             #  "graphMatching": [
             #      "sgm_pipeline",
