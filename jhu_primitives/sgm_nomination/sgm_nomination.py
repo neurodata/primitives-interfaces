@@ -151,7 +151,7 @@ class SGMNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         x_seeds = np.arange(n)[xhat[xhat.columns[0]].isin(xhat_seed_names)]
         y_seeds = np.arange(n)[yhat[yhat.columns[0]].isin(yhat_seed_names)]
 
-        gmp = GraphMatch(init='rand', n_init=10)
+        gmp = GraphMatch(shuffle_input=False)
         match = gmp.fit_predict(S_xx, S_yy, x_seeds, y_seeds)
         print("sgm_nomination started", file=sys.stderr)
 
