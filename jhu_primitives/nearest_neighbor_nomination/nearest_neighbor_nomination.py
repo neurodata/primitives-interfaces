@@ -118,8 +118,8 @@ class NearestNeighborNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperp
 
         matches = np.zeros(len(reference), dtype=int)
         for i in range(len(reference)):
-            e_id = xhat.index[xhat['e_nodeID'] == reference['e_nodeID'].iloc[i]]
-            g_id = yhat.index[yhat['g_nodeID'] == reference['g_nodeID'].iloc[i]]
+            e_id = xhat.index[xhat.columns[0] == reference.columns[1].iloc[i]]
+            g_id = yhat.index[yhat.columns[0] == reference.columns[2].iloc[i]]
             matches[i] = 1 if g_id == match[e_id] else 0
 
         reference['match'] = matches
