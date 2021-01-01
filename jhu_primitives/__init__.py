@@ -4,7 +4,7 @@ __all__ = [
            "EuclideanNomination",
            "NearestNeighborNomination",
            "PartialProcrustes",
-           "SGMNomination",
+           "SgmNomination",
            "AdjacencySpectralEmbedding",
            "LoadGraphs",
            "LaplacianSpectralEmbedding",
@@ -23,7 +23,7 @@ __all__ = [
 from .euclidean_nomination import EuclideanNomination
 from .nearest_neighbor_nomination import NearestNeighborNomination
 from .partial_procrustes import PartialProcrustes
-from .sgm_nomination import SGMNomination
+from .sgm_nomination import SgmNomination
 from .ase import AdjacencySpectralEmbedding
 from .load_graphs import LoadGraphs
 from .lse import LaplacianSpectralEmbedding

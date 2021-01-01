@@ -5,7 +5,7 @@ from d3m.metadata.pipeline import Pipeline
 from d3m.metadata import pipeline as meta_pipeline
 
 from jhu_primitives.pipelines.base import BasePipeline
-from jhu_primitives.sgm_nomination import SGMNomination
+from jhu_primitives.sgm_nomination import SgmNomination
 from jhu_primitives.partial_procrustes import PartialProcrustes
 
 DATASETS = {
@@ -78,7 +78,7 @@ class sgm_nomination_pipeline(BasePipeline):
 
         # Step 4
         step_4 = meta_pipeline.PrimitiveStep(
-            primitive_description=SGMNomination.metadata.query())
+            primitive_description=SgmNomination.metadata.query())
         step_4.add_argument(
             name='inputs_1',
             argument_type=ArgumentType.CONTAINER,

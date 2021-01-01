@@ -50,7 +50,7 @@ class Hyperparams(hyperparams.Hyperparams):
     # ],
 # )
 
-class SGMNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class SgmNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     """
     Creates a similarity matrix from pairwise distances and nominates one-to-one
     smallest distance vertex match.
@@ -153,7 +153,6 @@ class SGMNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
         gmp = GraphMatch(shuffle_input=False)
         match = gmp.fit_predict(S_xx, S_yy, x_seeds, y_seeds)
-        print("sgm_nomination started", file=sys.stderr)
 
         matches = np.zeros(len(reference), dtype=int)
         for i in range(len(reference)):
