@@ -220,7 +220,7 @@ class GraphMatch(BaseEstimator):
         self.n_iter_ = res.nit
         return self
 
-    def fit_predict(self, A, B, seeds_A=[], seeds_B=[]):
+    def fit_predict(self, A, B, seeds_A=[], seeds_B=[], S=None):
         """
         Fits the model with two assigned adjacency matrices, returning optimal
         permutation indices
