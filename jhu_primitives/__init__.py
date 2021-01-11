@@ -24,6 +24,7 @@ from .euclidean_nomination import EuclideanNomination
 from .nearest_neighbor_nomination import NearestNeighborNomination
 from .partial_procrustes import PartialProcrustes
 from .sgm_nomination import SgmNomination
+from .asgm_nomination import AsgmNomination
 from .ase import AdjacencySpectralEmbedding
 from .load_graphs import LoadGraphs
 from .lse import LaplacianSpectralEmbedding
