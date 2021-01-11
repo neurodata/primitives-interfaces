@@ -61,7 +61,7 @@ setup(
         'd3m.primitives': [
             'graph_matching.euclidean_nomination.JHU=jhu_primitives.euclidean_nomination:EuclideanNomination',
             'graph_matching.sgm_nomination.JHU=jhu_primitives.sgm_nomination:SgmNomination',
-            'graph_matching.asgm_nomination.JHU=jhu_primitives.sgm_nomination:AsgmNomination',
+            'graph_matching.asgm_nomination.JHU=jhu_primitives.asgm_nomination:AsgmNomination',
             'graph_matching.nearest_neighbor_nomination.JHU=jhu_primitives.nearest_neighbor_nomination:NearestNeighborNomination',
             'graph_matching.partial_procrustes.JHU=jhu_primitives.partial_procrustes:PartialProcrustes',
             'data_transformation.adjacency_spectral_embedding.JHU=jhu_primitives.ase:AdjacencySpectralEmbedding',

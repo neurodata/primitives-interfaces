@@ -60,7 +60,7 @@ class AsgmNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
         'id': '4a2537e6-344c-4cab-ad14-b18c7820fea3',
         'version': "0.1.0",
-        'name': "jhu.",
+        'name': "jhu.asgm_nomination",
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
         'keywords': ['nomination', 'matching', 'linear sum assignment'],
         'source': {
