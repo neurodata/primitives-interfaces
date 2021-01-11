@@ -130,7 +130,6 @@ class AsgmNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     def produce(self, *,
                 inputs_1: Inputs,
                 inputs_2: Inputs,
-                inputs_3: Inputs,
                 reference: Inputs,
                 timeout: float = None,
                 iterations: int = None) -> CallResult[Outputs]:
