@@ -9,7 +9,7 @@ import sys
 import numpy as np
 
 from scipy.spatial.distance import cdist
-from .ali_match import GraphMatch
+from .ali_sgm import GraphMatch
 
 from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
 from d3m import utils, container
