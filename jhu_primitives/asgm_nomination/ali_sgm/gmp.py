@@ -194,7 +194,7 @@ class GraphMatch(BaseEstimator):
         seeds_B = column_or_1d(seeds_B)
         partial_match = np.column_stack((seeds_A, seeds_B))
         S = check_array(S, copy=True, ensure_2d=True)
-        
+
         # pads A and B according to section 2.5 of [2]
         if A.shape[0] != B.shape[0]:
             A, B = _adj_pad(A, B, self.padding)
@@ -246,7 +246,7 @@ class GraphMatch(BaseEstimator):
         perm_inds_ : 1-d array, some shuffling of [0, n_vert)
             The optimal permutation indices to minimize the objective function
         """
-        self.fit(A, B, seeds_A, seeds_B)
+        self.fit(A, B, seeds_A, seeds_B, S)
         return self.perm_inds_
 
 
