@@ -13,64 +13,64 @@ import re
 
 PROBLEM_TYPES = [
      "matching",
-     # "graphMatching",
-     # "vertexClassification",
-     # "communityDetection",
-     # "linkPrediction",
+     "graphMatching",
+     "vertexClassification",
+     "communityDetection",
+     "linkPrediction",
     ]
 
 DATASETS = {
              "matching": [
                  "datasets/seed_datasets_current/LL1_2734_CLIR",
                  ],
-            #  "graphMatching": [
-            #      "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
-            #      "datasets/seed_datasets_current/LL1_DIC28_net_MIN_METADATA",
-            #      ],
-            # "vertexClassification": [
-            #     "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
-            #     "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
-            #     "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
-            #     "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
-            #     ],
-            #   "communityDetection": [
-            #       "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
-            #       ],
-            #  "linkPrediction": [
-            #      "datasets/seed_datasets_current/59_umls_MIN_METADATA",
-            #      "datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
-            #      ]
+             "graphMatching": [
+                 "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
+                 "datasets/seed_datasets_current/LL1_DIC28_net_MIN_METADATA",
+                 ],
+            "vertexClassification": [
+                "datasets/seed_datasets_current/LL1_net_nomination_seed_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_EDGELIST_net_nomination_seed_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1343_cora_MIN_METADATA",
+                "datasets/seed_datasets_current/LL1_VTXC_1369_synthetic_MIN_METADATA",
+                ],
+              "communityDetection": [
+                  "datasets/seed_datasets_current/LL1_bn_fly_drosophila_medulla_net_MIN_METADATA",
+                  ],
+             "linkPrediction": [
+                 "datasets/seed_datasets_current/59_umls_MIN_METADATA",
+                 "datasets/seed_datasets_current/59_LP_karate_MIN_METADATA"
+                 ]
             }
 
 PIPELINES = {
-             "matching": [
+             "graphMatching": [
+                 "sgm_pipeline",
+            #     "sgm_pipeline_10"
+                 ],
+            "vertexClassification": [
+                "gclass_ase_pipeline",
+                "gclass_lse_pipeline",
+                # "gclass_oosase_pipeline",
+                # "gclass_ooslse_pipeline",
+                # "sgc_pipeline"
+                ],
+              "communityDetection": [
+                 "gmm_ase_pipeline",
+                 "gmm_lse_pipeline",
+            #     "gmm_oosase_pipeline",
+            #     "gmm_ooslse_pipeline"
+            #     "sgc_pipeline"
+                 ],
+             "linkPrediction": [
+                 "link_pred_pipeline",
+                 ],
+              "matching": [
                  "euclidean_nomination_pipeline",
                  "procrustes_nomination_pipeline",
                  "nearest_neighbor_nomination_pipeline",
                  "sgm_nomination_pipeline",
                  "asgm_nomination_pipeline"
                  ],
-            #  "graphMatching": [
-            #      "sgm_pipeline",
-            # #     "sgm_pipeline_10"
-            #      ],
-            # "vertexClassification": [
-            #     "gclass_ase_pipeline",
-            #     "gclass_lse_pipeline",
-            #     # "gclass_oosase_pipeline",
-            #     # "gclass_ooslse_pipeline",
-            #     # "sgc_pipeline"
-            #     ],
-            #   "communityDetection": [
-            #      "gmm_ase_pipeline",
-            #      "gmm_lse_pipeline",
-            # #     "gmm_oosase_pipeline",
-            # #     "gmm_ooslse_pipeline"
-            # #     "sgc_pipeline"
-            #      ],
-            #  "linkPrediction": [
-            #      "link_pred_pipeline",
-            #      ],
              }
 
 def convert(name):
