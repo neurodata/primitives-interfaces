@@ -94,7 +94,7 @@ setup(
                       'lapjv==1.2.0',
                       'graspy>=0.0.2',
                       'graspologic',
-                      'numba>=0.52.0'
+                      'numba>=0.52.0',
 
 
                       # Begin d3m dependency
