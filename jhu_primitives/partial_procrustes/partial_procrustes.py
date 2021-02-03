@@ -109,7 +109,7 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         print('fit started', file=sys.stderr)
         if self._fitted:
             return base.CallResult(None)
-            
+
         xhat = self._training_inputs[0]
         yhat = self._training_inputs[1]
 
@@ -185,8 +185,8 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
             W = self._w)
 
     def set_params(self, *, params: Params) -> None:
-            self._fitted = True
-            self._w = W
+        self._fitted = True
+        self._w = params['W']
 
 
 
