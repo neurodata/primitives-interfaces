@@ -107,6 +107,9 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
         print('fit started', file=sys.stderr)
+        if self._fitted:
+            return base.CallResult(None)
+            
         xhat = self._training_inputs[0]
         yhat = self._training_inputs[1]
 
