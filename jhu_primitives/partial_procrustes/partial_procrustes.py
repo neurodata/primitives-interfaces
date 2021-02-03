@@ -20,34 +20,11 @@ Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
 class Params(params.Params):
-    pass
+
+    w: container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
     pass
-    # max_dimension = hyperparams.Bounded[int](
-    #     default=2,
-    #     semantic_types= [
-    #         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    # ],
-    #     lower = 1,
-    #     upper = None
-    # )
-
-    # which_elbow = hyperparams.Bounded[int](
-    #     default = 1,
-    #     semantic_types= [
-    #         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    # ],
-    #     lower = 1,
-    #     upper = 2
-    # )
-
-    # use_attributes = hyperparams.Hyperparameter[bool](
-    #     default = False,
-    #     semantic_types = [
-    #         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    # ],
-# )
 
 class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     """
@@ -125,6 +102,25 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         super().__init__(hyperparams=hyperparams,
                          random_seed=random_seed,
                          docker_containers=docker_containers)
+        self._fitted: bool = False
+        self._w: container.ndarray = None
+
+    def fit(self, inputs_1: Inputs,
+                inputs_2: Inputs,
+                reference: Inputs, timeout: float = None, iterations: int = None) -> CallResult[None]:
+        print('fit started', file=sys.stderr)
+        xhat = inputs_1
+        yhat = inputs_2
+
+        temp_train = reference.merge(xhat, how='left', on='e_nodeID')
+        temp_train = temp_train.merge(yhat, how='left', on='g_nodeID')
+        temp_train = temp_train[temp_train['match']==1]
+
+        xhat_train = temp_train.values[:, 4:-300]
+        yhat_train = temp_train.values[:, -300:]
+
+        self._w, _ = orthogonal_procrustes(yhat_train, xhat_train)
+        return CallResult(None)
 
     def produce(self, *,
                 inputs_1: Inputs,
@@ -132,22 +128,11 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
                 reference: Inputs,
                 timeout: float = None,
                 iterations: int = None) -> CallResult[Outputs]:
+        print('producing', file=sys.stderr)
         xhat = inputs_1
         yhat = inputs_2
 
-        seeds = reference['match'].astype(bool)
-
-        xhat_seed_names = reference[reference.columns[1]][seeds]
-        yhat_seed_names = reference[reference.columns[2]][seeds]
-
-
-
-        xhat_embedding_s = xhat.loc[xhat[xhat.columns[0]].isin(xhat_seed_names)].values[:,1:].astype(np.float32)
-        yhat_embedding_s = yhat.loc[yhat[yhat.columns[0]].isin(yhat_seed_names)].values[:,1:].astype(np.float32)
-
-
-        w, _ = orthogonal_procrustes(yhat_embedding_s, xhat_embedding_s)
-        yhat_embedding_align = yhat.values[:,1:].astype(np.float32) @ w 
+        yhat_embedding_align = yhat.values[:,1:].astype(np.float32) @ self._w 
         yhat_align = yhat.copy()
         yhat_align[yhat.columns[1:]] = yhat_embedding_align
 
@@ -187,7 +172,16 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
                                        inputs_1=inputs_1,
                                        inputs_2=inputs_2,
                                        reference=reference)
+     def get_params(self) -> Params:
+        if not self._fitted:
+            raise ValueError("Fit not performed.")
 
+        return Params(
+            W = self._w)
+
+    def set_params(self, *, params: Params) -> None:
+            self._fitted = True
+            self._w = W
 
 
 
