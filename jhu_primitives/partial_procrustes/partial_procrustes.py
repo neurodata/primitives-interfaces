@@ -119,8 +119,8 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
         temp_train = temp_train.merge(yhat, how='left', on='g_nodeID')
         temp_train = temp_train[temp_train['match']==1]
 
-        xhat_train = temp_train.values[:, 4:-300]
-        yhat_train = temp_train.values[:, -300:]
+        xhat_train = temp_train.values[:, 4:-300].astype(float32)
+        yhat_train = temp_train.values[:, -300:].astype(float32)
 
         self._w, _ = orthogonal_procrustes(yhat_train, xhat_train)
         return CallResult(None)
