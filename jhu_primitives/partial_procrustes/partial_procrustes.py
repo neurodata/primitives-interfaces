@@ -112,8 +112,8 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
         if self._fitted:
             return base.CallResult(None)
 
-        xhat = self._training_inputs[0]
-        yhat = self._training_inputs[1]
+        xhat = self._inputs_1
+        yhat = self._inputs_2
 
         temp_train = reference.merge(xhat, how='left', on='e_nodeID')
         temp_train = temp_train.merge(yhat, how='left', on='g_nodeID')
@@ -176,8 +176,11 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
                                        inputs_2=inputs_2,
                                        reference=reference)
 
-    def set_training_data(self, *, inputs: Inputs) -> None:
-        self._training_inputs = inputs
+    def set_training_data(self, *, 
+                    inputs_1: Inputs,
+                    inputs_2: Inputs) -> None:
+        self._inputs_1 = inputs_1
+        self._inputs_2 = inputs_2
 
     def get_params(self) -> Params:
         if not self._fitted:
