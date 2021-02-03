@@ -123,6 +123,8 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
         yhat_train = temp_train.values[:, -300:].astype(np.float32)
 
         self._w, _ = orthogonal_procrustes(yhat_train, xhat_train)
+        self._fitted = True
+        
         return CallResult(None)
 
     def produce(self, *,
