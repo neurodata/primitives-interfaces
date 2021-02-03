@@ -10,6 +10,7 @@ import numpy as np
 
 from scipy.linalg import orthogonal_procrustes
 
+from d3m import container
 from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
