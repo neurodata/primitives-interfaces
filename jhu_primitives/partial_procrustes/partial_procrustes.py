@@ -172,7 +172,7 @@ class PartialProcrustes(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
                                        inputs_1=inputs_1,
                                        inputs_2=inputs_2,
                                        reference=reference)
-     def get_params(self) -> Params:
+    def get_params(self) -> Params:
         if not self._fitted:
             raise ValueError("Fit not performed.")
 
