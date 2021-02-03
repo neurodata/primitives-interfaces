@@ -22,7 +22,7 @@ Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
 class Params(params.Params):
-    w: container.ndarray
+    W: container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
     pass
@@ -124,7 +124,7 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
 
         self._w, _ = orthogonal_procrustes(yhat_train, xhat_train)
         self._fitted = True
-        
+
         return CallResult(None)
 
     def produce(self, *,
