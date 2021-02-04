@@ -123,7 +123,7 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
         yhat_train = temp_train.values[:, -300:].astype(np.float32)
         print(xhat_train.shape, file=sys.stderr)
         print(yhat_train.shape, file=sys.stderr)
-        print(reference.head(), file=sys.stderr)
+        print(self._reference.head(), file=sys.stderr)
 
         self._w, _ = container.ndarray(orthogonal_procrustes(yhat_train, xhat_train))
         self._fitted = True
