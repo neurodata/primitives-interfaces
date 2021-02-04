@@ -108,7 +108,6 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
         self._w: container.ndarray = None
 
     def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
-        print('fit started', file=sys.stderr)
         if self._fitted:
             return base.CallResult(None)
 
@@ -122,9 +121,6 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
 
         xhat_train = temp_train.values[:, 4:-300].astype(np.float32)
         yhat_train = temp_train.values[:, -300:].astype(np.float32)
-        print(xhat_train.shape, file=sys.stderr)
-        print(yhat_train.shape, file=sys.stderr)
-        print(self._reference.head(), file=sys.stderr)
 
         w, _ = orthogonal_procrustes(yhat_train, xhat_train)
         self._w = container.ndarray(w)
@@ -138,7 +134,6 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
                 reference: Inputs,
                 timeout: float = None,
                 iterations: int = None) -> CallResult[Outputs]:
-        print('producing', file=sys.stderr)
         xhat = inputs_1
         yhat = inputs_2
 
