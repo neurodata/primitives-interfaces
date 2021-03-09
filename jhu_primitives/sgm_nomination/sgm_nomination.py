@@ -137,7 +137,8 @@ class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hy
         S_yy = np.exp(-cdist(yhat_embedding, yhat_embedding, ))
 
         gmp = GraphMatch(shuffle_input=False)
-        self._match = gmp.fit_predict(S_xx, S_yy, x_seeds, y_seeds)
+        match = gmp.fit_predict(S_xx, S_yy, x_seeds, y_seeds)
+        self._match = container.ndarray(match)
         self._fitted = True
 
         return CallResult(None)
