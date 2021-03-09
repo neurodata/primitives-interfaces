@@ -124,9 +124,9 @@ class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hy
         x_seeds = np.zeros(n_seeds)
         y_seeds = np.zeros(n_seeds)
         for i in range(n_seeds):
-            x_seeds[i] = (xhat[xhat.columns[0]] == xhat_seed_names[i]).nonzero()[0][0]
+            x_seeds[i] = np.where(xhat[xhat.columns[0]] == xhat_seed_names[i])[0][0]
 
-            y_seeds[i] = (yhat[yhat.columns[0]] == yhat_seed_names[i]).nonzero()[0][0]
+            y_seeds[i] = np.where(yhat[yhat.columns[0]] == yhat_seed_names[i])[0][0]
 
 
         # do this more carefully TODO
