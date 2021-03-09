@@ -125,9 +125,9 @@ class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hy
         y_seeds = np.zeros(n_seeds)
         for i in range(n_seeds):
             print((xhat.columns[0] == xhat_seed_names[i]).nonzero())
-            x_seeds[i] = (xhat.columns[0] == xhat_seed_names[i]).nonzero()[0][0]
+            x_seeds[i] = (xhat[xhat.columns[0]] == xhat_seed_names[i]).nonzero()[0][0]
 
-            y_seeds[i] = (yhat.columns[0] == yhat_seed_names[i]).nonzero()[0][0]
+            y_seeds[i] = (yhat[yhat.columns[0]] == yhat_seed_names[i]).nonzero()[0][0]
 
 
         # do this more carefully TODO
@@ -140,7 +140,7 @@ class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hy
         gmp = GraphMatch(shuffle_input=False)
         self._match = gmp.fit_predict(S_xx, S_yy, x_seeds, y_seeds)
         self._fitted = True
-        
+
         return CallResult(None)
 
     def produce(self, *,
