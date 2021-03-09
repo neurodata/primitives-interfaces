@@ -95,6 +95,7 @@ setup(
                       'graspy>=0.0.2',
                       'graspologic',
                       'numba>=0.52.0',
+                      'hyppo==1.3.0',
 
 
                       # Begin d3m dependency
