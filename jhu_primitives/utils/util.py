@@ -22,6 +22,7 @@ PROBLEM_TYPES = [
 DATASETS = {
              "matching": [
                  "datasets/seed_datasets_current/LL1_2734_CLIR",
+                 "datasets/seed_datasets_current/LL1_5297_CLIR2",
                  ],
             #  "graphMatching": [
             #      "datasets/seed_datasets_current/49_facebook_MIN_METADATA",
