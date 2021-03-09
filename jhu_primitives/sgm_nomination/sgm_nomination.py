@@ -28,7 +28,7 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     pass
 
-class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     """
     Creates a similarity matrix from pairwise distances and nominates one-to-one
     smallest distance vertex match.
