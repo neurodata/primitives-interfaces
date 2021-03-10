@@ -117,7 +117,7 @@ class PartialProcrustes(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params
         temp_train = self._reference.merge(xhat, how='left', on='e_nodeID')
         temp_train = temp_train.merge(yhat, how='left', on='g_nodeID')
 
-        temp_train = temp_train[temp_train['match'].astype(bool)]
+        temp_train = temp_train[temp_train['match'].astype(int).astype(bool)]
 
         xhat_train = temp_train.values[:, 4:-300].astype(np.float32)
         yhat_train = temp_train.values[:, -300:].astype(np.float32)

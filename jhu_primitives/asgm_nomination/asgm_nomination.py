@@ -11,8 +11,10 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from .ali_sgm import GraphMatch
 
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-from d3m import utils, container
+from d3m import utils
+from d3m import container
+from d3m import exceptions
+from d3m.primitive_interfaces.unsupervised_learning import UnsupervisedLearnerPrimitiveBase
 from d3m.metadata import hyperparams, base as metadata_module, params
 from d3m.primitive_interfaces import base
 from d3m.primitive_interfaces.base import CallResult
@@ -21,36 +23,12 @@ Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
 class Params(params.Params):
-    pass
+    match: container.ndarray
 
 class Hyperparams(hyperparams.Hyperparams):
     pass
-    # max_dimension = hyperparams.Bounded[int](
-    #     default=2,
-    #     semantic_types= [
-    #         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    # ],
-    #     lower = 1,
-    #     upper = None
-    # )
 
-    # which_elbow = hyperparams.Bounded[int](
-    #     default = 1,
-    #     semantic_types= [
-    #         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    # ],
-    #     lower = 1,
-    #     upper = 2
-    # )
-
-    # use_attributes = hyperparams.Hyperparameter[bool](
-    #     default = False,
-    #     semantic_types = [
-    #         'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-    # ],
-# )
-
-class AsgmNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class AsgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     """
     Creates a similarity matrix from pairwise distances and nominates one-to-one
     smallest distance vertex match.
@@ -126,6 +104,45 @@ class AsgmNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         super().__init__(hyperparams=hyperparams,
                          random_seed=random_seed,
                          docker_containers=docker_containers)
+        self._fitted: bool = False
+        self._training_inputs: Inputs = None
+        self._match: container.ndarray = None
+
+    def fit(self, *, timeout: float = None, iterations: int = None) -> CallResult[None]:
+        if self._fitted:
+            return base.CallResult(None)
+
+        xhat = self._inputs_1
+        yhat = self._inputs_2
+
+        seeds = self._reference['match'].astype(int).astype(bool)
+
+        xhat_seed_names = self._reference[self._reference.columns[1]][seeds].values
+        yhat_seed_names = self._reference[self._reference.columns[2]][seeds].values
+
+        n_seeds = len(xhat_seed_names)
+
+        x_seeds = np.zeros(n_seeds)
+        y_seeds = np.zeros(n_seeds)
+        for i in range(n_seeds):
+            x_seeds[i] = np.where(xhat[xhat.columns[0]] == xhat_seed_names[i])[0][0]
+
+            y_seeds[i] = np.where(yhat[yhat.columns[0]] == yhat_seed_names[i])[0][0]
+
+        # do this more carefully TODO
+        xhat_embedding = xhat.values[:,1:].astype(np.float32)
+        yhat_embedding = yhat.values[:,1:].astype(np.float32)
+
+        S_xx = np.exp(-cdist(xhat_embedding, xhat_embedding, ))
+        S_yy = np.exp(-cdist(yhat_embedding, yhat_embedding, ))
+        S_xy = np.exp(-cdist(xhat_embedding, yhat_embedding))
+
+        gmp = GraphMatch(shuffle_input=False)
+        match = gmp.fit_predict(S_xx, S_yy, x_seeds, y_seeds, S_xy)
+        self._match = container.ndarray(match)
+        self._fitted = True
+
+        return CallResult(None)
 
     def produce(self, *,
                 inputs_1: Inputs,
@@ -136,31 +153,12 @@ class AsgmNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         xhat = inputs_1
         yhat = inputs_2
 
-        seeds = reference['match'].astype(bool)
-
-        xhat_seed_names = reference[reference.columns[1]][seeds]
-        yhat_seed_names = reference[reference.columns[2]][seeds]
-
-        # do this more carefully TODO
-        xhat_embedding = xhat.values[:,1:].astype(np.float32)
-        yhat_embedding = yhat.values[:,1:].astype(np.float32)
-
-        S_xx = np.exp(-cdist(xhat_embedding, xhat_embedding, ))
-        S_yy = np.exp(-cdist(yhat_embedding, yhat_embedding, ))
-        n = xhat_embedding.shape[0]
-        x_seeds = np.arange(n)[xhat[xhat.columns[0]].isin(xhat_seed_names)]
-        y_seeds = np.arange(n)[yhat[yhat.columns[0]].isin(yhat_seed_names)]
-
-        S_xy = np.exp(-cdist(xhat_embedding, yhat_embedding))
-
-        gmp = GraphMatch()
-        match = gmp.fit_predict(S_xx, S_yy, x_seeds, y_seeds, S_xy)
 
         matches = np.zeros(len(reference), dtype=int)
         for i in range(len(reference)):
             e_id = xhat.index[xhat['e_nodeID'] == reference['e_nodeID'].iloc[i]]
             g_id = yhat.index[yhat['g_nodeID'] == reference['g_nodeID'].iloc[i]]
-            matches[i] = 1 if g_id == match[e_id] else 0
+            matches[i] = 1 if g_id == self._match[e_id] else 0
 
         reference['match'] = matches
 
@@ -202,6 +200,24 @@ class AsgmNomination(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
                                        inputs_2=inputs_2,
                                        reference=reference)
 
+    def set_training_data(self, *, 
+                    inputs_1: Inputs,
+                    inputs_2: Inputs,
+                    reference: Inputs) -> None:
+        self._inputs_1 = inputs_1
+        self._inputs_2 = inputs_2
+        self._reference = reference
+
+    def get_params(self) -> Params:
+        if not self._fitted:
+            raise ValueError("Fit not performed.")
+
+        return Params(
+            match = self._match)
+
+    def set_params(self, *, params: Params) -> None:
+        self._fitted = True
+        self._match = params['match']
 
 
 
