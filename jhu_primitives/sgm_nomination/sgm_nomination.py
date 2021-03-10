@@ -115,7 +115,7 @@ class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hy
         xhat = self._inputs_1
         yhat = self._inputs_2
 
-        seeds = self._reference['match'].astype(bool)
+        seeds = self._reference['match'].astype(int).astype(bool)
 
         xhat_seed_names = self._reference[self._reference.columns[1]][seeds].values
         yhat_seed_names = self._reference[self._reference.columns[2]][seeds].values
