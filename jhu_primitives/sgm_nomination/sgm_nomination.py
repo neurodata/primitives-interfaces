@@ -115,15 +115,23 @@ class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hy
         xhat = self._inputs_1
         yhat = self._inputs_2
 
-        seeds = self._reference['match'].astype(bool)
-        print(len(self._referencee), file=sys.stderr)
+        print(len(self._reference), file=sys.stderr)
         print(self._reference.head(5), file=sys.stderr)
+
+        seeds = self._reference['match'].astype(bool)
+
         print(seeds, file=sys.stderr)
         print(type(seeds), file=sys.stderr)
         print(len(seeds), file=sys.stderr)
 
         xhat_seed_names = self._reference[self._reference.columns[1]][seeds].values
         yhat_seed_names = self._reference[self._reference.columns[2]][seeds].values
+
+        print(len(x_seed_names), file=sys.stderr)
+        print(len(y_seed_names), file=sys.stderr)
+        print(len(np.unique(x_seed_names)), file=sys.stderr)
+        print(len(np.unique(y_seed_names)), file=sys.stderr)
+
         n_seeds = len(xhat_seed_names)
 
         x_seeds = np.zeros(n_seeds)
@@ -135,8 +143,8 @@ class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hy
 
         print(len(x_seeds), file=sys.stderr)
         print(len(y_seeds), file=sys.stderr)
-        print(len(np.unique(y_seeds)), file=sys.stderr)
         print(len(np.unique(x_seeds)), file=sys.stderr)
+        print(len(np.unique(y_seeds)), file=sys.stderr)
 
         # do this more carefully TODO
         xhat_embedding = xhat.values[:,1:].astype(np.float32)
