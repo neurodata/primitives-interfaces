@@ -66,11 +66,11 @@ PIPELINES = {
             #      "link_pred_pipeline",
             #      ],
               "matching": [
-                 # "euclidean_nomination_pipeline",
-                 # "procrustes_nomination_pipeline",
-                 # "nearest_neighbor_nomination_pipeline",
+                 "euclidean_nomination_pipeline",
+                 "procrustes_nomination_pipeline",
+                 "nearest_neighbor_nomination_pipeline",
                  "sgm_nomination_pipeline",
-                 # "asgm_nomination_pipeline"
+                 "asgm_nomination_pipeline"
                  ],
              }
 
