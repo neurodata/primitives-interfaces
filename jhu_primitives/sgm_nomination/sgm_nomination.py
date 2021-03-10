@@ -127,10 +127,10 @@ class SgmNomination(UnsupervisedLearnerPrimitiveBase[Inputs, Outputs, Params, Hy
         xhat_seed_names = self._reference[self._reference.columns[1]][seeds].values
         yhat_seed_names = self._reference[self._reference.columns[2]][seeds].values
 
-        print(len(x_seed_names), file=sys.stderr)
-        print(len(y_seed_names), file=sys.stderr)
-        print(len(np.unique(x_seed_names)), file=sys.stderr)
-        print(len(np.unique(y_seed_names)), file=sys.stderr)
+        print(len(xhat_seed_names), file=sys.stderr)
+        print(len(yhat_seed_names), file=sys.stderr)
+        print(len(np.unique(xhat_seed_names)), file=sys.stderr)
+        print(len(np.unique(yhat_seed_names)), file=sys.stderr)
 
         n_seeds = len(xhat_seed_names)
 
