@@ -121,5 +121,6 @@ setup(
                      ],
     url='https://github.com/neurodata/primitives-interfaces',
     dependency_links=['git+https://github.com/neurodata/graspy.git#egg=master'],
-    keywords = 'd3m_primitive'
+    keywords = 'd3m_primitive',
+    license = 'Apache-2.0',
 )
