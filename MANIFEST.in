@@ -1,1 +1,2 @@
 include jhu_primitives/*/*.R
+include LICENSE
