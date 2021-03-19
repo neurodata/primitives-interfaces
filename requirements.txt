@@ -22,7 +22,7 @@ ipython==7.4.0
 ipython-genutils==0.2.0
 jedi==0.13.3
 -e git+https://github.com/hhelm10/primitives-interfaces.git@675c85c39d1566303b84d43d944e4b7ba20e7311#egg=jhu_primitives
-Jinja2==2.10.1
+Jinja2==2.11.3
 jsonpath-ng==1.4.3
 jsonschema==2.6.0
 jupyter-client==5.2.4
