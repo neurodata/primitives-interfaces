@@ -91,7 +91,7 @@ setup(
                       'scipy', # jhu dependency
                       # 'lap',  # unnecessary jhu dependency
                       'cython', # jhu dependency,
-                      'lapjv==1.2.0',
+                      'lapjv>=1.2.0,<2.0.0',
                       'graspy>=0.0.2',
                       'graspologic',
                       'numba>=0.52.0',
