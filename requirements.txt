@@ -18,7 +18,7 @@ GPUtil==1.3.0
 -e git+https://github.com/hhelm10/graspy.git@bbf93b069af426885261d64a6225228ff5aa049b#egg=graspy
 idna==2.7
 ipykernel==5.1.0
-ipython==7.4.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 jedi==0.13.3
 -e git+https://github.com/hhelm10/primitives-interfaces.git@675c85c39d1566303b84d43d944e4b7ba20e7311#egg=jhu_primitives
